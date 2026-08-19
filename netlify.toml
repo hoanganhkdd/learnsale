@@ -1,0 +1,12 @@
+# Netlify — chỉ phục vụ bản STATIC (mục 7).
+# Ở chế độ này KHÔNG có backend Node: /api/* sẽ được api-static.js xử lý bằng localStorage,
+# và chat/insight gọi thẳng OpenAI từ trình duyệt. Mất upload file lớn + thư viện dùng chung + giấu key ở server.
+[build]
+  publish = "public"
+  command = ""
+
+# SPA-ish: mọi route không phải file tĩnh -> trả index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

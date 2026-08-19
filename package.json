@@ -1,0 +1,27 @@
+{
+  "name": "sale-self-learning-app",
+  "version": "1.0.0",
+  "description": "Ứng dụng web tự học kỹ năng Sale (Bán hàng) song ngữ Việt–Anh / Bilingual self-learning web app for Sales skills",
+  "type": "module",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "keywords": [
+    "sales",
+    "elearning",
+    "vietnamese",
+    "general-trade",
+    "modern-trade"
+  ],
+  "license": "MIT"
+}

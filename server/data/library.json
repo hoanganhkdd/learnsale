@@ -1,0 +1,187 @@
+{
+  "resources": [
+    {
+      "id": "seed-gt-1",
+      "skillId": "general-trade",
+      "type": "link",
+      "title": "General Trade vs Modern Trade: Key Differences (BeatRoute)",
+      "url": "https://beatroute.io/sales-execution/what-is-general-trade-vs-modern-trade/",
+      "note": "So sánh chi tiết kênh truyền thống và hiện đại, vai trò trong FMCG. / In-depth GT vs MT comparison and roles in FMCG.",
+      "tags": [
+        "general-trade",
+        "fmcg",
+        "channel",
+        "cơ bản"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-gt-2",
+      "skillId": "general-trade",
+      "type": "link",
+      "title": "Modern Trade vs General Trade & Role in FMCG (Unstop)",
+      "url": "https://unstop.com/blog/modern-trade-vs-general-trade",
+      "note": "Tổng quan kênh phân phối, kirana/tạp hoá, độ phủ và công nợ. / Distribution channels, mom-and-pop stores, coverage & credit.",
+      "tags": [
+        "general-trade",
+        "distribution",
+        "coverage"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-gt-3",
+      "skillId": "general-trade",
+      "type": "link",
+      "title": "General vs Modern Trade Guide 2026 (Botree.ai)",
+      "url": "https://www.botree.ai/guide/general-vs-modern-trade-guide",
+      "note": "Hướng dẫn quản lý tuyến, độ phủ số/trọng số, KPI kênh GT. / Route management, numeric/weighted distribution, GT KPIs.",
+      "tags": [
+        "general-trade",
+        "kpi",
+        "route",
+        "pjp"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-mt-1",
+      "skillId": "modern-trade",
+      "type": "link",
+      "title": "What Is Key Account Management? (Salesforce)",
+      "url": "https://www.salesforce.com/blog/key-account-management/",
+      "note": "Khái niệm KAM, phân hạng tài khoản, giá trị dịch vụ > tính năng. / KAM concept, account tiering, service value.",
+      "tags": [
+        "modern-trade",
+        "kam",
+        "key-account"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-mt-2",
+      "skillId": "modern-trade",
+      "type": "link",
+      "title": "Key Account Management — Complete Guide 2026 (DemandFarm)",
+      "url": "https://www.demandfarm.com/key-account-management/",
+      "note": "Account plan, JBP, QBR, multi-threading và quan hệ đối tác. / Account planning, JBP, QBR, multi-threading.",
+      "tags": [
+        "modern-trade",
+        "kam",
+        "jbp",
+        "qbr"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-mt-3",
+      "skillId": "modern-trade",
+      "type": "link",
+      "title": "Key Account Management for Modern Trade (LinkedIn)",
+      "url": "https://www.linkedin.com/pulse/key-account-management-modern-trade-meleusipo-fonollera-jr-",
+      "note": "Áp dụng KAM cho siêu thị/chuỗi, category management, trade marketing. / Applying KAM to supermarkets & chains.",
+      "tags": [
+        "modern-trade",
+        "category-management",
+        "trade-marketing"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-b2b-1",
+      "skillId": "b2b-sales",
+      "type": "link",
+      "title": "SPIN Selling — The Ultimate Guide (HubSpot)",
+      "url": "https://blog.hubspot.com/sales/spin-selling-the-ultimate-guide",
+      "note": "Khung SPIN (Situation-Problem-Implication-Need payoff) với ví dụ. / SPIN framework with examples.",
+      "tags": [
+        "b2b-sales",
+        "spin",
+        "consultative"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-b2b-2",
+      "skillId": "b2b-sales",
+      "type": "link",
+      "title": "What Is SPIN Selling? (Salesforce)",
+      "url": "https://www.salesforce.com/blog/sales/spin-selling/",
+      "note": "Xây niềm tin bằng câu hỏi đúng, bán tư vấn cho B2B. / Building trust with the right questions.",
+      "tags": [
+        "b2b-sales",
+        "spin",
+        "trust"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-b2b-3",
+      "skillId": "b2b-sales",
+      "type": "link",
+      "title": "SPIN Selling, Explained: What It Is and Why It Works (Highspot)",
+      "url": "https://www.highspot.com/blog/spin-selling/",
+      "note": "Vì sao SPIN hiệu quả trong deal B2B phức tạp, ACV cao. / Why SPIN works for complex B2B deals.",
+      "tags": [
+        "b2b-sales",
+        "spin",
+        "pipeline"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-mer-1",
+      "skillId": "merchandising",
+      "type": "link",
+      "title": "Visual Merchandising: A Complete Guide (Shopify)",
+      "url": "https://www.shopify.com/retail/visual-merchandising",
+      "note": "Nguyên lý visual merchandising: bố cục, ánh sáng, điểm nhấn. / Visual merchandising principles.",
+      "tags": [
+        "merchandising",
+        "visual",
+        "cơ bản"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-mer-2",
+      "skillId": "merchandising",
+      "type": "link",
+      "title": "What Is a Planogram? (Investopedia)",
+      "url": "https://www.investopedia.com/terms/p/planogram.asp",
+      "note": "Định nghĩa planogram, facing, tối ưu diện tích kệ. / Planogram, facing, shelf optimization.",
+      "tags": [
+        "merchandising",
+        "planogram",
+        "shelf"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-mer-3",
+      "skillId": "merchandising",
+      "type": "link",
+      "title": "Retail Merchandising Best Practices (Lightspeed)",
+      "url": "https://www.lightspeedhq.com/blog/retail-merchandising/",
+      "note": "POSM, trưng bày phụ, vị trí vàng, đo lường hiệu quả. / POSM, secondary display, hot spots.",
+      "tags": [
+        "merchandising",
+        "posm",
+        "display"
+      ],
+      "file": null,
+      "createdAt": "2026-08-19T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# Render.com Blueprint — deploy Node service (miễn phí / free plan)
+# Lưu ý: gói free KHÔNG có Disk => dữ liệu thêm mới (skills/library/uploads) sẽ reset khi service restart.
+# Muốn bền vững: nâng lên gói trả phí, bật Disk và trỏ DATA_DIR vào mount path (xem README).
+services:
+  - type: web
+    name: sale-self-learning-app
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      # Bật Disk (gói trả phí) rồi mở comment 2 dòng dưới + phần disk:
+      # - key: DATA_DIR
+      #   value: /var/data
+# disk:
+#   name: sale-data
+#   mountPath: /var/data
+#   sizeGB: 1

@@ -1,0 +1,1488 @@
+{
+  "meta": {
+    "title": "Tự học Sale — Bán hàng & Thương mại",
+    "subtitle": "Self-learning Sales — Trade & Commerce",
+    "source": "Tổng hợp từ tài liệu ngành FMCG/B2B (Salesforce, HubSpot, SPIN Selling, BeatRoute, DemandFarm...)",
+    "updated": "2026-08-19"
+  },
+  "skills": [
+    {
+      "id": "general-trade",
+      "icon": "🏪",
+      "name_vi": "General Trade — Kênh truyền thống",
+      "name_en": "General Trade (Traditional Channel)",
+      "summary": "Bán hàng qua chợ, tạp hoá, nhà phân phối (NPP). Quan hệ cá nhân, ghi sổ công nợ, độ phủ sâu tới vùng xa. Nền tảng của FMCG tại Việt Nam.",
+      "builtin": true,
+      "lessons": [
+        {
+          "id": "gt-1",
+          "title_vi": "Tổng quan kênh GT & vai trò nhà phân phối",
+          "title_en": "GT Channel Overview & Distributor Role",
+          "objective": "Hiểu cấu trúc kênh truyền thống, dòng chảy hàng hoá NSX → NPP → điểm bán → người mua, và vì sao GT vẫn chiếm >70% doanh số FMCG.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**General Trade (GT)** = kênh bán lẻ truyền thống: tạp hoá (mom-and-pop), chợ, sạp, cửa hàng nhỏ do chủ tự vận hành.",
+                "**Nhà phân phối / Distributor (NPP)**: đối tác mua đứt hàng của NSX rồi bán lại & giao tới điểm bán trong địa bàn.",
+                "**Điểm bán / Outlet (POS)**: cửa hàng lẻ nơi người tiêu dùng mua hàng.",
+                "**Độ phủ / Coverage**: tỷ lệ điểm bán có hàng của bạn trên tổng điểm bán khu vực.",
+                "GT dựa vào **quan hệ cá nhân (personal relationship)** và **bán chịu / credit** — chủ shop tin tưởng và giới thiệu sản phẩm cho khách."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "NSX (Manufacturer) sản xuất & định giá → bán cho NPP.",
+                "NPP nhập kho, chia tuyến (route) cho nhân viên bán hàng (salesman/DSR).",
+                "DSR viếng thăm điểm bán theo tuyến cố định (PJP — Permanent Journey Plan).",
+                "Ghi đơn (order taking) → NPP giao hàng (delivery) → thu tiền/ghi công nợ.",
+                "Trưng bày (merchandising) + chăm sóc quan hệ → tái đặt hàng (reorder)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Vẽ **bản đồ điểm bán (outlet mapping)** để không bỏ sót cửa hàng.",
+                "Chia hạng điểm bán A/B/C theo doanh số để dồn nguồn lực vào nhóm A.",
+                "Bắt tay chủ shop bằng lợi ích rõ ràng: biên lợi nhuận, hàng bán nhanh (fast-moving), hỗ trợ trưng bày."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một NPP nước giải khát ở Cần Thơ phủ 1.200 tạp hoá. DSR đi 40 điểm/ngày theo PJP, mỗi điểm dừng 8–10 phút: kiểm kho (stock check) → gợi ý đơn → chốt → dặn trưng bày mặt tiền. Nhờ tuyến cố định, độ phủ tăng từ 62% lên 78% trong 3 tháng."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Liệt kê 10 tạp hoá gần bạn, phân hạng A/B/C theo ước lượng doanh số.",
+                "Vẽ 1 tuyến PJP hợp lý cho 10 điểm đó (thứ tự viếng thăm tối ưu quãng đường).",
+                "Viết 3 lý do để chủ shop nhập thử một sản phẩm mới."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chỉ chăm điểm bán lớn, bỏ quên nhóm C đông đảo → mất độ phủ.",
+                "Cho công nợ tràn lan không kiểm soát → NPP chôn vốn, nợ xấu.",
+                "Không kiểm kho trước khi chào đơn → gợi ý sai số lượng, tồn hàng."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "GT = General Trade (kênh truyền thống)",
+                "NPP = Distributor (nhà phân phối)",
+                "DSR = Distributor Sales Representative (nhân viên bán hàng)",
+                "PJP = Permanent Journey Plan (tuyến viếng thăm cố định)",
+                "Coverage = độ phủ; Outlet = điểm bán",
+                "Reorder = tái đặt hàng; Credit = bán chịu/công nợ"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gt-2",
+          "title_vi": "Quy trình viếng thăm điểm bán 8 bước",
+          "title_en": "The 8-Step Retail Call Process",
+          "objective": "Nắm chuẩn 8 bước một cuộc viếng thăm chuyên nghiệp để mỗi lần ghé điểm bán đều tạo giá trị và tăng đơn.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Call = một lần viếng thăm** một điểm bán. Chất lượng call quyết định doanh số, không phải số call.",
+                "**Perfect Call / Cuộc viếng thăm hoàn hảo**: đủ bước, không bỏ sót, để lại điểm bán tốt hơn trước khi bạn tới.",
+                "**Strike rate / Tỷ lệ chốt**: số đơn thành công / số điểm ghé thăm."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "1. Chuẩn bị (Preparation): xem lịch sử đơn, mục tiêu, hàng khuyến mãi.",
+                "2. Chào hỏi (Greeting): tạo thiện cảm với chủ/nhân viên shop.",
+                "3. Kiểm tra cửa hàng (Store check): tồn kho, trưng bày, giá, đối thủ.",
+                "4. Kiểm kho & xử lý tồn (Stock check): FIFO, gom hàng cận date.",
+                "5. Trưng bày (Merchandising): bổ sung, xoay mặt hàng, POSM.",
+                "6. Chào bán & chốt đơn (Selling & closing): gợi ý theo nhu cầu.",
+                "7. Ghi đơn & xác nhận (Order & confirm): số lượng, giao, thanh toán.",
+                "8. Ghi chép & chào tạm biệt (Record & farewell): cập nhật, hẹn lần sau."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Dùng **suggestive selling**: 'Cuối tuần khách mua nhiều, anh lấy thêm 2 thùng nhé?'",
+                "Áp dụng **FIFO (First In First Out)**: đẩy hàng cũ ra trước, tránh hết hạn.",
+                "Quan sát **share of shelf** (tỷ lệ kệ) của mình so với đối thủ để đàm phán vị trí."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "DSR bước vào tạp hoá, chào chủ shop, đếm nhanh tồn (còn 3 thùng mì), thấy 5 gói cận date → xếp ra trước & gợi ý bán kèm. Sau đó bổ sung kệ, chốt đơn 6 thùng cho tuần lễ hội, dán POSM khuyến mãi. Toàn bộ 9 phút."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Đóng vai: thực hành đủ 8 bước trong 8 phút với một 'điểm bán giả định'.",
+                "Ghi lại strike rate của bạn sau 10 call giả lập.",
+                "Chỉ ra bước nào bạn hay bỏ sót nhất và cách khắc phục."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Vào là chào đơn ngay, bỏ qua kiểm kho → gợi ý sai.",
+                "Không trưng bày lại kệ → sản phẩm bị đối thủ 'nuốt' vị trí.",
+                "Không ghi chép → lần sau lặp lại sai lầm, quên cam kết."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Call = cuộc viếng thăm điểm bán",
+                "POSM = Point of Sale Material (vật phẩm quảng cáo tại điểm bán)",
+                "FIFO = First In First Out (nhập trước xuất trước)",
+                "Share of shelf = tỷ lệ diện tích kệ",
+                "Strike rate = tỷ lệ chốt đơn"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gt-3",
+          "title_vi": "Trưng bày & POSM tại điểm bán",
+          "title_en": "In-store Merchandising & POSM",
+          "objective": "Biến kệ hàng thành nhân viên bán hàng thầm lặng: đúng vị trí, đủ mặt hàng, bắt mắt, đúng giá.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Merchandising / Trưng bày**: sắp xếp sản phẩm để tối đa khả năng được nhìn thấy và mua.",
+                "**Planogram**: sơ đồ chuẩn cách xếp hàng trên kệ.",
+                "**Eye level is buy level** — tầm mắt là tầm mua: đặt SKU chủ lực ngang tầm mắt.",
+                "**Facing**: số mặt sản phẩm quay ra ngoài kệ."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định vị trí vàng (hot spot): quầy tính tiền, lối vào, ngang tầm mắt.",
+                "Nhóm sản phẩm cùng ngành hàng (category block) cho dễ chọn.",
+                "Đảm bảo đủ facing cho SKU bán chạy; loại bỏ hàng lỗi/bụi.",
+                "Gắn POSM: wobbler, sticker giá, standee, poster khuyến mãi.",
+                "Chụp ảnh trước–sau để theo dõi & báo cáo."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Quy tắc **'nhiều facing = nhiều doanh số'** cho hàng fast-moving.",
+                "Tạo **secondary display** (trưng bày phụ) như hộp đảo (dump bin) cạnh quầy.",
+                "Dùng màu sắc bao bì tạo **block màu** nổi bật giữa kệ đối thủ."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Nhãn snack tăng facing từ 2 lên 5 và chuyển lên tầm mắt, thêm 1 dump bin cạnh quầy thu ngân. Sau 2 tuần, sản lượng tại nhóm cửa hàng thử nghiệm tăng ~23% so với nhóm đối chứng."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Chụp 1 kệ tạp hoá thật, đánh giá: facing, tầm mắt, POSM còn thiếu gì.",
+                "Vẽ 1 planogram đề xuất cho 3 SKU của bạn.",
+                "Đề xuất 1 vị trí secondary display và lý do."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Nhồi quá nhiều SKU khiến kệ rối, khách khó chọn.",
+                "POSM dán chồng chéo, che mất sản phẩm hoặc giá.",
+                "Không cập nhật giá → khách mất niềm tin, chủ shop phiền."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "SKU = Stock Keeping Unit (đơn vị hàng lưu kho)",
+                "Facing = số mặt hàng quay ra kệ",
+                "Planogram = sơ đồ trưng bày chuẩn",
+                "POSM = vật phẩm quảng cáo điểm bán",
+                "Secondary display = trưng bày phụ; Hot spot = vị trí vàng"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gt-4",
+          "title_vi": "Xử lý từ chối & đàm phán với chủ shop",
+          "title_en": "Handling Objections & Negotiating with Retailers",
+          "objective": "Biến lời từ chối thành cơ hội: lắng nghe, đồng cảm, đưa lý do kinh tế để chủ shop nói 'có'.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Objection / Từ chối**: dấu hiệu chủ shop còn băn khoăn, chưa thấy đủ lợi ích.",
+                "Từ chối phổ biến ở GT: 'hàng bán chậm', 'hết chỗ trưng', 'còn tồn', 'lời ít', 'cho gối đầu không?'.",
+                "**Win-win**: đàm phán để cả NPP và chủ shop cùng có lợi, giữ quan hệ lâu dài."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Lắng nghe hết (Listen) — không cắt lời.",
+                "Đồng cảm & làm rõ (Acknowledge & clarify): 'Em hiểu, ý anh là...'.",
+                "Phản hồi bằng bằng chứng (Respond): số liệu, biên lợi nhuận, tốc độ bán.",
+                "Đề xuất giải pháp cụ thể (Propose): số lượng nhỏ thử, đổi trả, hỗ trợ trưng bày.",
+                "Chốt & xác nhận (Close & confirm)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Feel–Felt–Found**: 'Nhiều chủ shop cũng nghĩ vậy (feel/felt), nhưng khi thử họ thấy bán hết trong 1 tuần (found)'.",
+                "Quy lợi nhuận về **tiền/ngày**: 'Mỗi thùng lời 30k, bán 2 thùng/tuần là ~8k/ngày lời'.",
+                "Đề nghị **đơn hàng thử nhỏ** để giảm rủi ro cảm nhận."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Chủ shop: 'Hàng này bán chậm lắm'. DSR: 'Em hiểu ạ. Bên chị Ba đầu chợ cũng lo vậy, nhưng khi để ngang tầm mắt cạnh quầy, 1 tuần hết 3 thùng. Anh lấy thử 2 thùng, em phụ trưng bày, tuần sau bán chậm em nhận lại phần còn.' → Chốt 2 thùng."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết câu trả lời Feel–Felt–Found cho 3 lời từ chối phổ biến.",
+                "Tính lợi nhuận/ngày cho 1 SKU của bạn để dùng khi thuyết phục.",
+                "Đóng vai: bạn là chủ shop khó tính, đồng đội xử lý từ chối."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Tranh cãi tay đôi, chứng minh chủ shop 'sai' → mất quan hệ.",
+                "Giảm giá vô tội vạ để chốt → phá giá thị trường, giảm biên.",
+                "Hứa hỗ trợ rồi không thực hiện → mất uy tín, lần sau khó bán."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Objection = lời từ chối/phản đối",
+                "Feel–Felt–Found = kỹ thuật đồng cảm 3 bước",
+                "Win-win = đôi bên cùng có lợi",
+                "Trial order = đơn hàng thử",
+                "Gối đầu = bán chịu tới kỳ sau (credit term)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gt-5",
+          "title_vi": "Chỉ số bán hàng & quản lý tuyến",
+          "title_en": "Sales KPIs & Route Management",
+          "objective": "Đo lường đúng để cải thiện: nắm các KPI cốt lõi của kênh GT và cách quản lý tuyến hiệu quả.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**KPI**: chỉ số đo hiệu quả bán hàng.",
+                "**Numeric distribution / Độ phủ số**: % điểm bán có hàng.",
+                "**Weighted distribution / Độ phủ trọng số**: theo doanh số điểm bán, không chỉ đếm đầu.",
+                "**Productivity call**: % call có phát sinh đơn."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Đặt mục tiêu tháng: doanh số, số điểm bán mới, độ phủ SKU.",
+                "Chia mục tiêu về ngày/tuyến cho từng DSR.",
+                "Theo dõi hằng ngày: call thực hiện, strike rate, giá trị đơn TB.",
+                "Review tuần: điểm bán rớt đơn, SKU thiếu phủ, cơ hội upsell.",
+                "Điều chỉnh PJP & ưu tiên nhóm A."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Tăng **drop size** (giá trị đơn TB) bằng combo & mua theo thùng.",
+                "Tăng **lines per call / SKU/đơn**: bán thêm ngành hàng phụ.",
+                "Dùng **80/20**: 20% điểm bán tạo ~80% doanh số → ưu tiên."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "DSR có 45 call/ngày nhưng strike rate 55%. Sau khi tập trung nhóm A và bán thêm ngành hàng phụ, số call giảm còn 38 nhưng strike rate lên 72% và drop size tăng 18% → doanh số tăng dù đi ít điểm hơn."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Tính strike rate & drop size từ dữ liệu 1 tuần giả định.",
+                "Xác định 20% điểm bán tạo 80% doanh số trong danh sách của bạn.",
+                "Đề xuất 2 hành động tăng lines-per-call."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chạy theo số call (đi cho nhiều) mà bỏ chất lượng đơn.",
+                "Chỉ nhìn độ phủ số, bỏ độ phủ trọng số → phủ chỗ không bán được.",
+                "Không review dữ liệu → lặp lại sai sót, không thấy điểm rớt."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "KPI = Key Performance Indicator (chỉ số hiệu quả)",
+                "Numeric/Weighted distribution = độ phủ số/trọng số",
+                "Drop size = giá trị đơn trung bình",
+                "Lines per call = số SKU mỗi đơn",
+                "Productivity call = call có phát sinh đơn"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modern-trade",
+      "icon": "🏬",
+      "name_vi": "Modern Trade — Kênh hiện đại (MT/KA)",
+      "name_en": "Modern Trade (MT / Key Accounts)",
+      "summary": "Bán hàng vào siêu thị, đại siêu thị, chuỗi cửa hàng tiện lợi. Làm việc với mua hàng tập trung, hợp đồng, category management, trade marketing.",
+      "builtin": true,
+      "lessons": [
+        {
+          "id": "mt-1",
+          "title_vi": "Tổng quan Modern Trade & Key Account",
+          "title_en": "Modern Trade & Key Account Overview",
+          "objective": "Hiểu đặc thù kênh hiện đại: mua hàng tập trung, hợp đồng thương mại, dữ liệu real-time, và vì sao cần Key Account Management.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Modern Trade (MT)**: bán lẻ tổ chức quy mô lớn — siêu thị (supermarket), đại siêu thị (hypermarket), chuỗi tiện lợi (convenience), cash & carry.",
+                "**Key Account (KA)**: khách hàng lớn, quan trọng chiến lược, mua tập trung qua trụ sở.",
+                "**KAM — Key Account Management**: chiến lược quản lý các KA theo hướng đối tác chiến lược, dài hạn.",
+                "MT đặc trưng: **mua tập trung (central buying)**, **hợp đồng thương mại**, chuỗi cung ứng chuẩn hoá, dữ liệu bán hàng real-time."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Phân hạng KA (tiering) theo doanh số & tiềm năng: A (top 20–30%), B, C.",
+                "Xây **account plan** cho từng KA: mục tiêu, SKU, khuyến mãi, trưng bày.",
+                "Đàm phán **JBP (Joint Business Plan)** với bộ phận mua hàng.",
+                "Triển khai tại cửa hàng: listing, planogram, promotion.",
+                "Theo dõi sell-through, sell-out, tồn kho, và review định kỳ."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Áp dụng **account tiering**: dồn nguồn lực vào top 20–30% KA tạo phần lớn doanh thu.",
+                "Chuẩn bị **fact-based selling**: dùng dữ liệu category & shopper để thuyết phục buyer.",
+                "Xây quan hệ đa tuyến (multi-level): buyer, category manager, store ops."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một nhãn sữa làm việc với chuỗi siêu thị 80 cửa hàng. Thay vì bán lẻ từng nơi, họ ký hợp đồng năm với phòng mua hàng: listing 12 SKU, 4 đợt khuyến mãi, 2 đầu kệ (gondola end)/quý. Doanh số kênh MT tăng gấp đôi sau 1 năm."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Liệt kê 5 chuỗi MT tại VN và phân loại supermarket/hyper/convenience.",
+                "Phân hạng A/B/C cho 5 KA giả định theo doanh số.",
+                "Nêu 3 khác biệt then chốt khi bán MT so với GT."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Đối xử KA như điểm bán lẻ thường → bỏ lỡ đàm phán hợp đồng.",
+                "Chỉ quan hệ với 1 người (single-threaded) → rủi ro khi họ nghỉ.",
+                "Chạy khuyến mãi không tính lợi nhuận → doanh số tăng nhưng lỗ."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "MT = Modern Trade; KA = Key Account",
+                "KAM = Key Account Management",
+                "JBP = Joint Business Plan (kế hoạch kinh doanh chung)",
+                "Central buying = mua hàng tập trung",
+                "Sell-in / Sell-out = bán vào chuỗi / bán ra cho người tiêu dùng"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mt-2",
+          "title_vi": "Đàm phán với buyer & điều khoản thương mại",
+          "title_en": "Negotiating with Buyers & Trade Terms",
+          "objective": "Chuẩn bị và dẫn dắt đàm phán với phòng mua hàng: chiết khấu, phí, listing, thanh toán — bảo vệ biên lợi nhuận.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Buyer / Category buyer**: người quyết định nhập hàng, giá, khuyến mãi ở chuỗi MT.",
+                "**Trade terms / Điều khoản thương mại**: chiết khấu, thưởng doanh số (rebate), phí trưng bày, công nợ.",
+                "**Listing fee / Phí niêm yết**: phí để SKU được lên kệ chuỗi.",
+                "**Margin / Biên lợi nhuận**: phần trăm lời — thứ cần bảo vệ trong mọi nhượng bộ."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Chuẩn bị: BATNA, mục tiêu, khoảng nhượng bộ, dữ liệu category.",
+                "Mở đầu bằng giá trị (value), không bằng giảm giá.",
+                "Trao đổi có điều kiện (if–then): 'Nếu chị cho đầu kệ, em tăng ngân sách promo'.",
+                "Ghi lại thoả thuận & lượng hoá tác động lợi nhuận.",
+                "Chốt hợp đồng & lịch triển khai."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**BATNA (Best Alternative To Negotiated Agreement)**: biết phương án thay thế để không bị ép.",
+                "**Trade-off, không give-away**: mỗi nhượng bộ đổi lấy một thứ có giá trị.",
+                "Neo giá trị bằng số liệu: tăng trưởng ngành hàng, giá trị giỏ hàng, lượng khách."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Buyer đòi chiết khấu thêm 3%. Thay vì đồng ý ngay, sales đề xuất: giữ giá nhưng tặng gói dùng thử làm quà khách VIP + 1 đợt sampling — chi phí thấp hơn 3% chiết khấu nhưng buyer thấy hấp dẫn. Kết quả: giữ được biên, buyer vẫn 'thắng'."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết BATNA cho một tình huống đàm phán listing SKU mới.",
+                "Chuyển 3 yêu cầu giảm giá của buyer thành đề xuất if–then.",
+                "Tính tác động lợi nhuận nếu chiết khấu tăng từ 5% → 8%."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Nhượng bộ đơn phương để 'giữ quan hệ' → buyer đòi thêm mãi.",
+                "Không tính tổng chi phí thương mại → deal trông tốt nhưng lỗ.",
+                "Không có BATNA → bị dồn vào thế phải chấp nhận."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "BATNA = phương án thay thế tốt nhất",
+                "Rebate = thưởng chiết khấu theo doanh số",
+                "Listing fee = phí niêm yết/lên kệ",
+                "Trade terms = điều khoản thương mại",
+                "Margin = biên lợi nhuận"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mt-3",
+          "title_vi": "Category Management & Trade Marketing",
+          "title_en": "Category Management & Trade Marketing",
+          "objective": "Bán bằng tư duy ngành hàng: giúp chuỗi phát triển cả category, không chỉ nhãn của bạn — đó là con đường thành đối tác chiến lược.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Category management / Quản trị ngành hàng**: quản lý cả nhóm hàng như một đơn vị kinh doanh để tối đa doanh thu & trải nghiệm mua.",
+                "**Trade marketing**: các hoạt động thúc đẩy bán tại điểm bán (khuyến mãi, trưng bày, sampling).",
+                "**Shopper marketing**: hiểu hành vi người mua trong cửa hàng để tác động quyết định.",
+                "**Category captain**: nhà cung cấp được chuỗi tin tưởng tư vấn cả ngành hàng."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Định nghĩa ngành hàng & vai trò (destination, routine, convenience...).",
+                "Đánh giá hiệu quả: doanh số/m², tồn kho, cơ cấu SKU.",
+                "Xây planogram tối ưu theo dữ liệu shopper.",
+                "Thiết kế promotion & POSM đúng dịp (mùa vụ, lễ tết).",
+                "Đo lường (sell-out, uplift) & tối ưu liên tục."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Dùng dữ liệu **sell-out** & shopper để đề xuất, không dựa cảm tính.",
+                "**Assortment optimization**: bỏ SKU kém, thêm SKU tăng trưởng.",
+                "Đo **promo uplift** (mức tăng do khuyến mãi) để chọn cơ chế hiệu quả nhất."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Nhãn cà phê phân tích dữ liệu chuỗi: 30% SKU tạo 5% doanh số. Họ đề xuất cắt SKU kém, mở rộng dòng bán chạy, sắp lại kệ theo nhu cầu (hoà tan – rang xay – phin giấy). Doanh số ngành hàng cà phê của chuỗi tăng 12%, chuỗi mời họ làm category captain."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Chọn 1 ngành hàng, liệt kê vai trò của nó với người mua.",
+                "Đề xuất 3 SKU nên bỏ và 3 SKU nên thêm (kèm lý do).",
+                "Thiết kế 1 chương trình trade marketing cho dịp Tết."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chỉ nghĩ cho nhãn mình, ép SKU → mất niềm tin của chuỗi.",
+                "Khuyến mãi liên tục làm khách chỉ mua khi giảm giá (promo addiction).",
+                "Không đo uplift → tiêu ngân sách trade mà không biết hiệu quả."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Category management = quản trị ngành hàng",
+                "Trade marketing = tiếp thị tại kênh phân phối",
+                "Shopper marketing = tiếp thị theo người mua",
+                "Assortment = cơ cấu/danh mục SKU",
+                "Uplift = mức tăng doanh số do khuyến mãi"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mt-4",
+          "title_vi": "Joint Business Plan & quan hệ đối tác",
+          "title_en": "Joint Business Plan & Partnership",
+          "objective": "Chuyển từ giao dịch mua–bán sang hợp tác cùng tăng trưởng qua JBP: mục tiêu chung, cam kết hai chiều, review định kỳ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**JBP (Joint Business Plan)**: kế hoạch kinh doanh chung giữa nhà cung cấp và chuỗi, thường theo năm.",
+                "**Value proposition / Đề xuất giá trị**: điều bạn mang lại khiến chuỗi muốn hợp tác — dịch vụ & hỗ trợ quan trọng gấp đôi so với chỉ tính năng sản phẩm.",
+                "**Business review (QBR)**: họp rà soát kết quả định kỳ (thường theo quý)."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Thu thập insight: dữ liệu chuỗi, mục tiêu của họ, cơ hội ngành hàng.",
+                "Đề xuất mục tiêu chung (doanh số, tăng trưởng, thị phần).",
+                "Cam kết hai chiều: NSX (đầu tư, khuyến mãi, hàng mới) ↔ chuỗi (kệ, vị trí, giá).",
+                "Lập lịch hành động & người chịu trách nhiệm (owner).",
+                "QBR: đo kết quả, học hỏi, điều chỉnh."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Xây **quantified value proposition**: lượng hoá giá trị bằng tiền/tăng trưởng.",
+                "Liên kết mục tiêu của bạn với **KPI của buyer** (họ cũng có chỉ tiêu).",
+                "Đa tuyến quan hệ (multi-threading): kết nối nhiều phòng ban để bền vững."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Trong JBP năm, nhãn hàng cam kết 4 chiến dịch, 3 SKU mới độc quyền 2 tháng đầu, ngân sách sampling; đổi lại chuỗi cam kết 2 đầu kệ/quý và ưu tiên listing. QBR quý 2 cho thấy tăng trưởng 15% → cả hai mở rộng kế hoạch nửa cuối năm."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Phác thảo 1 JBP 1 trang: mục tiêu chung + cam kết 2 chiều.",
+                "Viết quantified value proposition cho 1 KA (lượng hoá bằng số).",
+                "Chuẩn bị 5 slide cho một QBR giả định."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "JBP một chiều (chỉ bạn cam kết) → không ràng buộc chuỗi.",
+                "Không QBR → kế hoạch thành giấy tờ, không ai theo dõi.",
+                "Chỉ nói tính năng sản phẩm, quên giá trị dịch vụ & hỗ trợ."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "JBP = Joint Business Plan",
+                "QBR = Quarterly Business Review (rà soát theo quý)",
+                "Value proposition = đề xuất giá trị",
+                "Multi-threading = quan hệ đa tuyến",
+                "Owner = người chịu trách nhiệm hành động"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mt-5",
+          "title_vi": "Phân tích dữ liệu bán lẻ & báo cáo",
+          "title_en": "Retail Data Analysis & Reporting",
+          "objective": "Dùng dữ liệu MT (sell-out, tồn kho, thị phần) để ra quyết định và kể câu chuyện thuyết phục buyer.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Sell-in vs Sell-out**: bán vào chuỗi vs bán ra cho người tiêu dùng (thước đo thật của nhu cầu).",
+                "**OSA — On-Shelf Availability / Sẵn hàng trên kệ**: % thời gian sản phẩm có mặt trên kệ.",
+                "**OOS — Out of Stock / Hết hàng**: tình trạng gây mất doanh số & lòng tin.",
+                "**Market share / Thị phần**: phần của bạn trong tổng ngành hàng."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Thu thập dữ liệu: POS/sell-out của chuỗi, dữ liệu ngành (Nielsen/NielsenIQ).",
+                "Làm sạch & chuẩn hoá theo SKU/cửa hàng/tuần.",
+                "Phân tích: xu hướng, OOS, uplift khuyến mãi, thị phần.",
+                "Rút insight → hành động (bổ sung hàng, đổi planogram, chỉnh promo).",
+                "Trình bày dạng story: bối cảnh → vấn đề → giải pháp → tác động."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Theo dõi **OSA/OOS** để chặn mất doanh số vô hình.",
+                "So sánh **like-for-like** (cùng kỳ, cùng cửa hàng) để đánh giá đúng.",
+                "Dùng **data storytelling**: 1 biểu đồ chính + 1 thông điệp hành động."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Phân tích cho thấy SKU chủ lực OOS 18% vào cuối tuần — mất ~9% doanh số tiềm năng. Sales đề xuất tăng tần suất giao & safety stock. Sau 6 tuần OOS giảm còn 4%, doanh số cửa hàng tăng 7% mà không cần khuyến mãi."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Từ bảng sell-out giả định, tính tăng trưởng like-for-like.",
+                "Xác định 2 SKU có OOS cao và đề xuất khắc phục.",
+                "Dựng 1 slide 'insight → hành động → tác động' từ dữ liệu đó."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chỉ nhìn sell-in (bán vào) mà bỏ sell-out → tồn kho ảo.",
+                "Báo cáo đầy số nhưng không có thông điệp hành động.",
+                "Bỏ qua OOS vì khó thấy → mất doanh số âm thầm."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Sell-in / Sell-out = bán vào chuỗi / bán ra",
+                "OSA = On-Shelf Availability (sẵn hàng trên kệ)",
+                "OOS = Out of Stock (hết hàng)",
+                "Market share = thị phần",
+                "Like-for-like = so sánh cùng điều kiện"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2b-sales",
+      "icon": "🤝",
+      "name_vi": "B2B Sales — Bán hàng doanh nghiệp",
+      "name_en": "B2B Sales (Consultative Selling)",
+      "summary": "Bán giải pháp cho doanh nghiệp: chu kỳ dài, nhiều người quyết định, giá trị hợp đồng lớn. Trọng tâm là đặt câu hỏi đúng (SPIN) và bán tư vấn.",
+      "builtin": true,
+      "lessons": [
+        {
+          "id": "b2b-1",
+          "title_vi": "Quy trình bán hàng B2B & phễu",
+          "title_en": "B2B Sales Process & Pipeline",
+          "objective": "Nắm các giai đoạn của một thương vụ B2B và cách quản lý phễu bán hàng để dự báo & tăng tỷ lệ chốt.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**B2B (Business-to-Business)**: bán cho tổ chức/doanh nghiệp, không phải người tiêu dùng cá nhân.",
+                "**Pipeline / Phễu bán hàng**: tập hợp cơ hội (opportunity) theo từng giai đoạn.",
+                "**Lead → MQL → SQL → Opportunity → Deal**: hành trình từ khách tiềm năng đến chốt.",
+                "**Sales cycle / Chu kỳ bán**: thời gian từ tiếp cận đến ký hợp đồng — B2B thường dài (tuần đến tháng)."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Prospecting (tìm kiếm khách) → tạo lead.",
+                "Qualifying (sàng lọc): đúng nhu cầu, ngân sách, thẩm quyền?",
+                "Discovery (khám phá nhu cầu) qua đặt câu hỏi.",
+                "Proposal & demo (đề xuất giải pháp).",
+                "Negotiation → Close (đàm phán & chốt) → Onboarding."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Dùng khung **BANT** (Budget, Authority, Need, Timeline) để qualify nhanh.",
+                "Quản lý phễu theo **giai đoạn + xác suất** để dự báo doanh số (forecast).",
+                "Luôn xác định **next step** rõ ràng sau mỗi tương tác để deal không 'đứng'."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một công ty phần mềm có 40 opportunity: 10 ở giai đoạn discovery (20% xác suất), 20 ở proposal (40%), 10 ở negotiation (70%). Nhân giá trị × xác suất → forecast có trọng số. Nhờ đó lãnh đạo biết cần thêm bao nhiêu lead đầu phễu để đạt chỉ tiêu quý."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Vẽ phễu 5 giai đoạn cho sản phẩm/dịch vụ của bạn.",
+                "Qualify 1 lead giả định bằng BANT.",
+                "Tính forecast có trọng số từ 5 opportunity giả định."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Nhồi phễu bằng lead kém chất lượng → tốn thời gian, tỷ lệ chốt thấp.",
+                "Không chốt next step → deal kéo dài rồi 'chết'.",
+                "Dự báo cảm tính, không theo giai đoạn/xác suất."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "B2B = Business-to-Business",
+                "Pipeline = phễu bán hàng; Opportunity = cơ hội",
+                "Lead / MQL / SQL = khách tiềm năng / đủ điều kiện marketing / bán hàng",
+                "BANT = Budget–Authority–Need–Timeline",
+                "Forecast = dự báo doanh số"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2b-2",
+          "title_vi": "SPIN Selling — Nghệ thuật đặt câu hỏi",
+          "title_en": "SPIN Selling — The Art of Questions",
+          "objective": "Làm chủ 4 loại câu hỏi SPIN để khách tự nhận ra vấn đề và giá trị của giải pháp — nền tảng của bán tư vấn.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**SPIN** = Situation, Problem, Implication, Need-payoff — 4 nhóm câu hỏi theo thứ tự.",
+                "**Consultative selling / Bán tư vấn**: bán bằng cách hiểu và giải quyết nhu cầu thật, không 'thao thao' tính năng.",
+                "Ý tưởng cốt lõi: người bán giỏi **hỏi nhiều hơn nói**, dẫn dắt khách tự kết luận."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "**S — Situation**: hỏi bối cảnh hiện tại (quy trình, công cụ, quy mô).",
+                "**P — Problem**: khơi khó khăn, bất tiện, điểm đau.",
+                "**I — Implication**: đào sâu hậu quả nếu vấn đề không được giải quyết (chi phí, rủi ro).",
+                "**N — Need-payoff**: hỏi để khách tự nói ra giá trị khi vấn đề được giải quyết.",
+                "Kết nối giải pháp của bạn với 'need-payoff' khách vừa nêu."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Ít câu Situation (đừng thẩm vấn), tập trung Problem & Implication.",
+                "Implication là 'đòn bẩy': biến vấn đề nhỏ thành lý do đủ lớn để hành động.",
+                "Need-payoff hỏi tích cực: 'Nếu giảm được 30% thời gian xử lý thì có ý nghĩa gì với đội anh?'"
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "S: 'Hiện đội chăm sóc dùng công cụ gì?' → P: 'Có khi nào bị sót yêu cầu khách không?' → I: 'Mỗi yêu cầu bị sót ảnh hưởng doanh thu/uy tín thế nào?' → N: 'Nếu hệ thống tự nhắc và không sót, giá trị mang lại cho anh là gì?'. Khách tự nói ra lợi ích → bạn trình bày giải pháp khớp 100%."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết 2 câu cho mỗi nhóm S-P-I-N cho sản phẩm của bạn.",
+                "Đóng vai discovery 10 phút chỉ dùng câu hỏi SPIN.",
+                "Ghi lại: khách tự nêu được bao nhiêu 'need-payoff'?"
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Nhảy sang giới thiệu sản phẩm quá sớm (trước khi khơi đủ Problem/Implication).",
+                "Hỏi quá nhiều Situation → khách thấy bị 'tra hỏi', mệt mỏi.",
+                "Không lắng nghe → bỏ lỡ tín hiệu mua (buying signal)."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "SPIN = Situation–Problem–Implication–Need-payoff",
+                "Consultative selling = bán tư vấn",
+                "Pain point = điểm đau/khó khăn",
+                "Buying signal = tín hiệu mua",
+                "Discovery = giai đoạn khám phá nhu cầu"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2b-3",
+          "title_vi": "Bán cho hội đồng ra quyết định (DMU)",
+          "title_en": "Selling to the Buying Committee (DMU)",
+          "objective": "Trong B2B, nhiều người cùng quyết định. Học cách nhận diện vai trò và điều phối để deal không bị kẹt.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**DMU — Decision Making Unit / Hội đồng ra quyết định**: nhóm người ảnh hưởng đến quyết định mua.",
+                "Các vai trò: **Economic buyer** (nắm ngân sách), **User** (người dùng), **Technical buyer** (đánh giá kỹ thuật), **Coach/Champion** (người ủng hộ bên trong), **Gatekeeper** (người gác cổng).",
+                "**Single-threaded**: chỉ quan hệ 1 người → rủi ro; **Multi-threaded**: nhiều tuyến → an toàn."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Lập **stakeholder map**: ai là ai, mức ảnh hưởng, thái độ (ủng hộ/trung lập/phản đối).",
+                "Tìm & nuôi **champion** bên trong khách hàng.",
+                "Cá nhân hoá thông điệp cho từng vai trò (giá trị họ quan tâm khác nhau).",
+                "Xử lý người phản đối bằng bằng chứng & giảm rủi ro.",
+                "Điều phối tới quyết định chung (consensus)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Multi-threading**: kết nối song song nhiều người để không phụ thuộc 1 đầu mối.",
+                "Trang bị cho **champion** tài liệu để họ 'bán hộ' bạn nội bộ.",
+                "Với economic buyer: nói **ROI & rủi ro**; với user: nói **sự tiện lợi & thời gian**."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Deal phần mềm kẹt 2 tháng vì chỉ nói chuyện với 1 trưởng phòng. Sales lập stakeholder map, phát hiện Giám đốc tài chính (economic buyer) chưa thấy ROI. Sau khi làm bản ROI 1 trang và để champion trình bày nội bộ, deal được duyệt trong 3 tuần."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Vẽ stakeholder map cho 1 deal giả định (≥4 vai trò).",
+                "Viết thông điệp giá trị riêng cho economic buyer và cho user.",
+                "Xác định ai có thể là champion và cách 'trang bị' cho họ."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Single-threaded: người liên hệ nghỉ việc → deal đổ.",
+                "Nói cùng một thông điệp cho mọi vai trò → không ai thấy 'trúng'.",
+                "Bỏ qua gatekeeper/technical buyer → bị chặn ở phút chót."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "DMU = Decision Making Unit",
+                "Economic buyer = người nắm ngân sách",
+                "Champion / Coach = người ủng hộ nội bộ",
+                "Gatekeeper = người gác cổng",
+                "Multi-threading = quan hệ đa tuyến"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2b-4",
+          "title_vi": "Trình bày giá trị & xử lý phản đối",
+          "title_en": "Value Proposition & Objection Handling",
+          "objective": "Trình bày giải pháp theo giá trị (không theo tính năng) và xử lý phản đối về giá, thời điểm, rủi ro một cách tự tin.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Feature vs Benefit vs Value**: tính năng (nó là gì) → lợi ích (giúp được gì) → giá trị (quy ra tiền/kết quả cho khách).",
+                "**ROI (Return on Investment)**: lợi ích ròng / chi phí — ngôn ngữ của người ra quyết định.",
+                "Phản đối thường gặp: giá cao, 'để sau', 'đang dùng đối thủ', 'sợ rủi ro chuyển đổi'."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Tóm lại nhu cầu khách đã nêu (từ SPIN) để tạo đồng thuận.",
+                "Trình bày giải pháp theo **feature → benefit → value**.",
+                "Lượng hoá ROI bằng số của chính khách hàng.",
+                "Chủ động nêu & xử lý phản đối (LAER: Listen–Acknowledge–Explore–Respond).",
+                "Chốt bằng next step cụ thể (pilot, hợp đồng, mốc thời gian)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**LAER**: Lắng nghe → Ghi nhận → Khám phá (hỏi thêm) → Phản hồi.",
+                "Xử lý giá bằng **giá trị/ROI**, không bằng giảm giá phản xạ.",
+                "Giảm rủi ro cảm nhận: pilot, cam kết SLA, tham chiếu khách hàng (case study)."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Khách: 'Giá cao hơn đối thủ 20%'. Sales (LAER): 'Em hiểu (ghi nhận). Anh so ở khía cạnh nào ạ? (khám phá)... Bên em đắt hơn 20% nhưng giảm 30% lỗi vận hành, tính ra tiết kiệm ~200 triệu/năm — gấp 4 lần chênh lệch (phản hồi bằng ROI).' Khách chuyển từ 'giá' sang 'giá trị'."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Chuyển 3 tính năng sản phẩm thành 'benefit' và 'value' quy ra tiền.",
+                "Viết kịch bản LAER cho phản đối 'giá cao' và 'để sau'.",
+                "Chuẩn bị 1 case study/tham chiếu để giảm rủi ro cảm nhận."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Liệt kê tính năng (feature dump) thay vì nói giá trị.",
+                "Giảm giá ngay khi nghe 'đắt' → mất biên & mất vị thế.",
+                "Coi phản đối là công kích → phòng thủ, tranh cãi."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Feature/Benefit/Value = tính năng/lợi ích/giá trị",
+                "ROI = Return on Investment (tỷ suất hoàn vốn)",
+                "LAER = Listen–Acknowledge–Explore–Respond",
+                "Pilot = triển khai thử nghiệm nhỏ",
+                "Case study = câu chuyện khách hàng tham chiếu"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2b-5",
+          "title_vi": "Chốt deal, follow-up & giữ khách",
+          "title_en": "Closing, Follow-up & Retention",
+          "objective": "Chốt đúng lúc, theo đuổi có kỷ luật, và biến khách hàng thành nguồn tăng trưởng qua upsell & giới thiệu.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Closing / Chốt**: đưa khách tới cam kết — là kết quả tự nhiên khi giá trị đã rõ, không phải 'ép'.",
+                "**Follow-up / Theo đuổi**: chuỗi liên hệ có kỷ luật giữ deal tiến lên.",
+                "**Retention & Expansion**: giữ chân và mở rộng (upsell/cross-sell) — chi phí thấp hơn tìm khách mới.",
+                "**CLV (Customer Lifetime Value)**: tổng giá trị một khách hàng trong suốt vòng đời."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Nhận diện **buying signal** → đề nghị chốt (trial close / assumptive close).",
+                "Xác nhận điều khoản, mốc triển khai, người phụ trách.",
+                "Onboarding tốt để tạo 'first value' sớm.",
+                "Theo dõi sử dụng & thành công của khách (customer success).",
+                "Định kỳ QBR → upsell/cross-sell & xin giới thiệu (referral)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Trial close**: 'Nếu mọi thứ ổn, mình bắt đầu đầu tháng sau được chứ?'",
+                "**Summary close**: tóm giá trị + đề nghị bước tiếp theo.",
+                "Xin **referral** đúng lúc khách vừa đạt kết quả tốt."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Sau pilot 30 ngày đạt KPI, sales dùng summary close: tóm ROI đã chứng minh, đề xuất hợp đồng năm + mở rộng 2 phòng ban (upsell). Khách ký và giới thiệu 1 công ty đối tác → thêm 1 lead chất lượng cao từ referral."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết 3 câu trial close phù hợp ngữ cảnh của bạn.",
+                "Thiết kế chuỗi follow-up 5 chạm (email/gọi) sau demo.",
+                "Soạn kịch bản xin referral sau khi khách đạt kết quả."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Không dám đề nghị chốt → deal trôi vô định.",
+                "Chốt xong 'biến mất', bỏ onboarding → khách rời bỏ (churn).",
+                "Quên upsell & referral → bỏ lỡ nguồn tăng trưởng rẻ nhất."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Trial/Assumptive/Summary close = các kỹ thuật chốt",
+                "Follow-up = theo đuổi; Onboarding = khởi tạo sử dụng",
+                "Churn = tỷ lệ rời bỏ; Retention = giữ chân",
+                "Upsell/Cross-sell = bán nâng cấp/bán chéo",
+                "CLV = Customer Lifetime Value; Referral = giới thiệu"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "merchandising",
+      "icon": "🛍️",
+      "name_vi": "Trưng bày — Merchandising tại điểm bán",
+      "name_en": "Merchandising & In-store Display",
+      "summary": "Nghệ thuật trưng bày để hàng tự bán: planogram, vị trí vàng, POSM, trưng bày phụ, trưng bày theo mùa vụ. Áp dụng cho cả GT và MT.",
+      "builtin": true,
+      "lessons": [
+        {
+          "id": "mer-1",
+          "title_vi": "Nguyên lý trưng bày & hành vi người mua",
+          "title_en": "Merchandising Principles & Shopper Behavior",
+          "objective": "Hiểu vì sao trưng bày là 'nhân viên bán hàng thầm lặng' và các nguyên lý tâm lý người mua chi phối quyết định mua tại kệ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Merchandising / Trưng bày**: sắp xếp & trình bày sản phẩm tại điểm bán để tối đa khả năng được nhìn thấy, chọn và mua.",
+                "**Visual merchandising**: dùng hình ảnh, ánh sáng, màu sắc, bố cục để thu hút và dẫn dắt ánh nhìn.",
+                "**Impulse buying / Mua ngẫu hứng**: quyết định mua phát sinh tại chỗ, không định trước — chiếm tỷ trọng lớn ở FMCG.",
+                "**The silent salesman / Nhân viên bán hàng thầm lặng**: kệ hàng trưng bày tốt tự thuyết phục khách mà không cần người bán."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Hiểu luồng di chuyển của khách trong cửa hàng (traffic flow).",
+                "Xác định điểm dừng mắt (eye-catch) và điểm chạm (touchpoint).",
+                "Đặt sản phẩm chủ lực vào vùng ưu tiên theo mục tiêu.",
+                "Tạo tín hiệu thị giác: block màu, POSM, giá rõ ràng.",
+                "Quan sát – đo lường – điều chỉnh (test & learn)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Eye level is buy level** — tầm mắt là tầm mua: SKU lợi nhuận/bán chạy đặt ngang tầm mắt (~120–160cm).",
+                "**Rule of 3 / Nhóm 3**: nhóm sản phẩm theo cụm dễ nhìn, dễ chọn.",
+                "Tạo **điểm nhấn tương phản** (màu, khối lượng) để hút mắt giữa 'biển' sản phẩm."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một cửa hàng tiện lợi đặt kẹo & snack nhỏ ngay quầy thu ngân (khu vực chờ tính tiền). Nhờ đánh vào mua ngẫu hứng lúc chờ, doanh số nhóm hàng này tăng mạnh dù diện tích rất nhỏ — minh chứng 'vị trí' quan trọng hơn 'diện tích'."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Vào 1 siêu thị/tạp hoá, vẽ luồng di chuyển của khách từ cửa vào tới quầy tính tiền.",
+                "Chỉ ra 3 vị trí đánh vào mua ngẫu hứng.",
+                "Chọn 1 SKU và đề xuất nên đặt ở đâu, vì sao."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Đặt sản phẩm quan trọng ở tầm quá thấp/quá cao → khách không thấy.",
+                "Trưng bày rối, không có điểm nhấn → mắt khách 'trượt' qua.",
+                "Chỉ nghĩ cho đẹp mà quên mục tiêu bán (đẹp nhưng không bán được)."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Merchandising = trưng bày hàng hoá",
+                "Visual merchandising = trưng bày trực quan",
+                "Impulse buying = mua ngẫu hứng",
+                "Eye level = tầm mắt; Traffic flow = luồng di chuyển",
+                "Touchpoint = điểm chạm/tương tác"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mer-2",
+          "title_vi": "Planogram & bố trí kệ hàng",
+          "title_en": "Planogram & Shelf Layout",
+          "objective": "Biết đọc và xây dựng planogram: phân bổ facing, tầng kệ, thứ tự SKU theo dữ liệu để tối ưu doanh số trên mỗi mét kệ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Planogram (POG)**: sơ đồ chuẩn quy định vị trí, số facing và thứ tự từng SKU trên kệ.",
+                "**Facing**: số mặt sản phẩm quay ra ngoài; nhiều facing = nhiều khả năng được thấy & mua.",
+                "**Shelf share / Space share**: tỷ lệ diện tích kệ dành cho một nhãn/ngành hàng.",
+                "**Fair share of shelf**: chia diện tích kệ tương ứng thị phần/tốc độ bán của SKU."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Thu thập dữ liệu bán (sell-out) & tồn kho theo SKU.",
+                "Phân bổ facing theo tốc độ bán (fast-moving nhiều facing hơn).",
+                "Xếp tầng: SKU chủ lực ngang tầm mắt, hàng nặng/cồng kềnh ở dưới.",
+                "Nhóm theo ngành hàng & logic mua (thương hiệu → dung tích → hương vị).",
+                "Triển khai đúng POG, chụp ảnh compliance & rà soát định kỳ."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Vertical block**: xếp cùng nhãn theo cột dọc để dễ nhận diện thay vì rải ngang.",
+                "Đặt sản phẩm **biên lợi nhuận cao** ở tầm mắt, hàng giá rẻ ở tầng thấp.",
+                "Dùng **planogram compliance** (ảnh trước/sau) để đảm bảo cửa hàng làm đúng sơ đồ."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Nhãn dầu gội chuyển từ xếp ngang sang vertical block theo thương hiệu, tăng facing cho 3 SKU bán chạy và đẩy chúng lên tầm mắt. Kết quả doanh số trên mét kệ (sales per linear meter) của nhãn tăng rõ rệt mà không cần thêm diện tích."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Cho 6 SKU với tốc độ bán khác nhau, phân bổ facing hợp lý (tổng 12 facing).",
+                "Vẽ 1 planogram 4 tầng cho ngành hàng bạn chọn.",
+                "Chỉ ra 2 lỗi bố trí kệ ở một cửa hàng thực tế bạn quan sát."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chia facing đều nhau cho mọi SKU → lãng phí kệ cho hàng bán chậm.",
+                "Không cập nhật POG khi có SKU mới/ngừng → kệ lỗi thời.",
+                "Triển khai không đúng sơ đồ (non-compliance) → mất hiệu quả thiết kế."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Planogram (POG) = sơ đồ trưng bày chuẩn",
+                "Facing = số mặt hàng quay ra kệ",
+                "Shelf/Space share = tỷ lệ diện tích kệ",
+                "Vertical block = khối dọc cùng nhãn",
+                "Compliance = mức tuân thủ sơ đồ"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mer-3",
+          "title_vi": "POSM & vật phẩm quảng cáo tại điểm bán",
+          "title_en": "POSM & Point-of-Sale Materials",
+          "objective": "Sử dụng POSM đúng loại, đúng chỗ để tăng nhận diện, dẫn dắt ánh nhìn và thúc đẩy hành động mua ngay tại kệ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**POSM (Point of Sale Material)**: vật phẩm quảng cáo tại điểm bán — wobbler, standee, poster, sticker, kệ trưng bày, hanger, tester...",
+                "**Call to action / Kêu gọi hành động**: thông điệp ngắn thúc đẩy mua ('Mua 2 tặng 1', 'Mới!').",
+                "**Brand visibility / Nhận diện thương hiệu**: mức độ nổi bật của nhãn tại điểm bán."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định mục tiêu POSM: nhận diện, giá, khuyến mãi hay điều hướng.",
+                "Chọn loại POSM phù hợp vị trí (kệ, quầy, lối đi, cửa).",
+                "Đặt đúng chỗ: không che sản phẩm/giá, hướng theo tầm nhìn khách.",
+                "Đảm bảo thông điệp ngắn – rõ – 1 lời kêu gọi hành động.",
+                "Kiểm tra định kỳ: thay POSM rách/lỗi thời, đúng chương trình đang chạy."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Wobbler** rung nhẹ ở mép kệ để hút mắt vùng ngoại vi (peripheral vision).",
+                "Dùng POSM tạo **đường dẫn thị giác** từ xa (standee/poster) tới kệ (sticker giá).",
+                "Nguyên tắc **KISS**: thông điệp cực ngắn — khách chỉ liếc vài giây."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Chương trình 'Mua 2 tặng 1' dùng standee ở đầu lối đi (hút khách từ xa) + wobbler tại kệ + sticker giá đỏ. Bộ ba POSM đồng bộ tạo đường dẫn thị giác, giúp khách nhận ra ưu đãi và tìm đúng sản phẩm, tăng chuyển đổi tại kệ."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Thiết kế thông điệp POSM (≤6 từ) cho 1 chương trình khuyến mãi.",
+                "Chọn 3 loại POSM và vị trí đặt cho một ngành hàng.",
+                "Chụp 1 POSM đặt sai (che giá/sản phẩm) và đề xuất sửa."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Dán POSM che mất sản phẩm hoặc giá → phản tác dụng.",
+                "Quá nhiều POSM gây rối, loãng thông điệp.",
+                "Để POSM cũ của chương trình đã kết thúc → sai thông tin, mất uy tín."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "POSM = Point of Sale Material",
+                "Wobbler = miếng quảng cáo rung ở mép kệ",
+                "Standee = bảng đứng quảng cáo",
+                "Call to action = lời kêu gọi hành động",
+                "Brand visibility = độ nhận diện thương hiệu"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mer-4",
+          "title_vi": "Trưng bày phụ & vị trí vàng",
+          "title_en": "Secondary Display & Hot Spots",
+          "objective": "Tận dụng các vị trí ngoài kệ chính (đầu kệ, đảo, quầy tính tiền) để tăng đột biến sản lượng, đặc biệt dịp cao điểm.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Primary display / Trưng bày chính**: vị trí cố định trên kệ ngành hàng.",
+                "**Secondary display / Trưng bày phụ**: vị trí bổ sung ngoài kệ chính — tạo điểm chạm thứ hai.",
+                "**Hot spot / Vị trí vàng**: nơi lưu lượng & sự chú ý cao (đầu kệ, lối vào, quầy tính tiền).",
+                "**Gondola end / Đầu kệ**: đầu dãy kệ hướng ra lối đi chính — vị trí đắt giá nhất trong siêu thị."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định hot spot theo luồng khách của cửa hàng.",
+                "Chọn hình thức: đầu kệ, dump bin (hộp đảo), pallet, kệ đảo (island).",
+                "Chọn SKU phù hợp: bán chạy, đang khuyến mãi, mùa vụ.",
+                "Đảm bảo đủ hàng (khối lượng lớn tạo cảm giác 'giá tốt, mua nhiều').",
+                "Gắn POSM giá & khuyến mãi; theo dõi tốc độ bán để tiếp hàng."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Mass display / Trưng bày khối lượng lớn**: tạo cảm giác dồi dào & giá hời.",
+                "Đặt trưng bày phụ **gần ngành hàng bổ trợ** (mì gần xúc xích, bia gần snack) để bán chéo.",
+                "Đầu kệ nên gắn với **1 thông điệp khuyến mãi duy nhất** để mạnh và rõ."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Dịp Tết, một nhãn bánh kẹo thuê đầu kệ + pallet lối vào, trưng bày khối lượng lớn kèm standee 'Quà Tết'. Vị trí vàng + mass display khiến sản phẩm 'đập vào mắt' ngay khi khách bước vào, sản lượng dịp lễ tăng gấp nhiều lần so với chỉ để trên kệ chính."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Liệt kê 4 hot spot trong một siêu thị và mức độ ưu tiên.",
+                "Chọn 1 SKU và thiết kế 1 trưng bày phụ (hình thức + vị trí + POSM).",
+                "Đề xuất 1 cặp sản phẩm bán chéo qua trưng bày phụ."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Đầu kệ để nhiều SKU/nhiều thông điệp → loãng, kém hiệu quả.",
+                "Trưng bày phụ hết hàng, để trống → mất doanh số & hình ảnh xấu.",
+                "Đặt trưng bày phụ ở nơi vắng khách (cold spot) → lãng phí chi phí thuê."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Secondary display = trưng bày phụ",
+                "Hot spot = vị trí vàng; Cold spot = vị trí ít khách",
+                "Gondola end = đầu kệ",
+                "Dump bin = hộp/thùng đổ đống; Pallet = pallet trưng bày",
+                "Mass display = trưng bày khối lượng lớn"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mer-5",
+          "title_vi": "Trưng bày theo mùa vụ & đo lường hiệu quả",
+          "title_en": "Seasonal Display & Performance Measurement",
+          "objective": "Lên kế hoạch trưng bày theo lịch mùa vụ/lễ tết và đo lường hiệu quả (uplift, ROI) để quyết định đầu tư đúng chỗ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Seasonal merchandising / Trưng bày mùa vụ**: điều chỉnh trưng bày theo dịp (Tết, Trung thu, back-to-school, mùa hè...).",
+                "**Planogram theo mùa (seasonal POG)**: sơ đồ riêng cho từng mùa/chiến dịch.",
+                "**Display uplift**: mức tăng doanh số nhờ trưng bày so với bình thường.",
+                "**ROI trưng bày**: lợi ích tăng thêm / chi phí (thuê vị trí, POSM, nhân sự)."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Lập lịch mùa vụ (retail calendar) cả năm & chọn dịp trọng điểm.",
+                "Thiết kế chủ đề trưng bày + POSM theo dịp (màu, thông điệp).",
+                "Chuẩn bị hàng hoá & vị trí trước cao điểm (set-up sớm).",
+                "Đo trước–sau: doanh số, sản lượng, sell-out để tính uplift.",
+                "Tính ROI, rút bài học, cập nhật cho mùa sau."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "So sánh **like-for-like** (cùng cửa hàng, cùng kỳ năm trước) để đo uplift chính xác.",
+                "Dùng **nhóm đối chứng (control vs test)**: cửa hàng có/không trưng bày để tách hiệu ứng.",
+                "Set-up sớm trước 1–2 tuần cao điểm để 'đón' khách mua sắm sớm."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Đợt back-to-school, nhãn đồ dùng học sinh triển khai trưng bày chủ đề tại 20 cửa hàng test, 20 cửa hàng control giữ nguyên. So sánh cho thấy nhóm test đạt uplift ~25%; ROI dương sau khi trừ chi phí POSM & thuê vị trí → nhân rộng cho năm sau."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Lập lịch mùa vụ 12 tháng cho ngành hàng của bạn, đánh dấu 3 dịp trọng điểm.",
+                "Từ số liệu giả định trước/sau, tính display uplift (%).",
+                "Tính ROI của một đợt trưng bày (uplift doanh thu vs chi phí)."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Set-up muộn, qua đỉnh mua sắm → mất phần lớn cơ hội.",
+                "Không có nhóm đối chứng → tưởng do trưng bày nhưng thực ra do mùa vụ chung.",
+                "Đầu tư trưng bày mà không đo ROI → lặp lại chương trình kém hiệu quả."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Seasonal merchandising = trưng bày theo mùa vụ",
+                "Retail calendar = lịch bán lẻ theo mùa/dịp",
+                "Uplift = mức tăng doanh số nhờ trưng bày",
+                "Control vs Test = nhóm đối chứng và nhóm thử nghiệm",
+                "ROI = tỷ suất hoàn vốn"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

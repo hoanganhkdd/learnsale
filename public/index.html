@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tự học Sale · Bán hàng & Thương mại</title>
+  <meta name="description" content="Ứng dụng web tự học kỹ năng Sale song ngữ Việt–Anh: General Trade, Modern Trade, B2B." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛒%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn" aria-label="Menu">☰</button>
+    <div class="brand">
+      <span class="brand-icon">🛒</span>
+      <div class="brand-text">
+        <strong>Tự học Sale</strong>
+        <small>Bán hàng &amp; Thương mại</small>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="libraryBtn" class="pill-btn" title="Thư viện chung">📚 <span class="hide-sm">Thư viện</span></button>
+      <button id="themeBtn" class="icon-btn" title="Đổi giao diện sáng/tối">🌙</button>
+      <button id="settingsBtn" class="icon-btn" title="Cài đặt AI">⚙️</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-head">
+        <input id="searchInput" type="search" placeholder="🔎 Tìm kỹ năng / bài học…" />
+      </div>
+      <nav id="skillTree" class="skill-tree"><!-- render bằng JS --></nav>
+      <div class="sidebar-foot">
+        <button id="addSkillBtn" class="btn btn-primary full">➕ Thêm kỹ năng mới</button>
+      </div>
+    </aside>
+    <div id="backdrop" class="backdrop"></div>
+
+    <!-- Main -->
+    <main id="main" class="main"><!-- render bằng JS --></main>
+  </div>
+
+  <!-- Modal container -->
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast"></div>
+
+  <script src="/js/api-static.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
