@@ -182,6 +182,51 @@
       ],
       "file": null,
       "createdAt": "2026-08-19T00:00:00.000Z"
+    },
+    {
+      "id": "seed-ec-1",
+      "skillId": "ecommerce",
+      "type": "link",
+      "title": "Ecommerce Conversion Rate Optimization Guide 2026 (FullStory)",
+      "url": "https://www.fullstory.com/blog/ecommerce-conversion-rate-optimization/",
+      "note": "Khung CRO 2026: giảm ma sát, checkout mượt, cá nhân hoá. / CRO framework, frictionless checkout, personalization.",
+      "tags": [
+        "ecommerce",
+        "cro",
+        "conversion"
+      ],
+      "file": null,
+      "createdAt": "2026-08-22T00:00:00.000Z"
+    },
+    {
+      "id": "seed-ec-2",
+      "skillId": "ecommerce",
+      "type": "link",
+      "title": "Top Strategies For Ecommerce Conversion Optimization (Yotpo)",
+      "url": "https://www.yotpo.com/blog/ecommerce-conversion-optimization/",
+      "note": "Social proof, đánh giá, loyalty và giữ chân khách. / Social proof, reviews, loyalty & retention.",
+      "tags": [
+        "ecommerce",
+        "reviews",
+        "retention"
+      ],
+      "file": null,
+      "createdAt": "2026-08-22T00:00:00.000Z"
+    },
+    {
+      "id": "seed-ec-3",
+      "skillId": "ecommerce",
+      "type": "link",
+      "title": "What Is Live Selling? TikTok, Shopee & More 2026 (OneCart)",
+      "url": "https://www.getonecart.com/what-is-live-selling/",
+      "note": "Bán hàng livestream: giỏ nhúng, tương tác, khan hiếm, social proof. / Live selling across TikTok & Shopee.",
+      "tags": [
+        "ecommerce",
+        "livestream",
+        "social-commerce"
+      ],
+      "file": null,
+      "createdAt": "2026-08-22T00:00:00.000Z"
     }
   ]
 }

@@ -163,8 +163,9 @@
     main.innerHTML = '';
     const totalLessons = State.skills.reduce((a, s) => a + s.lessons.length, 0);
     const doneLessons = State.skills.reduce((a, s) => a + s.lessons.filter((l) => isDone(s.id, l.id)).length, 0);
-    let resCount = 0;
-    try { resCount = (await api.resources()).resources.length; } catch {}
+    let allRes = [];
+    try { allRes = (await api.resources()).resources; } catch {}
+    const resCount = allRes.length;
 
     main.append(
       el('section', { class: 'hero' },
@@ -178,6 +179,8 @@
         )
       )
     );
+
+    renderDashboard(main, allRes, { totalLessons, doneLessons });
 
     main.append(el('div', { class: 'section-title' }, el('h2', {}, '📚 Kỹ năng của bạn'), el('div', { class: 'line' })));
 
@@ -232,18 +235,105 @@
       )
     );
 
-    // lazy fill resource counts per skill
-    try {
-      const all = (await api.resources()).resources;
-      $$('[data-rescount]').forEach((n) => {
-        const id = n.getAttribute('data-rescount');
-        const c = all.filter((r) => r.skillId === id).length;
-        n.innerHTML = `<b>${c}</b> tài liệu`;
-      });
-    } catch {}
+    // fill resource counts per skill (reuse allRes)
+    $$('[data-rescount]').forEach((n) => {
+      const id = n.getAttribute('data-rescount');
+      const c = allRes.filter((r) => r.skillId === id).length;
+      n.innerHTML = `<b>${c}</b> tài liệu`;
+    });
 
     function stat(v, label) {
       return el('div', { class: 'stat' }, el('b', {}, String(v)), el('span', {}, label));
+    }
+  }
+
+  // ==========================================================================
+  // 📊 DASHBOARD TỔNG QUAN
+  // ==========================================================================
+  const RES_TYPE_META = { text: ['📝', 'Text'], image: ['🖼️', 'Ảnh'], pdf: ['📄', 'PDF'], youtube: ['▶️', 'YouTube'], facebook: ['📘', 'Facebook'], link: ['🔗', 'Link'] };
+
+  function renderDashboard(main, allRes, { totalLessons, doneLessons }) {
+    const overallPct = totalLessons ? Math.round((doneLessons / totalLessons) * 100) : 0;
+
+    // Thống kê ôn tập & điểm
+    let reviewed = 0, dueCount = 0, scoreSum = 0, scoreN = 0;
+    State.skills.forEach((s) => s.lessons.forEach((l) => {
+      const r = reviewGet(l.id);
+      if (r) { reviewed++; if (typeof r.score === 'number') { scoreSum += r.score; scoreN++; } }
+      if (isDone(s.id, l.id) && needsReview(l)) dueCount++;
+    }));
+    const avgScore = scoreN ? Math.round((scoreSum / scoreN) * 10) / 10 : null;
+
+    // Tài liệu theo loại
+    const byType = {};
+    allRes.forEach((r) => { byType[r.type] = (byType[r.type] || 0) + 1; });
+    const maxType = Math.max(1, ...Object.values(byType));
+
+    const wrap = el('section', { class: 'dash' });
+    wrap.append(el('div', { class: 'section-title' }, el('h2', {}, '📊 Dashboard tổng quan'), el('div', { class: 'line' })));
+
+    // Hàng KPI: vòng tiến độ + các thẻ
+    const kpis = el('div', { class: 'dash-kpis' });
+    kpis.append(
+      el('div', { class: 'dash-card ring-card' },
+        ringEl(overallPct),
+        el('div', {}, el('b', {}, 'Tiến độ toàn khoá'), el('div', { class: 'muted' }, `${doneLessons}/${totalLessons} bài đã học`))
+      ),
+      kpiCard('📚', State.skills.length, 'Kỹ năng'),
+      kpiCard('✅', doneLessons, 'Bài đã học'),
+      kpiCard('🗂️', allRes.length, 'Tài liệu'),
+      kpiCard('🔁', dueCount, 'Cần ôn lại', dueCount > 0 ? 'warn' : 'ok'),
+      kpiCard('🏆', avgScore === null ? '—' : avgScore + '/10', 'Điểm KT trung bình'),
+    );
+    wrap.append(kpis);
+
+    // 2 cột: tiến độ theo kỹ năng + tài liệu theo loại
+    const cols = el('div', { class: 'dash-cols' });
+
+    const skillPanel = el('div', { class: 'dash-panel' }, el('div', { class: 'dash-panel-head' }, '📈 Tiến độ theo kỹ năng'));
+    const skillBody = el('div', { class: 'dash-panel-body' });
+    State.skills.forEach((s) => {
+      const p = skillProgress(s);
+      skillBody.append(
+        el('div', { class: 'bar-row', onclick: () => go({ type: 'skill', id: s.id }), title: 'Mở kỹ năng' },
+          el('div', { class: 'bar-label' }, (s.icon || '📌') + ' ' + s.name_vi),
+          el('div', { class: 'bar-track' }, el('i', { style: `width:${p.pct}%` })),
+          el('div', { class: 'bar-val' }, `${p.done}/${p.total}`),
+        )
+      );
+    });
+    skillPanel.append(skillBody);
+
+    const resPanel = el('div', { class: 'dash-panel' }, el('div', { class: 'dash-panel-head' }, '🗂️ Tài liệu theo loại'));
+    const resBody = el('div', { class: 'dash-panel-body' });
+    const types = Object.keys(RES_TYPE_META).filter((t) => byType[t]);
+    if (!types.length) resBody.append(el('div', { class: 'muted', style: 'font-size:13px' }, 'Chưa có tài liệu.'));
+    types.forEach((t) => {
+      const [ic, lb] = RES_TYPE_META[t];
+      resBody.append(
+        el('div', { class: 'bar-row', onclick: () => openLibrary(''), title: 'Mở thư viện' },
+          el('div', { class: 'bar-label' }, ic + ' ' + lb),
+          el('div', { class: 'bar-track' }, el('i', { class: 'accent', style: `width:${Math.round((byType[t] / maxType) * 100)}%` })),
+          el('div', { class: 'bar-val' }, String(byType[t])),
+        )
+      );
+    });
+    resPanel.append(resBody);
+
+    cols.append(skillPanel, resPanel);
+    wrap.append(cols);
+    main.append(wrap);
+
+    function kpiCard(icon, val, label, tone) {
+      return el('div', { class: 'dash-card kpi' + (tone ? ' tone-' + tone : '') },
+        el('div', { class: 'kpi-ic' }, icon),
+        el('div', {}, el('b', { class: 'kpi-val' }, String(val)), el('div', { class: 'muted' }, label))
+      );
+    }
+    function ringEl(pct) {
+      const ring = el('div', { class: 'ring', style: `--pct:${pct}` });
+      ring.append(el('span', {}, pct + '%'));
+      return ring;
     }
   }
 
@@ -663,13 +753,15 @@
     );
 
     // Bảng nội dung bài học (cuộn được)
-    const contentBox = el('div', { class: 'deep-panel' },
+    const contentBox = el('div', { class: 'deep-panel', style: 'margin-bottom:16px' },
       el('div', { class: 'deep-head' }, el('b', {}, '📖 Nội dung bài học')),
       el('div', { class: 'deep-scroll markdown', html: lessonPlainLines(skill, lesson).map((l) => mdLite(l)).join('<br>') })
     );
     root.append(contentBox);
 
-    DEEP_PANELS.forEach((p) => root.append(deepPanel(skill, lesson, p)));
+    const grid = el('div', { class: 'deep-grid' });
+    DEEP_PANELS.forEach((p) => grid.append(deepPanel(skill, lesson, p)));
+    root.append(grid);
   }
 
   function deepPanel(skill, lesson, p) {

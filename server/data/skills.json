@@ -3,7 +3,7 @@
     "title": "Tự học Sale — Bán hàng & Thương mại",
     "subtitle": "Self-learning Sales — Trade & Commerce",
     "source": "Tổng hợp từ tài liệu ngành FMCG/B2B (Salesforce, HubSpot, SPIN Selling, BeatRoute, DemandFarm...)",
-    "updated": "2026-08-19"
+    "updated": "2026-08-22"
   },
   "skills": [
     {
@@ -1478,6 +1478,377 @@
                 "Uplift = mức tăng doanh số nhờ trưng bày",
                 "Control vs Test = nhóm đối chứng và nhóm thử nghiệm",
                 "ROI = tỷ suất hoàn vốn"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ecommerce",
+      "icon": "🛒",
+      "name_vi": "Ecommerce — Bán hàng thương mại điện tử",
+      "name_en": "E-commerce Sales",
+      "summary": "Bán hàng online: sàn TMĐT (Shopee/Lazada/TikTok Shop), website D2C, và social commerce. Trọng tâm: gian hàng, tỷ lệ chuyển đổi (CRO), livestream, quảng cáo & giữ chân khách.",
+      "builtin": true,
+      "lessons": [
+        {
+          "id": "ec-1",
+          "title_vi": "Tổng quan Ecommerce & các mô hình kênh",
+          "title_en": "E-commerce Overview & Channel Models",
+          "objective": "Hiểu bức tranh TMĐT: sàn (marketplace), website D2C, social commerce; và chọn kênh phù hợp theo sản phẩm & nguồn lực.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**E-commerce / TMĐT**: mua bán hàng hoá & dịch vụ qua internet.",
+                "**Marketplace / Sàn TMĐT**: nền tảng tập trung nhiều người bán (Shopee, Lazada, TikTok Shop, Tiki) — có sẵn lưu lượng nhưng cạnh tranh & phí sàn.",
+                "**D2C (Direct-to-Consumer)**: bán trực tiếp qua website riêng — kiểm soát thương hiệu & dữ liệu khách, nhưng phải tự kéo traffic.",
+                "**Social commerce / Thương mại mạng xã hội**: bán ngay trên Facebook/Instagram/TikTok — đang tăng nhanh gấp ~3 lần TMĐT truyền thống.",
+                "**Omnichannel / Đa kênh**: kết hợp online + offline, dữ liệu & tồn kho đồng bộ."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định sản phẩm & tệp khách hàng mục tiêu.",
+                "Chọn kênh chính: sàn (nhanh có đơn) hay D2C (dài hạn, thương hiệu).",
+                "Thiết lập gian hàng/website: danh mục, giá, vận chuyển, thanh toán.",
+                "Kéo lưu lượng (traffic): SEO sàn, quảng cáo, nội dung, KOL.",
+                "Chuyển đổi → xử lý đơn → chăm sóc & giữ chân."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Bắt đầu ở nơi có sẵn khách**: sàn TMĐT để có đơn nhanh, rồi mở D2C để giữ biên & dữ liệu.",
+                "Đo **CAC vs CLV** (chi phí kéo khách so với giá trị vòng đời) để chọn kênh bền vững.",
+                "Dùng **social commerce** làm phễu trên (awareness) dẫn về sàn/website."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một thương hiệu mỹ phẩm mới mở gian hàng Shopee + TikTok Shop để tận dụng lưu lượng sẵn có, chạy livestream cuối tuần. Khi đã có tệp khách trung thành, họ mở thêm website D2C để bán combo, giữ dữ liệu email/SĐT và tăng biên lợi nhuận nhờ không mất phí sàn."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Liệt kê 4 sàn/kênh TMĐT tại VN và ưu–nhược của mỗi kênh cho sản phẩm của bạn.",
+                "Chọn 1 kênh chính + 1 kênh phụ và giải thích lý do.",
+                "Ước lượng phí sàn/hoa hồng của kênh bạn chọn."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Dàn trải quá nhiều kênh cùng lúc → không kênh nào tốt.",
+                "Chỉ phụ thuộc 1 sàn → rủi ro khi sàn đổi chính sách/khoá gian hàng.",
+                "Bỏ qua chi phí thật (phí sàn, ship, hoàn hàng) → tưởng lãi mà lỗ."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Marketplace = sàn TMĐT; D2C = bán trực tiếp tới người tiêu dùng",
+                "Social commerce = thương mại mạng xã hội",
+                "Omnichannel = đa kênh đồng bộ",
+                "CAC = Customer Acquisition Cost (chi phí kéo khách)",
+                "CLV/LTV = giá trị vòng đời khách hàng"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ec-2",
+          "title_vi": "Tối ưu gian hàng & trang sản phẩm",
+          "title_en": "Store & Product Page Optimization",
+          "objective": "Biến lượt xem thành đơn: tối ưu tiêu đề, ảnh, mô tả, giá và SEO sàn để sản phẩm dễ tìm và dễ mua.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Listing / Trang sản phẩm**: trang chi tiết một SKU — nơi khách quyết định mua.",
+                "**SEO sàn (marketplace SEO)**: tối ưu từ khoá để sản phẩm lên top tìm kiếm trong sàn.",
+                "**PDP (Product Detail Page)**: bố cục ảnh + tiêu đề + mô tả + đánh giá + nút mua.",
+                "**A+ content / Rich content**: mô tả trực quan bằng hình ảnh, so sánh, infographic."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Nghiên cứu từ khoá khách tìm (keyword) → đưa vào tiêu đề.",
+                "Chuẩn bị bộ ảnh: ảnh chính nền trắng + ảnh công dụng + ảnh kích thước + ảnh review.",
+                "Viết mô tả: lợi ích trước, thông số sau; gạch đầu dòng dễ đọc.",
+                "Thiết lập biến thể (variation), giá, khuyến mãi, phí ship.",
+                "Bổ sung đánh giá (reviews) & Q&A để tạo niềm tin."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Tiêu đề công thức: **Thương hiệu + Sản phẩm + Đặc điểm chính + Từ khoá phụ**.",
+                "Ảnh đầu tiên quyết định click — đầu tư ảnh chính rõ, nổi bật, đúng chuẩn sàn.",
+                "Hiển thị **social proof** (đánh giá, đã bán, lượt thích) — review có thể tăng chuyển đổi mạnh."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một shop đồ gia dụng đổi ảnh chính từ ảnh chụp mờ sang ảnh nền trắng + icon lợi ích, thêm 5 ảnh công dụng và 20 đánh giá thật. Tỷ lệ click từ trang tìm kiếm và tỷ lệ chuyển đổi của listing tăng rõ, đẩy sản phẩm lên top ngành hàng."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết lại tiêu đề 1 sản phẩm theo công thức chuẩn + 5 từ khoá.",
+                "Liệt kê bộ 6 ảnh cần có cho trang sản phẩm.",
+                "Soạn mô tả 1 sản phẩm: 3 lợi ích + thông số + 1 call-to-action."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Nhồi từ khoá (keyword stuffing) khiến tiêu đề khó đọc & bị sàn phạt.",
+                "Ảnh xấu/thiếu → mất click dù giá tốt.",
+                "Thiếu đánh giá & thông tin ship → khách rời trang."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Listing = trang đăng bán sản phẩm",
+                "PDP = Product Detail Page",
+                "Marketplace SEO = tối ưu tìm kiếm trên sàn",
+                "Variation = biến thể (màu/size)",
+                "Social proof = bằng chứng xã hội (đánh giá, đã bán)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ec-3",
+          "title_vi": "Tối ưu tỷ lệ chuyển đổi (CRO) & checkout",
+          "title_en": "Conversion Rate Optimization & Checkout",
+          "objective": "Tăng % khách mua trên tổng lượt truy cập bằng cách giảm ma sát, tạo niềm tin và thanh toán mượt.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Conversion rate / Tỷ lệ chuyển đổi**: số đơn / số lượt truy cập. Trung bình TMĐT toàn cầu chỉ ~1–2%.",
+                "**CRO (Conversion Rate Optimization)**: tối ưu có hệ thống để tăng tỷ lệ này.",
+                "**Friction / Ma sát**: mọi bước gây khó khiến khách bỏ giỏ (form dài, phí ẩn, bắt đăng ký).",
+                "**Cart abandonment / Bỏ giỏ hàng**: khách thêm giỏ nhưng không thanh toán."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Đo phễu: xem → thêm giỏ → checkout → thanh toán, tìm chỗ rớt nhiều nhất.",
+                "Giảm ma sát: checkout ngắn, cho mua không cần tài khoản (guest), nhiều cách thanh toán.",
+                "Tạo niềm tin: đánh giá, chính sách đổi trả, bảo mật, ship rõ ràng.",
+                "Tạo động lực: freeship ngưỡng, ưu đãi có thời hạn, gợi ý sản phẩm.",
+                "A/B test từng thay đổi → giữ cái thắng."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Frictionless checkout**: giảm số bước & số ô nhập; hỗ trợ ví điện tử/1-chạm.",
+                "**Abandoned cart recovery**: email/SMS/nhắc lại giỏ bị bỏ (SMS có tỷ lệ mở & chuyển đổi rất cao).",
+                "**Cá nhân hoá (AI)**: gợi ý sản phẩm & tìm kiếm thông minh có thể tăng chuyển đổi nhiều lần."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một website D2C phát hiện 70% khách bỏ giỏ ở bước điền địa chỉ. Họ rút form từ 12 ô còn 6 ô, thêm thanh toán ví điện tử 1 chạm và freeship cho đơn > 300k. Kết hợp email nhắc giỏ bị bỏ, tỷ lệ hoàn tất checkout tăng đáng kể."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Vẽ phễu chuyển đổi của gian hàng bạn và đoán bước rớt nhiều nhất.",
+                "Liệt kê 5 điểm ma sát trong checkout hiện tại và cách bỏ.",
+                "Thiết kế 1 chuỗi 3 tin nhắn nhắc giỏ hàng bị bỏ."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Phí ship/thuế hiện ra bất ngờ ở bước cuối → khách bỏ giỏ.",
+                "Bắt tạo tài khoản mới cho được mua → tăng ma sát.",
+                "Đổi nhiều thứ cùng lúc, không A/B test → không biết cái nào hiệu quả."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Conversion rate = tỷ lệ chuyển đổi",
+                "CRO = tối ưu tỷ lệ chuyển đổi",
+                "Friction = ma sát/cản trở",
+                "Cart abandonment = bỏ giỏ hàng",
+                "A/B test = thử nghiệm so sánh 2 phương án"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ec-4",
+          "title_vi": "Livestream & Social Commerce",
+          "title_en": "Livestream & Social Commerce",
+          "objective": "Chốt đơn theo thời gian thực qua livestream (TikTok Shop, Shopee Live) và bán trên mạng xã hội với kịch bản, tương tác và tạo khan hiếm đúng cách.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Live selling / Bán hàng livestream**: bán trực tiếp qua video, giỏ hàng nhúng ngay trong luồng phát.",
+                "**Host / KOC / KOL**: người dẫn/booking review — tạo niềm tin & tương tác thời gian thực.",
+                "**Urgency / Khan hiếm**: giới hạn số lượng/thời gian (flash sale) thúc đẩy quyết định.",
+                "**Real-time social proof**: hiển thị đơn mua trực tiếp khi đang live tạo hiệu ứng đám đông."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Lên kịch bản (rundown): mở màn → giới thiệu deal → demo sản phẩm → chốt → nhắc lại.",
+                "Chuẩn bị: sản phẩm, giá live, mã giảm, giỏ hàng nhúng, ánh sáng & âm thanh.",
+                "Trong live: demo thật (chất liệu/công dụng), trả lời bình luận, xử lý từ chối ngay.",
+                "Tạo khan hiếm: 'chỉ 50 suất giá này', đếm ngược.",
+                "Sau live: chốt đơn còn treo, gửi mã, phân tích số liệu để cải thiện."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Nhiệt thành thật + khan hiếm thật** thay vì thúc ép — giữ không khí vui.",
+                "Ghim (pin) sản phẩm đang nói để khách bấm mua ngay không rời luồng.",
+                "Dùng **micro-influencer/KOC** cho ROI cao hơn; flash sale sau live để 'đón sóng' quan tâm."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một shop thời trang live TikTok Shop tối thứ Sáu: host mặc thử từng mẫu, ghim sản phẩm đang nói, tung mã 'chỉ trong 10 phút'. Thông báo mua hiện liên tục tạo hiệu ứng đám đông; kết thúc chạy flash sale dẫn về gian hàng, tỷ lệ click sang mua cao hơn hẳn ngày thường."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết rundown 20 phút cho 1 buổi live 3 sản phẩm.",
+                "Soạn 3 câu tạo khan hiếm mà không gây khó chịu.",
+                "Chuẩn bị 5 câu trả lời cho phản đối thường gặp khi live (giá, chất lượng, ship)."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Thúc ép quá đà → khách khó chịu, rời live.",
+                "Không ghim sản phẩm/không hướng dẫn mua → khách muốn mua mà không biết bấm đâu.",
+                "Live một lần rồi bỏ → livestream là kỹ năng cần luyện đều mới lên."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Live selling = bán hàng livestream",
+                "KOL/KOC = người ảnh hưởng/người tiêu dùng có sức lan toả",
+                "Flash sale = ưu đãi chớp nhoáng có giới hạn",
+                "Pin/ghim sản phẩm = gắn sản phẩm nổi trong live",
+                "Urgency = tạo cảm giác cấp bách/khan hiếm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ec-5",
+          "title_vi": "Quảng cáo, đánh giá & giữ chân khách",
+          "title_en": "Ads, Reviews & Customer Retention",
+          "objective": "Kéo traffic hiệu quả bằng quảng cáo, tận dụng đánh giá để tăng niềm tin, và giữ chân khách để tăng lợi nhuận dài hạn.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Ads TMĐT**: quảng cáo trong sàn (Shopee/Lazada/TikTok Ads) & ngoài sàn (Facebook/Google).",
+                "**ROAS (Return on Ad Spend)**: doanh thu / chi phí quảng cáo — thước đo hiệu quả ads.",
+                "**Reviews / Đánh giá**: gần như mọi khách đọc review trước khi mua — đòn bẩy niềm tin lớn nhất.",
+                "**Retention / Giữ chân**: bán lại cho khách cũ rẻ hơn nhiều so với tìm khách mới."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Đặt mục tiêu & ngân sách ads; chọn sản phẩm chủ lực để đẩy.",
+                "Chạy thử nhiều mẫu (creative) → giữ mẫu ROAS tốt, cắt mẫu kém.",
+                "Chủ động xin đánh giá sau mua (kèm ưu đãi lần sau).",
+                "Xây kênh giữ chân: chương trình thành viên, email/SMS, remarketing.",
+                "Đo lường & tối ưu theo ROAS, tỷ lệ mua lại (repeat rate), CLV."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Đẩy ads vào SKU có sẵn đánh giá tốt** → chuyển đổi cao, ROAS tốt hơn.",
+                "**Remarketing**: nhắm lại người đã xem/bỏ giỏ — chi phí thấp, chuyển đổi cao.",
+                "**Chương trình loyalty & combo** để tăng giá trị đơn (AOV) và tỷ lệ mua lại."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một shop dồn ngân sách ads vào 3 SKU có >100 đánh giá 5 sao thay vì rải đều. ROAS tăng do chuyển đổi cao. Song song, họ gửi SMS ưu đãi cho khách cũ và tặng mã lần sau khi để lại đánh giá — tỷ lệ mua lại tăng, kéo CLV lên và giảm phụ thuộc vào ads."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Tính ROAS từ số liệu giả định (doanh thu ads / chi phí ads).",
+                "Soạn kịch bản xin đánh giá sau mua (kèm ưu đãi).",
+                "Đề xuất 1 chương trình giữ chân khách cũ (loyalty hoặc combo)."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chạy ads vào sản phẩm chưa có đánh giá/chuyển đổi kém → đốt tiền.",
+                "Chỉ lo kéo khách mới, bỏ quên khách cũ → CLV thấp, chi phí cao.",
+                "Không đo ROAS theo từng mẫu/kênh → không biết cắt cái nào."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "ROAS = Return on Ad Spend (doanh thu/chi phí ads)",
+                "AOV = Average Order Value (giá trị đơn trung bình)",
+                "Remarketing = tiếp thị lại người đã tương tác",
+                "Repeat rate = tỷ lệ mua lại; Retention = giữ chân",
+                "Loyalty program = chương trình khách hàng thân thiết"
               ]
             }
           ]
