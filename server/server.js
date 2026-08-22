@@ -463,10 +463,101 @@ app.post('/api/insight', async (req, res) => {
 });
 
 // ==========================================================================
+// AI: KNOWLEDGE GENERATE (ví dụ / công cụ / thực hành / video) + QUIZ
+// ==========================================================================
+function parseJSONLoose(text) {
+  if (!text) return null;
+  let t = String(text).trim();
+  // bỏ ```json ... ```
+  t = t.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+  try { return JSON.parse(t); } catch {}
+  // thử tìm khối {...} hoặc [...] đầu tiên
+  const m = t.match(/[[{][\s\S]*[\]}]/);
+  if (m) { try { return JSON.parse(m[0]); } catch {} }
+  return null;
+}
+
+// kind: examples | tools | practice | videos
+app.post('/api/knowledge/generate', async (req, res) => {
+  const { apiKey, model } = getOpenAIConfig();
+  if (!apiKey) return res.status(200).json({ items: [], error: 'no_key', message: NO_KEY_MSG });
+  const { kind, context, topic } = req.body || {};
+  const ctx = context || topic || SUBJECT;
+
+  const specs = {
+    examples: { web: true, prompt: `Tìm 4-6 VÍ DỤ THỰC TẾ có thật (case study, tình huống doanh nghiệp/thương hiệu) minh hoạ cho chủ đề: "${ctx}". Mỗi ví dụ kèm URL nguồn thật.` },
+    tools: { web: true, prompt: `Liệt kê 4-6 CÔNG CỤ / WEBSITE / TÀI NGUYÊN có thật, hữu ích để học & thực hành chủ đề: "${ctx}". Mỗi mục kèm URL thật.` },
+    videos: { web: true, prompt: `Tìm 4-6 VIDEO YOUTUBE có thật, chất lượng, liên quan trực tiếp chủ đề: "${ctx}". Ưu tiên tiếng Việt, có thể kèm tiếng Anh. Mỗi mục 'url' PHẢI là link YouTube thật (https://www.youtube.com/watch?v=...).` },
+    practice: { web: false, prompt: `Soạn 4-6 BÀI TẬP / HÀNH ĐỘNG cụ thể, thực chiến làm được ngay trong tuần cho chủ đề: "${ctx}". Không cần URL.` },
+  };
+  const spec = specs[kind];
+  if (!spec) return res.status(400).json({ error: 'kind không hợp lệ' });
+
+  const instructions = `Bạn là chuyên gia đào tạo ${SUBJECT}. Trả về DUY NHẤT một JSON hợp lệ dạng {"items":[{"title":"...","detail":"...","url":"..."}]} (tiếng Việt). "url" để "" nếu không có. Không thêm chữ nào ngoài JSON.`;
+  try {
+    let out;
+    if (spec.web) out = await callResponsesWebSearch({ apiKey, model, instructions, input: spec.prompt });
+    else out = await callChatCompletions({ apiKey, model, messages: [{ role: 'system', content: instructions }, { role: 'user', content: spec.prompt }] });
+    const parsed = parseJSONLoose(out.text);
+    let items = (parsed && Array.isArray(parsed.items)) ? parsed.items : (Array.isArray(parsed) ? parsed : []);
+    items = items.map((it) => ({ title: String(it.title || '').trim(), detail: String(it.detail || it.note || '').trim(), url: String(it.url || '').trim() })).filter((it) => it.title || it.detail);
+    res.json({ items, citations: out.citations || [], kind });
+  } catch (e) {
+    console.error('[knowledge]', e.message);
+    res.status(200).json({ items: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message });
+  }
+});
+
+// Sinh đề kiểm tra. scope: lesson | skill | all
+app.post('/api/quiz/generate', async (req, res) => {
+  const { apiKey, model } = getOpenAIConfig();
+  if (!apiKey) return res.status(200).json({ questions: [], error: 'no_key', message: NO_KEY_MSG });
+  const { context, mcq = 4, essay = 1 } = req.body || {};
+  const instructions = `Bạn là giảng viên ${SUBJECT}. Soạn đề kiểm tra tiếng Việt dựa trên ngữ cảnh. Trả về DUY NHẤT JSON hợp lệ:
+{"questions":[
+  {"type":"mcq","q":"...","options":["A","B","C","D"],"answer":0,"explain":"..."},
+  {"type":"essay","q":"...","guide":"gợi ý chấm điểm"}
+]}
+Yêu cầu: ${mcq} câu trắc nghiệm (mỗi câu 4 lựa chọn, "answer" là chỉ số 0-3, kèm "explain") và ${essay} câu tự luận thực chiến. Không thêm chữ nào ngoài JSON.`;
+  try {
+    const out = await callChatCompletions({ apiKey, model, temperature: 0.4, messages: [{ role: 'system', content: instructions }, { role: 'user', content: 'Ngữ cảnh:\n' + (context || SUBJECT) }] });
+    const parsed = parseJSONLoose(out.text);
+    const questions = (parsed && Array.isArray(parsed.questions)) ? parsed.questions : [];
+    if (!questions.length) return res.status(200).json({ questions: [], error: 'parse', message: 'AI không trả về đúng định dạng, thử lại.' });
+    res.json({ questions });
+  } catch (e) {
+    console.error('[quiz-gen]', e.message);
+    res.status(200).json({ questions: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message });
+  }
+});
+
+// Chấm các câu tự luận. body: {items:[{q, guide, answer}]}
+app.post('/api/quiz/grade', async (req, res) => {
+  const { apiKey, model } = getOpenAIConfig();
+  if (!apiKey) return res.status(200).json({ results: [], error: 'no_key', message: NO_KEY_MSG });
+  const { items } = req.body || {};
+  if (!Array.isArray(items) || !items.length) return res.status(400).json({ error: 'Thiếu items' });
+  const instructions = `Bạn là giám khảo ${SUBJECT}. Chấm từng câu tự luận theo thang 0-10, nhận xét ngắn gọn mang tính xây dựng (tiếng Việt). Trả về DUY NHẤT JSON: {"results":[{"score":0-10,"feedback":"..."}]} theo đúng thứ tự câu.`;
+  const payload = items.map((it, i) => `Câu ${i + 1}: ${it.q}\nGợi ý chấm: ${it.guide || '(không có)'}\nBài làm của học viên: ${it.answer || '(bỏ trống)'}`).join('\n\n');
+  try {
+    const out = await callChatCompletions({ apiKey, model, temperature: 0.2, messages: [{ role: 'system', content: instructions }, { role: 'user', content: payload }] });
+    const parsed = parseJSONLoose(out.text);
+    const results = (parsed && Array.isArray(parsed.results)) ? parsed.results : [];
+    res.json({ results });
+  } catch (e) {
+    console.error('[quiz-grade]', e.message);
+    res.status(200).json({ results: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message });
+  }
+});
+
+// ==========================================================================
 // Static + uploads + health
 // ==========================================================================
 app.use('/uploads', express.static(UPLOADS_DIR));
-app.use(express.static(PUBLIC_DIR));
+// Chống cache JS/CSS/HTML cũ trên host
+app.use(express.static(PUBLIC_DIR, {
+  setHeaders: (res) => res.setHeader('Cache-Control', 'no-store'),
+}));
 
 app.get('/healthz', (req, res) => res.json({ ok: true, ts: Date.now() }));
 

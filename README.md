@@ -14,7 +14,11 @@
   - 🤝 **B2B Sales** — bán hàng doanh nghiệp (SPIN, bán tư vấn)
 - Mỗi kỹ năng **5 bài học**, mỗi bài đủ block: Khái niệm / Quy trình / Kỹ thuật / Ví dụ / Bài tập / Lỗi thường gặp / Thuật ngữ.
 - **Sidebar** gập/mở theo kỹ năng + ô tìm kiếm; **trang chủ** hero + lưới thẻ kỹ năng (số bài, đã xong, số tài liệu).
-- **Trang bài học 3 tab**: 📖 Bài học · 📚 Thư viện · 🤖 Hỏi AI (có công tắc 🔎 tìm web kèm nguồn).
+- **Trang bài học 4 tab**: 📖 Bài học · 🧠 Đào sâu · 📚 Thư viện · 🤖 Hỏi AI (có công tắc 🔎 tìm web kèm nguồn).
+- **🧠 Đào sâu** (AI gợi ý): Ví dụ thực tế · Công cụ/Thư viện · **🎬 Video liên quan (tìm YouTube đúng chủ đề)** · Hướng dẫn thực hành. Mỗi gợi ý có **💾 Lưu vào Thư viện**.
+- **🎧 Text-to-Speech (chế độ ngồi xe)**: nghe cả bài học **và toàn bộ nội dung đào sâu** (nội dung bài + ví dụ + công cụ + video + thực hành) qua mini-player cố định đáy màn hình (phát/dừng, câu trước/sau, chỉnh tốc độ, chọn giọng ưu tiên vi-VN).
+- **📝 Thu hoạch / Kiểm tra**: trắc nghiệm (tự chấm) + tự luận (AI chấm điểm /10 kèm nhận xét), theo **bài (kiểm tra nhanh)**, **module** và **tổng kết toàn khoá**. Có **🔁 Cần ôn lại** (nhắc ôn bài đã học quá 3 ngày / chưa kiểm tra / điểm < 7).
+- **Mọi kết quả AI** (đào sâu + kết quả kiểm tra) đều **lưu được vào Thư viện** làm nguồn tài liệu (feature theo yêu cầu).
 - **Thư viện tài liệu**: text / ảnh / PDF / YouTube / Facebook Reel / link. Video dán link **nhúng xem trực tiếp**; ảnh/PDF **upload**. Có tag + source link.
 - **Thư viện chung** (modal): tìm kiếm + lọc theo loại + theo kỹ năng.
 - **✨ Rút insight bằng AI** cho từng tài liệu (cache lại, có nút *Làm mới*) + *Rút insight tất cả*.
@@ -90,7 +94,12 @@ PORT=3100 npm start
 | GET/POST | `/api/settings` | OpenAI key + model (key lưu local) |
 | POST | `/api/chat` | Proxy ChatGPT (coach; tuỳ chọn web_search) |
 | POST | `/api/insight` | Rút insight 1 tài liệu (cache vào library.json) |
+| POST | `/api/knowledge/generate` | Sinh gợi ý AI theo `kind` = examples / tools / videos / practice (web_search cho examples/tools/videos) |
+| POST | `/api/quiz/generate` | Sinh đề kiểm tra JSON (trắc nghiệm + tự luận) theo ngữ cảnh |
+| POST | `/api/quiz/grade` | Chấm câu tự luận → điểm /10 + nhận xét |
 | GET | `/healthz` | Health check |
+
+> Static server đặt `Cache-Control: no-store`; link CSS/JS gắn `?v=N` để chống cache bản cũ.
 
 **Mô hình dữ liệu**: xem `server/data/skills.json` và `server/data/library.json`.
 Block bài học: `concept | steps | technique | example | practice | pitfall | terms`.

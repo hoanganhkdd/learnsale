@@ -73,6 +73,9 @@
     async saveSettings(body) { return jpost('/api/settings', body); },
     async chat(body) { return jpost('/api/chat', body); },
     async insight(resourceId) { return jpost('/api/insight', { resourceId }); },
+    async genKnowledge(body) { return jpost('/api/knowledge/generate', body); },
+    async quizGen(body) { return jpost('/api/quiz/generate', body); },
+    async quizGrade(body) { return jpost('/api/quiz/grade', body); },
   };
   async function jpost(url, body) {
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -199,6 +202,30 @@
     }
     main.append(grid);
 
+    // 🔁 Cần ôn lại
+    const dueList = [];
+    State.skills.forEach((s) => s.lessons.forEach((l) => { if (isDone(s.id, l.id) && needsReview(l)) dueList.push({ s, l }); }));
+    main.append(el('div', { class: 'section-title', style: 'margin-top:28px' }, el('h2', {}, '🔁 Cần ôn lại'), el('div', { class: 'line' })));
+    if (!dueList.length) {
+      main.append(el('div', { style: 'color:var(--text-soft);font-size:14px' }, 'Tuyệt vời! Không có bài nào cần ôn ngay. (Bài đã học sẽ hiện ở đây khi quá 3 ngày, chưa kiểm tra, hoặc điểm < 7.)'));
+    } else {
+      const chips = el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' });
+      dueList.slice(0, 20).forEach(({ s, l }) => chips.append(
+        el('button', { class: 'chip', title: 'Kiểm tra nhanh để ôn', onclick: () => startQuiz({ context: quizContextLesson(s, l), title: 'Ôn nhanh: ' + l.title_vi, mcq: 4, essay: 0, skillId: s.id, review: { key: l.id } }) },
+          s.icon + ' ' + l.title_vi)
+      ));
+      main.append(chips);
+    }
+
+    // 📝 Thu hoạch / Kiểm tra tổng kết
+    main.append(el('div', { class: 'section-title', style: 'margin-top:28px' }, el('h2', {}, '📝 Thu hoạch / Kiểm tra'), el('div', { class: 'line' })));
+    main.append(
+      el('div', { style: 'display:flex;gap:10px;flex-wrap:wrap' },
+        el('button', { class: 'btn btn-accent', onclick: () => startQuiz({ context: quizContextAll(), title: 'Kiểm tra tổng kết toàn khoá', mcq: 8, essay: 2 }) }, '🎓 Kiểm tra tổng kết toàn khoá'),
+        ...State.skills.map((s) => el('button', { class: 'btn btn-sm', onclick: () => startQuiz({ context: quizContextSkill(s), title: 'Kiểm tra: ' + s.name_vi, mcq: 6, essay: 1, skillId: s.id }) }, '🧪 ' + s.name_vi)),
+      )
+    );
+
     main.append(
       el('div', { style: 'margin-top:26px' },
         el('button', { class: 'btn btn-primary', onclick: openAddSkill }, '➕ Thêm kỹ năng mới')
@@ -246,6 +273,7 @@
         el('button', { class: 'btn btn-primary', onclick: () => openAddLesson(skill.id) }, '➕ Thêm bài học'),
         el('button', { class: 'btn btn-accent', onclick: () => openAddResource(skill.id) }, '📎 Thêm tài liệu'),
         el('button', { class: 'btn', onclick: () => openLibrary(skill.id) }, '📚 Thư viện kỹ năng'),
+        el('button', { class: 'btn', onclick: () => startQuiz({ context: quizContextSkill(skill), title: 'Kiểm tra module: ' + skill.name_vi, mcq: 6, essay: 1, skillId: skill.id }) }, '🧪 Kiểm tra module'),
         !skill.builtin && el('button', { class: 'btn btn-danger', onclick: () => confirmDelSkill(skill) }, '🗑 Xóa kỹ năng'),
       )
     );
@@ -295,6 +323,8 @@
           el('div', { class: 'en' }, lesson.title_en),
         ),
         el('div', { style: 'margin-left:auto;display:flex;gap:8px;flex-wrap:wrap' },
+          el('button', { class: 'btn btn-sm', onclick: () => startQuiz({ context: quizContextLesson(skill, lesson), title: 'Kiểm tra nhanh: ' + lesson.title_vi, mcq: 4, essay: 0, skillId: skill.id, review: { key: lesson.id } }) }, '🧠 Kiểm tra nhanh'),
+          reviewBadge(skill, lesson),
           el('button', { class: 'btn btn-sm btn-danger', onclick: () => confirmDelLesson(skill, lesson) }, '🗑 Xóa bài'),
         )
       )
@@ -302,6 +332,7 @@
 
     const tabs = el('div', { class: 'tabs' },
       tabBtn('learn', '📖 Bài học', tab),
+      tabBtn('deep', '🧠 Đào sâu', tab),
       tabBtn('library', '📚 Thư viện', tab),
       tabBtn('ai', '🤖 Hỏi AI', tab),
     );
@@ -310,6 +341,7 @@
     main.append(body);
 
     if (tab === 'learn') renderLearnTab(body, skill, lesson);
+    else if (tab === 'deep') renderDeepTab(body, skill, lesson);
     else if (tab === 'library') renderLibraryTab(body, skill, lesson);
     else renderAiTab(body, skill, lesson);
 
@@ -321,6 +353,11 @@
   const BLOCK_ICON = { concept: '💡', steps: '🪜', technique: '🛠️', example: '📌', practice: '✍️', pitfall: '⚠️', terms: '🔤' };
 
   function renderLearnTab(root, skill, lesson) {
+    root.append(
+      el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px' },
+        el('button', { class: 'btn btn-sm', onclick: () => TTS.play(lessonSpeechText(skill, lesson), '🎧 ' + lesson.title_vi) }, '🎧 Nghe bài (chế độ ngồi xe)'),
+      )
+    );
     if (lesson.objective) {
       root.append(el('div', { class: 'objective-box' }, el('b', {}, '🎯 Mục tiêu / Objective: '), el('span', { class: 'markdown', html: mdLite(lesson.objective) })));
     }
@@ -549,6 +586,351 @@
       'Những lỗi thường gặp và cách tránh?',
       'Tạo 3 câu hỏi luyện tập cho bài này.',
     ];
+  }
+
+  // ==========================================================================
+  // TEXT HELPERS cho TTS / Quiz / Lưu
+  // ==========================================================================
+  const stripMd = (s) => String(s ?? '').replace(/\*\*/g, '').replace(/\*/g, '').replace(/`/g, '').trim();
+
+  function lessonPlainLines(skill, lesson) {
+    const out = [`${lesson.title_vi}. ${lesson.title_en}.`];
+    if (lesson.objective) out.push('Mục tiêu: ' + stripMd(lesson.objective));
+    (lesson.blocks || []).forEach((b) => {
+      out.push((b.label || b.type) + ':');
+      if (b.text) out.push(stripMd(b.text));
+      (b.items || []).forEach((it) => out.push(stripMd(it)));
+    });
+    return out;
+  }
+  const lessonSpeechText = (skill, lesson) => lessonPlainLines(skill, lesson);
+  const lessonPlainText = (skill, lesson) => lessonPlainLines(skill, lesson).join('\n');
+
+  function quizContextLesson(skill, lesson) {
+    return `Kỹ năng: ${skill.name_vi}. Bài học: ${lesson.title_vi} (${lesson.title_en}).\n` + lessonPlainText(skill, lesson);
+  }
+  function quizContextSkill(skill) {
+    return `Kỹ năng: ${skill.name_vi} (${skill.name_en}).\nCác bài học:\n` +
+      skill.lessons.map((l) => `- ${l.title_vi}: ${stripMd(l.objective || '')}`).join('\n');
+  }
+  function quizContextAll() {
+    return `Toàn khoá ${State.meta.title || 'Sale'}.\n` +
+      State.skills.map((s) => `# ${s.name_vi}\n` + s.lessons.map((l) => `- ${l.title_vi}: ${stripMd(l.objective || '')}`).join('\n')).join('\n\n');
+  }
+
+  async function saveTextResource(skillId, title, text, tags, type = 'text', url = '') {
+    const body = { skillId: skillId || null, type, title, note: text, tags, url };
+    const res = await api.addResource(body);
+    if (res.error) { toast(res.error, 'err'); return null; }
+    toast('📚 Đã lưu vào Thư viện!', 'ok');
+    return res;
+  }
+
+  // ---- Review log (nhắc nhớ) — localStorage ----
+  const reviewGet = (lessonId) => lsGet('review_' + lessonId, null); // {ts, score}
+  const reviewSet = (lessonId, obj) => lsSet('review_' + lessonId, obj);
+  function needsReview(lesson) {
+    const r = reviewGet(lesson.id);
+    if (!r) return true;
+    if ((r.score ?? 10) < 7) return true;
+    if (Date.now() - r.ts > 3 * 24 * 3600 * 1000) return true;
+    return false;
+  }
+  function reviewBadge(skill, lesson) {
+    const r = reviewGet(lesson.id);
+    if (!r) return el('span', { class: 'badge badge-mut' }, 'Chưa ôn');
+    const d = new Date(r.ts).toLocaleDateString('vi-VN');
+    return el('span', { class: 'badge ' + (r.score >= 7 ? 'badge-ok' : 'badge-warn') }, `✔ Ôn ${d} · ${r.score}/10`);
+  }
+
+  // ==========================================================================
+  // 🧠 ĐÀO SÂU TAB
+  // ==========================================================================
+  const DEEP_PANELS = [
+    { kind: 'examples', icon: '🌍', label: 'Ví dụ thực tế' },
+    { kind: 'tools', icon: '🧰', label: 'Công cụ / Thư viện' },
+    { kind: 'videos', icon: '🎬', label: 'Video liên quan' },
+    { kind: 'practice', icon: '🏋️', label: 'Hướng dẫn thực hành' },
+  ];
+  const deepKey = (skillId, lessonId, kind) => `deep_${skillId}_${lessonId}_${kind}`;
+
+  function renderDeepTab(root, skill, lesson) {
+    root.append(
+      el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px' },
+        el('button', { class: 'btn btn-sm', onclick: () => TTS.play(deepSpeechText(skill, lesson), '🎧 Đào sâu: ' + lesson.title_vi) }, '🎧 Nghe toàn bộ đào sâu'),
+        el('button', { class: 'btn btn-sm', onclick: () => go({ type: 'lesson', skillId: skill.id, lessonId: lesson.id, tab: 'ai' }) }, '🤔 Hỏi AI tra cứu'),
+      )
+    );
+
+    // Bảng nội dung bài học (cuộn được)
+    const contentBox = el('div', { class: 'deep-panel' },
+      el('div', { class: 'deep-head' }, el('b', {}, '📖 Nội dung bài học')),
+      el('div', { class: 'deep-scroll markdown', html: lessonPlainLines(skill, lesson).map((l) => mdLite(l)).join('<br>') })
+    );
+    root.append(contentBox);
+
+    DEEP_PANELS.forEach((p) => root.append(deepPanel(skill, lesson, p)));
+  }
+
+  function deepPanel(skill, lesson, p) {
+    const cacheKey = deepKey(skill.id, lesson.id, p.kind);
+    let items = lsGet(cacheKey, []);
+    const panel = el('div', { class: 'deep-panel' });
+    const holder = el('div', { class: 'deep-items' });
+    const genBtn = el('button', { class: 'btn btn-sm btn-accent', onclick: gen }, '✨ Gợi ý bằng AI');
+    panel.append(
+      el('div', { class: 'deep-head' },
+        el('b', {}, p.icon + ' ' + p.label),
+        el('div', { style: 'margin-left:auto;display:flex;gap:6px' }, genBtn,
+          el('button', { class: 'btn btn-sm btn-ghost', title: 'Nghe mục này', onclick: () => TTS.play(panelSpeech(p, items), '🎧 ' + p.label) }, '🎧'))
+      ),
+      holder
+    );
+    renderItems();
+    return panel;
+
+    function renderItems() {
+      holder.innerHTML = '';
+      if (!items.length) { holder.append(el('div', { class: 'deep-empty' }, 'Chưa có. Bấm “✨ Gợi ý bằng AI”.')); return; }
+      items.forEach((it, idx) => holder.append(deepItemCard(skill, lesson, p, it, idx, () => { items.splice(idx, 1); lsSet(cacheKey, items); renderItems(); })));
+    }
+    async function gen() {
+      genBtn.disabled = true; const old = genBtn.textContent; genBtn.innerHTML = '<span class="spinner"></span> Đang tìm…';
+      try {
+        const res = await api.genKnowledge({ kind: p.kind, context: `${skill.name_vi} — ${lesson.title_vi}. ${stripMd(lesson.objective || '')}` });
+        if (res.error === 'no_key') toast(res.message || res.error, 'err');
+        else if (res.error) toast(res.message || 'Lỗi AI', 'err');
+        else if (!res.items || !res.items.length) toast('AI chưa trả về kết quả, thử lại.', 'err');
+        else { items = res.items; lsSet(cacheKey, items); renderItems(); toast(`✨ Đã gợi ý ${items.length} mục.`, 'ok'); }
+      } catch (e) { toast('Lỗi: ' + e.message, 'err'); }
+      finally { genBtn.disabled = false; genBtn.textContent = old; }
+    }
+  }
+
+  function deepItemCard(skill, lesson, p, it, idx, onRemove) {
+    const isVideo = p.kind === 'videos' && /youtu/.test(it.url || '');
+    const card = el('div', { class: 'deep-item' },
+      el('div', { class: 'di-body' },
+        el('b', {}, it.title || '(mục)'),
+        it.detail && el('div', { class: 'di-detail markdown', html: mdLite(it.detail) }),
+        it.url && el('a', { class: 'di-url', href: it.url, target: '_blank', rel: 'noopener' }, '🔗 ' + it.url),
+      ),
+      el('div', { class: 'di-foot' },
+        el('button', { class: 'btn btn-sm btn-accent', onclick: save }, '💾 Lưu vào thư viện'),
+        el('button', { class: 'btn btn-sm btn-ghost', onclick: onRemove }, '✕ Bỏ'),
+      )
+    );
+    return card;
+    async function save() {
+      let type = 'text', url = it.url || '';
+      if (isVideo) type = 'youtube';
+      else if (/^https?:/.test(url) && p.kind !== 'practice') type = 'link';
+      const title = `[${p.label}] ${it.title}`;
+      const note = it.detail || it.title;
+      const tags = ['đào-sâu', p.kind, skill.id];
+      await saveTextResource(skill.id, title, note, tags, type, type === 'text' ? '' : url);
+    }
+  }
+
+  const panelSpeech = (p, items) => [p.label + ':', ...items.flatMap((it) => [stripMd(it.title || ''), stripMd(it.detail || '')].filter(Boolean))];
+  function deepSpeechText(skill, lesson) {
+    const out = ['Nội dung bài học.', ...lessonPlainLines(skill, lesson)];
+    DEEP_PANELS.forEach((p) => {
+      const items = lsGet(deepKey(skill.id, lesson.id, p.kind), []);
+      if (items.length) out.push(...panelSpeech(p, items));
+    });
+    return out;
+  }
+
+  // ==========================================================================
+  // 🎧 TTS MINI-PLAYER (Web Speech API)
+  // ==========================================================================
+  const TTS = (() => {
+    const synth = window.speechSynthesis;
+    let queue = [], idx = 0, playing = false, rate = 1, voice = null, title = '';
+    let bar = null;
+    function voices() { return synth ? synth.getVoices() : []; }
+    function pickVoice() {
+      const vs = voices();
+      const savedName = lsGet('tts_voice', '');
+      voice = vs.find((v) => v.name === savedName) || vs.find((v) => /vi[-_]?VN/i.test(v.lang)) || vs.find((v) => /vi/i.test(v.lang)) || vs[0] || null;
+    }
+    function ensureBar() {
+      if (bar) return;
+      bar = el('div', { class: 'tts-bar', id: 'ttsBar' });
+      document.body.append(bar);
+    }
+    function renderBar() {
+      if (!bar) return;
+      bar.innerHTML = '';
+      bar.append(
+        el('div', { class: 'tts-title' }, '🎧 ', el('span', {}, title)),
+        el('div', { class: 'tts-ctrls' },
+          el('button', { class: 'icon-btn', title: 'Câu trước', onclick: prev }, '⏮'),
+          el('button', { class: 'icon-btn', title: (playing && !synth.paused) ? 'Tạm dừng' : 'Phát', onclick: toggle }, (playing && synth && !synth.paused) ? '⏸' : '▶'),
+          el('button', { class: 'icon-btn', title: 'Câu sau', onclick: next }, '⏭'),
+          rateSelect(),
+          voiceSelect(),
+          el('span', { class: 'tts-pos' }, `${Math.min(idx + 1, queue.length)}/${queue.length}`),
+          el('button', { class: 'icon-btn', title: 'Đóng', onclick: stop }, '✕'),
+        )
+      );
+    }
+    function rateSelect() {
+      const sel = el('select', { class: 'tts-sel', title: 'Tốc độ', onchange: (e) => { rate = parseFloat(e.target.value); lsSet('tts_rate', rate); if (playing) { synth.cancel(); speak(); } } });
+      [0.8, 1, 1.15, 1.3, 1.5].forEach((r) => sel.append(el('option', { value: r, selected: r === rate ? '' : null }, r + '×')));
+      return sel;
+    }
+    function voiceSelect() {
+      const sel = el('select', { class: 'tts-sel', title: 'Giọng đọc', onchange: (e) => { const v = voices().find((x) => x.name === e.target.value); if (v) { voice = v; lsSet('tts_voice', v.name); if (playing) { synth.cancel(); speak(); } } } });
+      voices().forEach((v) => sel.append(el('option', { value: v.name, selected: voice && v.name === voice.name ? '' : null }, `${v.name} (${v.lang})`)));
+      if (!voices().length) sel.append(el('option', {}, 'Giọng mặc định'));
+      return sel;
+    }
+    function speak() {
+      if (idx >= queue.length) { stop(); return; }
+      const u = new SpeechSynthesisUtterance(queue[idx]);
+      u.rate = rate; u.lang = (voice && voice.lang) || 'vi-VN'; if (voice) u.voice = voice;
+      u.onend = () => { if (playing) { idx++; renderBar(); speak(); } };
+      u.onerror = () => { if (playing) { idx++; speak(); } };
+      synth.speak(u);
+      renderBar();
+    }
+    function play(sentences, t) {
+      if (!synth) { toast('Trình duyệt không hỗ trợ đọc (TTS).', 'err'); return; }
+      queue = (Array.isArray(sentences) ? sentences : [String(sentences)]).map((s) => stripMd(s)).filter(Boolean);
+      if (!queue.length) { toast('Không có nội dung để đọc.', 'err'); return; }
+      title = (t || 'Đang đọc').replace(/^🎧\s*/, ''); idx = 0; playing = true;
+      rate = lsGet('tts_rate', 1); pickVoice();
+      synth.cancel(); ensureBar(); bar.classList.add('show'); renderBar(); speak();
+    }
+    function toggle() {
+      if (!playing) return;
+      if (synth.paused) { synth.resume(); }
+      else if (synth.speaking) { synth.pause(); }
+      // toggle icon via a manual flag: use speaking/paused
+      renderBar();
+    }
+    function next() { if (!queue.length) return; synth.cancel(); idx = Math.min(idx + 1, queue.length - 1); speak(); }
+    function prev() { if (!queue.length) return; synth.cancel(); idx = Math.max(idx - 1, 0); speak(); }
+    function stop() { playing = false; if (synth) synth.cancel(); if (bar) bar.classList.remove('show'); }
+    if (synth && typeof synth.onvoiceschanged !== 'undefined') synth.onvoiceschanged = () => { if (bar && bar.classList.contains('show')) renderBar(); };
+    return { play, stop };
+  })();
+
+  // ==========================================================================
+  // 📝 QUIZ / KIỂM TRA
+  // ==========================================================================
+  // opts: {context, title, mcq, essay, skillId, review:{key}}
+  async function startQuiz(opts) {
+    const loading = openModal({
+      title: '📝 ' + (opts.title || 'Kiểm tra'),
+      bodyNodes: [el('div', { class: 'empty' }, el('span', { class: 'spinner' }), ' Đang soạn đề bằng AI…')],
+    });
+    let data;
+    try {
+      data = await api.quizGen({ context: opts.context, mcq: opts.mcq ?? 4, essay: opts.essay ?? 1 });
+    } catch (e) { loading.close(); return toast('Lỗi: ' + e.message, 'err'); }
+    loading.close();
+    if (data.error === 'no_key') return toast(data.message || 'Chưa cấu hình OpenAI API key. Vào ⚙️ Cài đặt.', 'err');
+    if (!data.questions || !data.questions.length) return toast(data.message || 'Không tạo được đề, thử lại.', 'err');
+    renderQuizModal(opts, data.questions);
+  }
+
+  function renderQuizModal(opts, questions) {
+    const answers = {}; // idx -> value (number for mcq, string for essay)
+    const body = el('div', {});
+    questions.forEach((q, i) => {
+      const qb = el('div', { class: 'quiz-q' }, el('div', { class: 'quiz-qtitle' }, `Câu ${i + 1}. `, el('span', { class: 'markdown', html: mdLite(q.q) })));
+      if (q.type === 'mcq' && Array.isArray(q.options)) {
+        q.options.forEach((opt, oi) => {
+          const id = `q${i}_${oi}`;
+          const row = el('label', { class: 'quiz-opt', for: id },
+            el('input', { type: 'radio', name: 'q' + i, id, onchange: () => { answers[i] = oi; } }),
+            el('span', { class: 'markdown', html: mdLite(opt) }));
+          qb.append(row);
+        });
+      } else {
+        const ta = el('textarea', { class: 'quiz-essay', rows: 4, placeholder: 'Nhập câu trả lời của bạn…', oninput: (e) => { answers[i] = e.target.value; } });
+        qb.append(ta);
+      }
+      body.append(qb);
+    });
+
+    const resultBox = el('div', { id: 'quizResult' });
+    body.append(resultBox);
+
+    const submitBtn = el('button', { class: 'btn btn-primary', onclick: submit }, '✅ Nộp bài & chấm');
+    const m = openModal({
+      title: '📝 ' + (opts.title || 'Kiểm tra'),
+      wide: true,
+      bodyNodes: [body],
+      footNodes: [el('button', { class: 'btn', onclick: () => m.close() }, 'Đóng'), submitBtn],
+    });
+
+    async function submit() {
+      submitBtn.disabled = true; const old = submitBtn.textContent; submitBtn.innerHTML = '<span class="spinner"></span> Đang chấm…';
+      try {
+        // chấm MCQ ở client
+        let scoreSum = 0, scoreCount = 0;
+        const review = [];
+        const essays = [];
+        questions.forEach((q, i) => {
+          if (q.type === 'mcq') {
+            const correct = answers[i] === q.answer;
+            scoreSum += correct ? 10 : 0; scoreCount++;
+            review.push({ i, type: 'mcq', correct, q, chosen: answers[i], });
+          } else {
+            essays.push({ i, q: q.q, guide: q.guide, answer: answers[i] || '' });
+          }
+        });
+        // chấm tự luận qua AI
+        let essayResults = [];
+        if (essays.length) {
+          const gr = await api.quizGrade({ items: essays.map((e) => ({ q: e.q, guide: e.guide, answer: e.answer })) });
+          if (gr.error === 'no_key') toast(gr.message || 'Thiếu API key, câu tự luận không chấm được.', 'err');
+          essayResults = gr.results || [];
+        }
+        essays.forEach((e, k) => {
+          const r = essayResults[k] || { score: 0, feedback: '(chưa chấm được)' };
+          scoreSum += Number(r.score) || 0; scoreCount++;
+          review.push({ i: e.i, type: 'essay', score: r.score, feedback: r.feedback, q: questions[e.i], answer: e.answer });
+        });
+        const total = scoreCount ? Math.round((scoreSum / scoreCount) * 10) / 10 : 0;
+        renderQuizResult(resultBox, opts, questions, review, total);
+        // lưu reviewlog cho kiểm tra nhanh theo bài
+        if (opts.review && opts.review.key) { reviewSet(opts.review.key, { ts: Date.now(), score: Math.round(total) }); }
+        submitBtn.style.display = 'none';
+      } catch (e) { toast('Lỗi chấm bài: ' + e.message, 'err'); }
+      finally { submitBtn.disabled = false; submitBtn.textContent = old; }
+    }
+  }
+
+  function renderQuizResult(box, opts, questions, review, total) {
+    box.innerHTML = '';
+    box.append(el('div', { class: 'quiz-score' }, `🏆 Điểm tổng: ${total}/10`));
+    const detail = review.sort((a, b) => a.i - b.i);
+    const lines = [`KẾT QUẢ KIỂM TRA: ${opts.title || ''} — Điểm ${total}/10`, ''];
+    detail.forEach((r) => {
+      const wrap = el('div', { class: 'quiz-review ' + (r.type === 'mcq' ? (r.correct ? 'ok' : 'bad') : '') });
+      if (r.type === 'mcq') {
+        wrap.append(el('div', {}, el('b', {}, `Câu ${r.i + 1}: `), r.correct ? '✅ Đúng' : '❌ Sai'));
+        wrap.append(el('div', { class: 'markdown', html: '<b>Đáp án đúng:</b> ' + mdLite(r.q.options[r.q.answer] || '') }));
+        if (r.q.explain) wrap.append(el('div', { class: 'markdown', html: '<i>Giải thích:</i> ' + mdLite(r.q.explain) }));
+        lines.push(`Câu ${r.i + 1} (TN): ${r.correct ? 'Đúng' : 'Sai'}. Đáp án: ${stripMd(r.q.options[r.q.answer] || '')}. ${stripMd(r.q.explain || '')}`);
+      } else {
+        wrap.append(el('div', {}, el('b', {}, `Câu ${r.i + 1} (tự luận): `), `${r.score}/10`));
+        if (r.feedback) wrap.append(el('div', { class: 'markdown', html: '<i>Nhận xét:</i> ' + mdLite(r.feedback) }));
+        lines.push(`Câu ${r.i + 1} (TL): ${r.score}/10. Nhận xét: ${stripMd(r.feedback || '')}`);
+      }
+      box.append(wrap);
+    });
+    box.append(
+      el('div', { style: 'margin-top:12px;display:flex;gap:8px;flex-wrap:wrap' },
+        el('button', { class: 'btn btn-sm btn-accent', onclick: () => saveTextResource(opts.skillId || null, '📝 ' + (opts.title || 'Kết quả kiểm tra'), lines.join('\n'), ['kiểm-tra', 'nhắc-nhớ']) }, '📚 Lưu kết quả vào thư viện'),
+        el('button', { class: 'btn btn-sm btn-ghost', onclick: () => TTS.play(lines, '🎧 Kết quả kiểm tra') }, '🎧 Nghe kết quả'),
+      )
+    );
   }
 
   // ==========================================================================

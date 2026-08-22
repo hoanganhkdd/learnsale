@@ -200,7 +200,68 @@
       } catch (e) { return jsonRes({ insight: 'Lỗi gọi AI: ' + e.message, citations: [], error: 'ai_error' }); }
     }
 
+    // ----- KNOWLEDGE GENERATE (ví dụ/công cụ/video/thực hành) -----
+    if (path === '/api/knowledge/generate' && method === 'POST') {
+      const { apiKey, model } = openaiCfg();
+      if (!apiKey) return jsonRes({ items: [], error: 'no_key', message: NO_KEY });
+      const b = body || {}; const ctx = b.context || b.topic || SUBJECT;
+      const specs = {
+        examples: { web: true, prompt: `Tìm 4-6 VÍ DỤ THỰC TẾ có thật minh hoạ chủ đề: "${ctx}". Mỗi ví dụ kèm URL nguồn thật.` },
+        tools: { web: true, prompt: `Liệt kê 4-6 CÔNG CỤ/WEBSITE/TÀI NGUYÊN có thật để học & thực hành chủ đề: "${ctx}". Mỗi mục kèm URL thật.` },
+        videos: { web: true, prompt: `Tìm 4-6 VIDEO YOUTUBE có thật liên quan chủ đề: "${ctx}". Ưu tiên tiếng Việt. 'url' PHẢI là link YouTube thật.` },
+        practice: { web: false, prompt: `Soạn 4-6 BÀI TẬP/HÀNH ĐỘNG cụ thể làm được ngay trong tuần cho chủ đề: "${ctx}". Không cần URL.` },
+      };
+      const spec = specs[b.kind]; if (!spec) return jsonRes({ error: 'kind không hợp lệ' }, 400);
+      const instructions = `Bạn là chuyên gia đào tạo ${SUBJECT}. Trả về DUY NHẤT JSON {"items":[{"title":"...","detail":"...","url":"..."}]} (tiếng Việt). "url"="" nếu không có. Không thêm chữ ngoài JSON.`;
+      try {
+        const out = spec.web ? await responsesWebSearch(apiKey, model, instructions, spec.prompt)
+          : await chatCompletions(apiKey, model, [{ role: 'system', content: instructions }, { role: 'user', content: spec.prompt }]);
+        const parsed = parseJSONLoose(out.text);
+        let items = (parsed && Array.isArray(parsed.items)) ? parsed.items : (Array.isArray(parsed) ? parsed : []);
+        items = items.map((it) => ({ title: String(it.title || '').trim(), detail: String(it.detail || it.note || '').trim(), url: String(it.url || '').trim() })).filter((it) => it.title || it.detail);
+        return jsonRes({ items, citations: out.citations || [], kind: b.kind });
+      } catch (e) { return jsonRes({ items: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message }); }
+    }
+
+    // ----- QUIZ GENERATE -----
+    if (path === '/api/quiz/generate' && method === 'POST') {
+      const { apiKey, model } = openaiCfg();
+      if (!apiKey) return jsonRes({ questions: [], error: 'no_key', message: NO_KEY });
+      const b = body || {}; const mcq = b.mcq || 4, essay = b.essay || 1;
+      const instructions = `Bạn là giảng viên ${SUBJECT}. Soạn đề kiểm tra tiếng Việt. Trả về DUY NHẤT JSON {"questions":[{"type":"mcq","q":"...","options":["A","B","C","D"],"answer":0,"explain":"..."},{"type":"essay","q":"...","guide":"..."}]}. Gồm ${mcq} câu trắc nghiệm (4 lựa chọn, "answer" là 0-3, kèm "explain") và ${essay} câu tự luận. Không thêm chữ ngoài JSON.`;
+      try {
+        const out = await chatCompletions(apiKey, model, [{ role: 'system', content: instructions }, { role: 'user', content: 'Ngữ cảnh:\n' + (b.context || SUBJECT) }]);
+        const parsed = parseJSONLoose(out.text);
+        const questions = (parsed && Array.isArray(parsed.questions)) ? parsed.questions : [];
+        if (!questions.length) return jsonRes({ questions: [], error: 'parse', message: 'AI không trả về đúng định dạng, thử lại.' });
+        return jsonRes({ questions });
+      } catch (e) { return jsonRes({ questions: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message }); }
+    }
+
+    // ----- QUIZ GRADE -----
+    if (path === '/api/quiz/grade' && method === 'POST') {
+      const { apiKey, model } = openaiCfg();
+      if (!apiKey) return jsonRes({ results: [], error: 'no_key', message: NO_KEY });
+      const b = body || {}; const items = b.items || [];
+      if (!items.length) return jsonRes({ error: 'Thiếu items' }, 400);
+      const instructions = `Bạn là giám khảo ${SUBJECT}. Chấm từng câu tự luận 0-10, nhận xét ngắn (tiếng Việt). Trả về DUY NHẤT JSON {"results":[{"score":0-10,"feedback":"..."}]} theo thứ tự câu.`;
+      const payload = items.map((it, i) => `Câu ${i + 1}: ${it.q}\nGợi ý chấm: ${it.guide || '(không có)'}\nBài làm: ${it.answer || '(bỏ trống)'}`).join('\n\n');
+      try {
+        const out = await chatCompletions(apiKey, model, [{ role: 'system', content: instructions }, { role: 'user', content: payload }]);
+        const parsed = parseJSONLoose(out.text);
+        return jsonRes({ results: (parsed && Array.isArray(parsed.results)) ? parsed.results : [] });
+      } catch (e) { return jsonRes({ results: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message }); }
+    }
+
     return jsonRes({ error: 'Không hỗ trợ (static): ' + method + ' ' + path }, 404);
+  }
+  function parseJSONLoose(text) {
+    if (!text) return null;
+    let t = String(text).trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+    try { return JSON.parse(t); } catch {}
+    const m = t.match(/[[{][\s\S]*[\]}]/);
+    if (m) { try { return JSON.parse(m[0]); } catch {} }
+    return null;
   }
   const normTags = (t) => Array.isArray(t) ? t.map((x) => String(x).trim()).filter(Boolean) : (typeof t === 'string' ? t.split(',').map((x) => x.trim()).filter(Boolean) : []);
 
