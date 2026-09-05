@@ -108,6 +108,31 @@
     State.meta = data.meta || {};
   }
 
+  // ---------- Sao lưu & tự khôi phục kỹ năng người dùng tạo (chống mất dữ liệu khi host reset) ----------
+  const BK_SKILLS = 'userSkillsBackup';
+  function backupUserSkills() {
+    try { lsSet(BK_SKILLS, State.skills.filter((s) => !s.builtin)); } catch {}
+  }
+  async function restoreUserSkills() {
+    const backup = lsGet(BK_SKILLS, []);
+    if (!Array.isArray(backup) || !backup.length) return 0;
+    const serverIds = new Set(State.skills.map((s) => s.id));
+    let restored = 0;
+    for (const s of backup) {
+      if (serverIds.has(s.id)) continue; // đã có trên server → bỏ qua
+      try {
+        const res = await api.addSkill({ name_vi: s.name_vi, name_en: s.name_en, icon: s.icon, summary: s.summary });
+        if (res && res.id && !res.error) {
+          restored++;
+          for (const l of (s.lessons || [])) {
+            await api.addLesson(res.id, { title_vi: l.title_vi, title_en: l.title_en, objective: l.objective, blocks: l.blocks });
+          }
+        }
+      } catch {}
+    }
+    return restored;
+  }
+
   // ==========================================================================
   // RENDER: Sidebar
   // ==========================================================================
@@ -1123,7 +1148,7 @@
       if (!nameVi.value.trim() && !nameEn.value.trim()) return toast('Nhập tên kỹ năng.', 'err');
       const res = await api.addSkill({ name_vi: nameVi.value.trim(), name_en: nameEn.value.trim(), icon: icon.value.trim() || '📌', summary: summary.value.trim() });
       if (res.error) return toast(res.error, 'err');
-      await loadSkills(); renderSidebar($('#searchInput').value);
+      await loadSkills(); backupUserSkills(); renderSidebar($('#searchInput').value);
       m.close(); toast('✅ Đã thêm kỹ năng!', 'ok');
       go({ type: 'skill', id: res.id });
     }
@@ -1181,7 +1206,7 @@
       push('terms', 'Thuật ngữ', terms);
       const res = await api.addLesson(skillId, { title_vi: titleVi.value.trim(), title_en: titleEn.value.trim(), objective: objective.value.trim(), blocks });
       if (res.error) return toast(res.error, 'err');
-      await loadSkills(); renderSidebar($('#searchInput').value);
+      await loadSkills(); backupUserSkills(); renderSidebar($('#searchInput').value);
       m.close(); toast('✅ Đã thêm bài học!', 'ok');
       go({ type: 'lesson', skillId, lessonId: res.id, tab: 'learn' });
     }
@@ -1642,14 +1667,14 @@
     confirmModal(`Xóa kỹ năng "${skill.name_vi}" cùng toàn bộ bài học & tài liệu của nó? Không thể hoàn tác.`, async () => {
       const res = await api.delSkill(skill.id);
       if (res.error) return toast(res.error, 'err');
-      await loadSkills(); renderSidebar(); toast('Đã xóa kỹ năng.', 'ok'); go({ type: 'home' });
+      await loadSkills(); backupUserSkills(); renderSidebar(); toast('Đã xóa kỹ năng.', 'ok'); go({ type: 'home' });
     });
   }
   function confirmDelLesson(skill, lesson) {
     confirmModal(`Xóa bài học "${lesson.title_vi}"?`, async () => {
       const res = await api.delLesson(skill.id, lesson.id);
       if (res.error) return toast(res.error, 'err');
-      await loadSkills(); renderSidebar(); toast('Đã xóa bài học.', 'ok'); go({ type: 'skill', id: skill.id });
+      await loadSkills(); backupUserSkills(); renderSidebar(); toast('Đã xóa bài học.', 'ok'); go({ type: 'skill', id: skill.id });
     });
   }
   function confirmDelResource(r, skillId) {
@@ -1731,6 +1756,10 @@
 
     try {
       await loadSkills();
+      // Tự khôi phục kỹ năng người dùng nếu server bị reset (mất dữ liệu)
+      const n = await restoreUserSkills();
+      if (n > 0) { await loadSkills(); toast(`♻️ Đã khôi phục ${n} kỹ năng đã lưu.`, 'ok'); }
+      backupUserSkills();
     } catch (e) {
       $('#main').innerHTML = '<div class="empty"><div class="big">⚠️</div><p>Không tải được dữ liệu. Kiểm tra server.</p></div>';
       return;

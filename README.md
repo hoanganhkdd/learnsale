@@ -144,7 +144,12 @@ Cũng dùng được **Procfile** (`web: npm start`) cho các PaaS khác. Node v
 
 ---
 
-## 🛡 Độ bền
+## 🛡 Độ bền & chống mất kỹ năng đã tạo
+
+- **Tự sao lưu & khôi phục kỹ năng người dùng**: mỗi kỹ năng bạn tự tạo (kèm bài học) được sao lưu vào `localStorage` của trình duyệt. Khi mở app, nếu server bị **reset dữ liệu** (thường gặp trên hosting free có ổ đĩa tạm — Render free, redeploy…), app **tự khôi phục** các kỹ năng đó lên server (báo "♻️ Đã khôi phục N kỹ năng"). Kỹ năng đã xoá sẽ **không** bị khôi phục lại.
+- Muốn lưu bền vững phía server (đồng bộ đa thiết bị, không phụ thuộc trình duyệt): dùng host có **ổ đĩa bền** (Render trả phí + Disk, Railway, VPS) và trỏ `DATA_DIR` vào ổ đĩa đó — xem `render.yaml` / `DEPLOY`.
+
+
 
 - `process.on('uncaughtException')` + `unhandledRejection` → 1 lỗi request không làm sập tiến trình.
 - `app.listen(PORT, '0.0.0.0')`; middleware bắt lỗi Express trả JSON 500.
