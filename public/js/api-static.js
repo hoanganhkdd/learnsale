@@ -285,6 +285,22 @@
       } catch (e) { return jsonRes({ questions: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message }); }
     }
 
+    // ----- TEMPLATE GENERATE (AI) -----
+    if (path === '/api/template/generate' && method === 'POST') {
+      const { apiKey, model } = openaiCfg();
+      if (!apiKey) return jsonRes({ error: 'no_key', message: NO_KEY });
+      const b = body || {}; let ctx = b.context;
+      if (b.resourceId) { const r = store.library.resources.find((x) => x.id === b.resourceId); if (r) ctx = `${r.title}\n${r.note || ''}\n${r.url || ''}`.trim(); }
+      if (!ctx) return jsonRes({ error: 'Thiếu ngữ cảnh' }, 400);
+      const instructions = `Bạn là chuyên gia ${SUBJECT}. Tạo MỘT TEMPLATE EXCEL thực dụng dựa trên ngữ cảnh. Trả về DUY NHẤT JSON: {"title":"...","category":"Bảng theo dõi / Tracker","description":"...","headers":["..."],"rows":[["..."]]}. 4-8 cột; 3-8 dòng mẫu. Không thêm chữ ngoài JSON.`;
+      try {
+        const out = await chatCompletions(apiKey, model, [{ role: 'system', content: instructions }, { role: 'user', content: 'Ngữ cảnh:\n' + ctx }]);
+        const p = parseJSONLoose(out.text);
+        if (!p || !Array.isArray(p.headers) || !p.headers.length) return jsonRes({ error: 'parse', message: 'AI không trả về đúng định dạng, thử lại.' });
+        return jsonRes({ title: p.title || 'Template', category: p.category || 'Bảng theo dõi / Tracker', description: p.description || '', headers: p.headers.map(String), rows: Array.isArray(p.rows) ? p.rows.map((r) => Array.isArray(r) ? r.map((c) => String(c ?? '')) : []) : [] });
+      } catch (e) { return jsonRes({ error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message }); }
+    }
+
     // ----- QUIZ GRADE -----
     if (path === '/api/quiz/grade' && method === 'POST') {
       const { apiKey, model } = openaiCfg();

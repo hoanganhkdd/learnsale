@@ -543,6 +543,30 @@ Yêu cầu: ${mcq} câu trắc nghiệm (mỗi câu 4 lựa chọn, "answer" là
   }
 });
 
+// Tự sinh TEMPLATE EXCEL bằng AI. body: {context?, resourceId?}
+app.post('/api/template/generate', async (req, res) => {
+  const { apiKey, model } = getOpenAIConfig();
+  if (!apiKey) return res.status(200).json({ error: 'no_key', message: NO_KEY_MSG });
+  let { context, resourceId } = req.body || {};
+  if (resourceId) {
+    const r = readLibrary().resources.find((x) => x.id === resourceId);
+    if (r) context = `${r.title}\n${r.note || ''}\n${r.url || ''}`.trim();
+  }
+  if (!context) return res.status(400).json({ error: 'Thiếu ngữ cảnh' });
+  const instructions = `Bạn là chuyên gia ${SUBJECT}. Dựa trên ngữ cảnh, hãy TẠO MỘT TEMPLATE EXCEL thực dụng, có thể dùng ngay để theo dõi/áp dụng. Trả về DUY NHẤT JSON hợp lệ (tiếng Việt):
+{"title":"...","category":"Bảng theo dõi / Tracker","description":"...","headers":["Cột 1","Cột 2",...],"rows":[["...","..."],["",""]]}
+Yêu cầu: 4-8 cột hợp lý; 3-8 dòng mẫu (có thể để trống vài ô để người dùng điền). Không thêm chữ nào ngoài JSON.`;
+  try {
+    const out = await callChatCompletions({ apiKey, model, temperature: 0.4, messages: [{ role: 'system', content: instructions }, { role: 'user', content: 'Ngữ cảnh:\n' + context }] });
+    const p = parseJSONLoose(out.text);
+    if (!p || !Array.isArray(p.headers) || !p.headers.length) return res.status(200).json({ error: 'parse', message: 'AI không trả về đúng định dạng, thử lại.' });
+    res.json({ title: p.title || 'Template', category: p.category || 'Bảng theo dõi / Tracker', description: p.description || '', headers: p.headers.map(String), rows: Array.isArray(p.rows) ? p.rows.map((r) => (Array.isArray(r) ? r.map((c) => String(c ?? '')) : [])) : [] });
+  } catch (e) {
+    console.error('[template-gen]', e.message);
+    res.status(200).json({ error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message });
+  }
+});
+
 // Chấm các câu tự luận. body: {items:[{q, guide, answer}]}
 app.post('/api/quiz/grade', async (req, res) => {
   const { apiKey, model } = getOpenAIConfig();

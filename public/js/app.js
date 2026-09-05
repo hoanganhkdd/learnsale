@@ -82,6 +82,7 @@
     async addTemplate(body) { return jpost('/api/templates', body); },
     async updateTemplate(id, body) { const r = await fetch('/api/templates/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); return r.json(); },
     async delTemplate(id) { return jdel('/api/templates/' + id); },
+    async genTemplate(body) { return jpost('/api/template/generate', body); },
   };
   async function jpost(url, body) {
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -553,6 +554,7 @@
 
     const foot = el('div', { class: 'res-foot' },
       el('button', { class: 'btn btn-sm btn-accent', onclick: (e) => doInsight(r, e.target, insightBox) }, r.insight ? '✨ Làm mới insight' : '✨ Rút insight bài học'),
+      el('button', { class: 'btn btn-sm', title: 'AI tạo template Excel từ tài liệu này', onclick: (e) => generateTemplateAI({ resourceId: r.id, skillId: r.skillId || skillId, btn: e.target }) }, '📊 Sinh template .xlsx'),
       r.type === 'pdf' && el('a', { class: 'btn btn-sm', href: r.url, target: '_blank', rel: 'noopener' }, '📄 Mở PDF'),
       el('button', { class: 'btn btn-sm btn-danger', onclick: () => confirmDelResource(r, skillId) }, '🗑'),
     );
@@ -1335,6 +1337,55 @@
     return [['Tiêu đề', tpl.title], ['Danh mục', tpl.category], ['Mô tả', tpl.description], ['Nội dung', tpl.content]]
       .map((r) => r.map(csvEscape).join(',')).join('\r\n');
   }
+  // ---- XLSX ----
+  function templateToRows(tpl) {
+    if (tpl.table && tpl.table.headers) return { headers: tpl.table.headers, rows: tpl.table.rows || [] };
+    // template văn bản -> 1 cột nội dung theo dòng
+    const lines = String(tpl.content || tpl.description || '').split('\n');
+    return { headers: [tpl.title || 'Nội dung'], rows: lines.map((l) => [l.replace(/\*\*/g, '').replace(/\*/g, '')]) };
+  }
+  function downloadTemplateXlsx(tpl) {
+    if (!window.XlsxLite) return toast('Chưa tải được bộ tạo XLSX.', 'err');
+    const { headers, rows } = templateToRows(tpl);
+    window.XlsxLite.download(slug(tpl.title) + '.xlsx', headers, rows);
+    toast('⬇️ Đã tạo file .xlsx!', 'ok');
+  }
+
+  // Sinh template .xlsx bằng AI (từ tài liệu hoặc ngữ cảnh)
+  function generateTemplateAI({ resourceId, context, skillId, btn, reload }) {
+    const old = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Đang sinh…'; }
+    api.genTemplate({ resourceId, context }).then((res) => {
+      if (res.error === 'no_key') return toast(res.message || 'Chưa cấu hình OpenAI API key.', 'err');
+      if (res.error) return toast(res.message || 'Không sinh được template.', 'err');
+      if (!res.headers || !res.headers.length) return toast('AI chưa trả về template hợp lệ.', 'err');
+      previewGeneratedTemplate(res, skillId, reload);
+    }).catch((e) => toast('Lỗi: ' + e.message, 'err'))
+      .finally(() => { if (btn) { btn.disabled = false; btn.textContent = old; } });
+  }
+
+  function previewGeneratedTemplate(gen, skillId, reload) {
+    const tpl = { title: gen.title || 'Template', category: gen.category || 'Bảng theo dõi / Tracker', description: gen.description || '', table: { headers: gen.headers, rows: gen.rows || [] }, tags: ['ai', 'template'] };
+    const preview = el('div', {}, templateTableEl(tpl.table));
+    const m = openModal({
+      title: '📊 Template .xlsx do AI sinh',
+      wide: true,
+      bodyNodes: [
+        el('div', { style: 'margin-bottom:8px' }, el('b', {}, tpl.title), tpl.description && el('div', { class: 'note', style: 'font-size:13px;color:var(--text-soft)' }, tpl.description)),
+        preview,
+      ],
+      footNodes: [
+        el('button', { class: 'btn', onclick: () => m.close() }, 'Đóng'),
+        el('button', { class: 'btn', onclick: () => downloadTemplateXlsx(tpl) }, '⬇️ Tải .xlsx'),
+        el('button', { class: 'btn btn-accent', onclick: async () => {
+          const res = await api.addTemplate({ skillId: skillId || null, title: tpl.title, category: tpl.category, description: tpl.description, table: tpl.table, tags: 'ai, template' });
+          if (res.error) return toast(res.error, 'err');
+          toast('📋 Đã lưu vào Thư viện Template!', 'ok'); m.close(); reload && reload();
+        } }, '📋 Lưu vào Thư viện Template'),
+      ],
+    });
+  }
+
   function allTemplatesToCSV(list) {
     const header = ['Tiêu đề', 'Danh mục', 'Mô tả', 'Nội dung', 'Tags'];
     const rows = list.map((t) => {
@@ -1360,6 +1411,7 @@
       bodyNodes: [
         el('div', { class: 'filter-row' }, search, skillSel, catSel,
           el('button', { class: 'btn btn-accent btn-sm', onclick: () => openTemplateForm({ skillId: skillSel.value && skillSel.value !== '__none' ? skillSel.value : (presetSkill || null) }, load) }, '➕ Thêm template'),
+          el('button', { class: 'btn btn-sm', title: 'AI tự sinh template .xlsx theo chủ đề', onclick: (e) => aiGenTemplateByTopic(skillSel.value && skillSel.value !== '__none' ? skillSel.value : '', load) }, '✨ AI sinh template'),
           el('button', { class: 'btn btn-sm', title: 'Xuất toàn bộ template ra CSV/Excel', onclick: exportAll }, '⬇️ Xuất tất cả (CSV)'),
         ),
         holder,
@@ -1395,6 +1447,26 @@
       downloadFile('templates.csv', allTemplatesToCSV(templates));
       toast('⬇️ Đã xuất toàn bộ template ra CSV.', 'ok');
     }
+  }
+
+  // AI sinh template theo chủ đề (nhập tay), tuỳ chọn gắn kỹ năng
+  function aiGenTemplateByTopic(presetSkill, reload) {
+    const sk = presetSkill && findSkill(presetSkill);
+    const topic = el('input', { value: sk ? sk.name_vi : '', placeholder: 'VD: Bảng theo dõi công nợ điểm bán; Kế hoạch viếng thăm tuần…' });
+    const skillSel = el('select', {}, el('option', { value: '' }, '📌 Chung (không thuộc kỹ năng)'),
+      ...State.skills.map((s) => el('option', { value: s.id }, s.icon + ' ' + s.name_vi)));
+    skillSel.value = presetSkill || '';
+    const m = openModal({
+      title: '✨ AI sinh template .xlsx',
+      bodyNodes: [
+        field('Chủ đề / Ngữ cảnh *', topic, 'AI sẽ tạo bảng Excel phù hợp với chủ đề này.'),
+        field('📚 Gắn vào nhóm bài học', skillSel),
+      ],
+      footNodes: [
+        el('button', { class: 'btn', onclick: () => m.close() }, 'Hủy'),
+        el('button', { class: 'btn btn-accent', onclick: (e) => { if (!topic.value.trim()) return toast('Nhập chủ đề.', 'err'); m.close(); generateTemplateAI({ context: topic.value.trim(), skillId: skillSel.value || null, reload }); } }, '✨ Sinh template'),
+      ],
+    });
   }
 
   // Gom nhóm template theo kỹ năng (nhóm bài học)
@@ -1438,7 +1510,8 @@
 
     const foot = el('div', { class: 'res-foot' },
       el('button', { class: 'btn btn-sm btn-accent', onclick: () => copyTemplate(t) }, '📋 Copy'),
-      el('button', { class: 'btn btn-sm', onclick: () => { downloadFile(slug(t.title) + '.csv', templateToCSV(t)); toast('⬇️ Đã xuất CSV.', 'ok'); } }, '⬇️ CSV'),
+      el('button', { class: 'btn btn-sm', title: 'Tải Excel .xlsx', onclick: () => downloadTemplateXlsx(t) }, '⬇️ XLSX'),
+      el('button', { class: 'btn btn-sm btn-ghost', onclick: () => { downloadFile(slug(t.title) + '.csv', templateToCSV(t)); toast('⬇️ Đã xuất CSV.', 'ok'); } }, 'CSV'),
       el('button', { class: 'btn btn-sm btn-ghost', onclick: () => openTemplateForm(t, reload) }, '✏️ Sửa'),
       !t.builtin && el('button', { class: 'btn btn-sm btn-danger', onclick: () => confirmModal(`Xóa template "${t.title}"?`, async () => { const r = await api.delTemplate(t.id); if (r.error) return toast(r.error, 'err'); toast('Đã xóa.', 'ok'); reload(); }) }, '🗑'),
     );

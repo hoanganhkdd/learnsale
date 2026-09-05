@@ -21,6 +21,7 @@
 - **Mọi kết quả AI** (đào sâu + kết quả kiểm tra) đều **lưu được vào Thư viện** làm nguồn tài liệu (feature theo yêu cầu).
 - **🖼️ Chèn ảnh vào ghi chú**: dán (Ctrl+V) ảnh trực tiếp vào ô nội dung, hoặc chọn **nhiều ảnh cùng lúc** — ảnh hiển thị trực tiếp trong thẻ tài liệu. Loại "Ảnh" cũng upload được nhiều ảnh một lần.
 - **✨ Rút insight + prompt tự nhập**: khi rút insight (từng tài liệu hoặc tất cả) có ô nhập **prompt tuỳ chỉnh** để AI bám theo yêu cầu riêng.
+- **📊 Tự sinh template .xlsx (AI)**: cạnh nút Rút insight, mỗi tài liệu có nút sinh **template Excel** bằng AI (xem trước bảng → tải **.xlsx** hoặc lưu vào Thư viện Template). Thư viện Template cũng có **✨ AI sinh template** theo chủ đề và nút **⬇️ XLSX** cho mọi template. File .xlsx được tạo **thuần client, không cần thư viện, chạy offline** (`js/xlsx-lite.js`).
 - **📋 Thư viện Template**: kho mẫu tái sử dụng (kịch bản, bảng theo dõi, checklist, email…), có mẫu dạng **bảng Excel**; **gom nhóm theo từng nhóm bài học (kỹ năng)**, lọc theo kỹ năng/danh mục, tìm kiếm, thêm/sửa/xoá, **📋 Copy**, **⬇️ Xuất CSV** từng mẫu và **xuất toàn bộ** (mở bằng Excel / import Google Sheets). Mỗi trang kỹ năng có nút **📋 Template** mở thẳng template của kỹ năng đó.
 - **Thư viện tài liệu**: text / ảnh / PDF / YouTube / Facebook Reel / link. Video dán link **nhúng xem trực tiếp**; ảnh/PDF **upload**. Có tag + source link.
 - **Thư viện chung** (modal): tìm kiếm + lọc theo loại + theo kỹ năng.
@@ -101,8 +102,9 @@ PORT=3100 npm start
 | POST | `/api/quiz/generate` | Sinh đề kiểm tra JSON (trắc nghiệm + tự luận) theo ngữ cảnh |
 | POST | `/api/quiz/grade` | Chấm câu tự luận → điểm /10 + nhận xét |
 | POST | `/api/upload` | Upload nhiều ảnh cùng lúc (để nhúng vào ghi chú) → trả danh sách URL |
-| GET | `/api/templates?q=&category=` | Thư viện template (tìm/lọc) |
-| POST/PUT/DELETE | `/api/templates[/:id]` | Thêm/sửa/xoá template |
+| GET | `/api/templates?q=&category=&skill=` | Thư viện template (tìm/lọc/theo kỹ năng) |
+| POST/PUT/DELETE | `/api/templates[/:id]` | Thêm/sửa/xoá template (có `skillId`) |
+| POST | `/api/template/generate` | AI sinh template Excel `{title,category,description,headers,rows}` |
 | GET | `/healthz` | Health check |
 
 > `/api/insight` nhận thêm `prompt` (tuỳ chọn) để tuỳ biến khung insight. Xuất CSV template được xử lý ở client (có BOM UTF-8 để Excel đọc đúng tiếng Việt).
