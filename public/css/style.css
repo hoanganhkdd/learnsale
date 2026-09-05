@@ -339,6 +339,15 @@ button { font-family: inherit; }
 
 .markdown b, .markdown strong { font-weight: 700; }
 .markdown em { font-style: italic; }
+.md-img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); margin: 6px 0; display: block; }
+
+/* ---------- Template library ---------- */
+.tpl-content { font-size: 13px; color: var(--text-soft); max-height: 220px; overflow-y: auto; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 4px; white-space: normal; }
+.tpl-table-wrap { overflow-x: auto; margin-top: 6px; border: 1px solid var(--border); border-radius: 8px; }
+.tpl-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+.tpl-table th, .tpl-table td { border: 1px solid var(--border); padding: 5px 8px; text-align: left; white-space: nowrap; }
+.tpl-table th { background: var(--surface-2); font-weight: 700; position: sticky; top: 0; }
+.tpl-table tr:nth-child(even) td { background: var(--surface-2); }
 
 /* ---------- Badges ---------- */
 .badge { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); }

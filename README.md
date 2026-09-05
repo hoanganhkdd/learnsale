@@ -19,6 +19,9 @@
 - **🎧 Text-to-Speech (chế độ ngồi xe)**: nghe cả bài học **và toàn bộ nội dung đào sâu** (nội dung bài + ví dụ + công cụ + video + thực hành) qua mini-player cố định đáy màn hình (phát/dừng, câu trước/sau, chỉnh tốc độ, chọn giọng ưu tiên vi-VN).
 - **📝 Thu hoạch / Kiểm tra**: trắc nghiệm (tự chấm) + tự luận (AI chấm điểm /10 kèm nhận xét), theo **bài (kiểm tra nhanh)**, **module** và **tổng kết toàn khoá**. Có **🔁 Cần ôn lại** (nhắc ôn bài đã học quá 3 ngày / chưa kiểm tra / điểm < 7).
 - **Mọi kết quả AI** (đào sâu + kết quả kiểm tra) đều **lưu được vào Thư viện** làm nguồn tài liệu (feature theo yêu cầu).
+- **🖼️ Chèn ảnh vào ghi chú**: dán (Ctrl+V) ảnh trực tiếp vào ô nội dung, hoặc chọn **nhiều ảnh cùng lúc** — ảnh hiển thị trực tiếp trong thẻ tài liệu. Loại "Ảnh" cũng upload được nhiều ảnh một lần.
+- **✨ Rút insight + prompt tự nhập**: khi rút insight (từng tài liệu hoặc tất cả) có ô nhập **prompt tuỳ chỉnh** để AI bám theo yêu cầu riêng.
+- **📋 Thư viện Template**: kho mẫu tái sử dụng (kịch bản, bảng theo dõi, checklist, email…), có mẫu dạng **bảng Excel**; hỗ trợ tìm/lọc, thêm/sửa/xoá, **📋 Copy**, **⬇️ Xuất CSV** từng mẫu và **xuất toàn bộ** (mở bằng Excel / import Google Sheets).
 - **Thư viện tài liệu**: text / ảnh / PDF / YouTube / Facebook Reel / link. Video dán link **nhúng xem trực tiếp**; ảnh/PDF **upload**. Có tag + source link.
 - **Thư viện chung** (modal): tìm kiếm + lọc theo loại + theo kỹ năng.
 - **✨ Rút insight bằng AI** cho từng tài liệu (cache lại, có nút *Làm mới*) + *Rút insight tất cả*.
@@ -97,7 +100,12 @@ PORT=3100 npm start
 | POST | `/api/knowledge/generate` | Sinh gợi ý AI theo `kind` = examples / tools / videos / practice (web_search cho examples/tools/videos) |
 | POST | `/api/quiz/generate` | Sinh đề kiểm tra JSON (trắc nghiệm + tự luận) theo ngữ cảnh |
 | POST | `/api/quiz/grade` | Chấm câu tự luận → điểm /10 + nhận xét |
+| POST | `/api/upload` | Upload nhiều ảnh cùng lúc (để nhúng vào ghi chú) → trả danh sách URL |
+| GET | `/api/templates?q=&category=` | Thư viện template (tìm/lọc) |
+| POST/PUT/DELETE | `/api/templates[/:id]` | Thêm/sửa/xoá template |
 | GET | `/healthz` | Health check |
+
+> `/api/insight` nhận thêm `prompt` (tuỳ chọn) để tuỳ biến khung insight. Xuất CSV template được xử lý ở client (có BOM UTF-8 để Excel đọc đúng tiếng Việt).
 
 > Static server đặt `Cache-Control: no-store`; link CSS/JS gắn `?v=N` để chống cache bản cũ.
 

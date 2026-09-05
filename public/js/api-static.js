@@ -23,6 +23,8 @@
     set library(v) { localStorage.setItem(LS + 'library', JSON.stringify(v)); },
     get settings() { return JSON.parse(localStorage.getItem(LS + 'settings') || '{}'); },
     set settings(v) { localStorage.setItem(LS + 'settings', JSON.stringify(v)); },
+    get templates() { return JSON.parse(localStorage.getItem(LS + 'templates') || 'null'); },
+    set templates(v) { localStorage.setItem(LS + 'templates', JSON.stringify(v)); },
   };
 
   async function seedIfNeeded() {
@@ -33,6 +35,10 @@
     if (!store.library) {
       try { store.library = await (await realFetch('/data/library.json')).json(); }
       catch { store.library = { resources: [] }; }
+    }
+    if (!store.templates) {
+      try { store.templates = await (await realFetch('/data/templates.json')).json(); }
+      catch { store.templates = { templates: [] }; }
     }
   }
 
@@ -155,6 +161,44 @@
       lib.resources = lib.resources.filter((r) => r.id !== id); store.library = lib; return jsonRes({ ok: true });
     }
 
+    // ----- MULTI-UPLOAD (nhúng ảnh) -----
+    if (path === '/api/upload' && method === 'POST') {
+      return jsonRes({ files: (body && body.files) || [] }, 201);
+    }
+
+    // ----- TEMPLATES -----
+    if (path === '/api/templates' && method === 'GET') {
+      let list = store.templates.templates;
+      const q = qp.get('q'), cat = qp.get('category');
+      if (cat) list = list.filter((t) => t.category === cat);
+      if (q) { const n = q.toLowerCase(); list = list.filter((t) => [t.title, t.description, t.content, t.category, (t.tags || []).join(' ')].filter(Boolean).join(' ').toLowerCase().includes(n)); }
+      return jsonRes({ templates: list });
+    }
+    if (path === '/api/templates' && method === 'POST') {
+      const b = body || {}; if (!b.title) return jsonRes({ error: 'Thiếu tiêu đề' }, 400);
+      const data = store.templates;
+      const tpl = { id: uid('tpl'), title: b.title, category: b.category || 'Khác', description: b.description || '', content: b.content || '', table: b.table && Array.isArray(b.table.headers) ? { headers: b.table.headers, rows: Array.isArray(b.table.rows) ? b.table.rows : [] } : null, tags: normTags(b.tags), builtin: false, createdAt: new Date().toISOString() };
+      data.templates.push(tpl); store.templates = data; return jsonRes(tpl, 201);
+    }
+    if ((mm = path.match(/^\/api\/templates\/([^/]+)$/)) && method === 'PUT') {
+      const id = mm[1]; const data = store.templates; const tpl = data.templates.find((t) => t.id === id);
+      if (!tpl) return jsonRes({ error: 'Không tìm thấy template' }, 404);
+      const b = body || {};
+      if (typeof b.title === 'string' && b.title.trim()) tpl.title = b.title.trim();
+      if (typeof b.category === 'string') tpl.category = b.category || 'Khác';
+      if (typeof b.description === 'string') tpl.description = b.description;
+      if (typeof b.content === 'string') tpl.content = b.content;
+      if (b.table !== undefined) tpl.table = b.table && Array.isArray(b.table.headers) ? { headers: b.table.headers, rows: Array.isArray(b.table.rows) ? b.table.rows : [] } : null;
+      if (b.tags !== undefined) tpl.tags = normTags(b.tags);
+      store.templates = data; return jsonRes(tpl);
+    }
+    if ((mm = path.match(/^\/api\/templates\/([^/]+)$/)) && method === 'DELETE') {
+      const id = mm[1]; const data = store.templates; const tpl = data.templates.find((t) => t.id === id);
+      if (!tpl) return jsonRes({ error: 'Không tìm thấy template' }, 404);
+      if (tpl.builtin) return jsonRes({ error: 'Không thể xóa template mặc định' }, 403);
+      data.templates = data.templates.filter((t) => t.id !== id); store.templates = data; return jsonRes({ ok: true });
+    }
+
     // ----- SETTINGS -----
     if (path === '/api/settings' && method === 'GET') {
       const s = store.settings; return jsonRes({ model: s.model || 'gpt-4o-mini', hasKey: Boolean((s.apiKey || '').trim()), keyFromEnv: false });
@@ -188,7 +232,8 @@
       if (!apiKey) return jsonRes({ insight: NO_KEY, citations: [], error: 'no_key' });
       const b = body || {}; const lib = store.library; const r = lib.resources.find((x) => x.id === b.resourceId);
       if (!r) return jsonRes({ error: 'Không tìm thấy tài liệu' }, 404);
-      const frame = `Hãy RÚT INSIGHT BÀI HỌC cho môn ${SUBJECT} theo khung (tiếng Việt): **Tóm tắt** (2-3 câu). **Bài học chính** (3-5 gạch đầu dòng). **Áp dụng ngay** (2-3 hành động).`;
+      const extra = b.prompt && String(b.prompt).trim() ? `\n\nYÊU CẦU THÊM TỪ NGƯỜI DÙNG (ưu tiên tuân thủ): ${String(b.prompt).trim()}` : '';
+      const frame = `Hãy RÚT INSIGHT BÀI HỌC cho môn ${SUBJECT} theo khung (tiếng Việt): **Tóm tắt** (2-3 câu). **Bài học chính** (3-5 gạch đầu dòng). **Áp dụng ngay** (2-3 hành động).${extra}`;
       try {
         let o;
         if (r.type === 'text') o = await chatCompletions(apiKey, model, [{ role: 'system', content: frame }, { role: 'user', content: `${r.title}\n\n${r.note || ''}` }]);
@@ -287,13 +332,20 @@
     // ----- STATIC MODE -----
     let body = null;
     if (opts.body instanceof FormData) {
-      // upload trong static: đọc file thành dataURL để nhúng
-      const fd = opts.body; const file = fd.get('file');
-      body = { skillId: fd.get('skillId'), title: fd.get('title'), note: fd.get('note'), tags: fd.get('tags') };
-      if (file && file.size) {
-        body.type = /pdf/.test(file.type) ? 'pdf' : 'image';
-        body.title = body.title || file.name;
-        body.dataUrl = await readAsDataURL(file);
+      const fd = opts.body;
+      if (url.pathname === '/api/upload') {
+        // nhiều ảnh -> mảng dataURL để nhúng
+        const files = fd.getAll('files');
+        body = { files: [] };
+        for (const f of files) { if (f && f.size) body.files.push({ url: await readAsDataURL(f), name: f.name }); }
+      } else {
+        const file = fd.get('file');
+        body = { skillId: fd.get('skillId'), title: fd.get('title'), note: fd.get('note'), tags: fd.get('tags') };
+        if (file && file.size) {
+          body.type = /pdf/.test(file.type) ? 'pdf' : 'image';
+          body.title = body.title || file.name;
+          body.dataUrl = await readAsDataURL(file);
+        }
       }
     } else if (typeof opts.body === 'string') {
       try { body = JSON.parse(opts.body); } catch { body = null; }

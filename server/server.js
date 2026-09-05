@@ -27,6 +27,7 @@ const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 
 const SKILLS_FILE = path.join(DATA_DIR, 'skills.json');
 const LIBRARY_FILE = path.join(DATA_DIR, 'library.json');
+const TEMPLATES_FILE = path.join(DATA_DIR, 'templates.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
 // ---- Bảo đảm thư mục & tự copy seed khi DATA_DIR là ổ ngoài (lần đầu trống) ----
@@ -44,6 +45,7 @@ function ensureDataDir() {
   };
   seedIfMissing(SKILLS_FILE, 'skills.json');
   seedIfMissing(LIBRARY_FILE, 'library.json');
+  seedIfMissing(TEMPLATES_FILE, 'templates.json');
 }
 ensureDataDir();
 
@@ -64,6 +66,9 @@ function readSkills() {
 }
 function readLibrary() {
   return readJSON(LIBRARY_FILE, { resources: [] });
+}
+function readTemplates() {
+  return readJSON(TEMPLATES_FILE, { templates: [] });
 }
 function readSettings() {
   return readJSON(SETTINGS_FILE, {});
@@ -257,6 +262,12 @@ app.post('/api/resources/upload', upload.single('file'), (req, res) => {
   res.status(201).json(resource);
 });
 
+// Upload nhiều ảnh cùng lúc để NHÚNG vào nội dung (không tạo resource) → trả danh sách URL
+app.post('/api/upload', upload.array('files', 30), (req, res) => {
+  const files = (req.files || []).map((f) => ({ url: `/uploads/${f.filename}`, name: f.originalname }));
+  res.status(201).json({ files });
+});
+
 app.delete('/api/resources/:id', (req, res) => {
   const { id } = req.params;
   const lib = readLibrary();
@@ -410,15 +421,16 @@ app.post('/api/insight', async (req, res) => {
   const { apiKey, model } = getOpenAIConfig();
   if (!apiKey) return res.status(200).json({ insight: NO_KEY_MSG, citations: [], error: 'no_key' });
 
-  const { resourceId } = req.body || {};
+  const { resourceId, prompt: userPrompt } = req.body || {};
   const lib = readLibrary();
   const r = lib.resources.find((x) => x.id === resourceId);
   if (!r) return res.status(404).json({ error: 'Không tìm thấy tài liệu' });
 
+  const extra = userPrompt && String(userPrompt).trim() ? `\n\nYÊU CẦU THÊM TỪ NGƯỜI DÙNG (ưu tiên tuân thủ): ${String(userPrompt).trim()}` : '';
   const frame = `Hãy RÚT INSIGHT BÀI HỌC cho môn ${SUBJECT} theo đúng khung sau (tiếng Việt):
 **Tóm tắt**: 2-3 câu.
 **Bài học chính**: 3-5 gạch đầu dòng thực chiến.
-**Áp dụng ngay**: 2-3 hành động cụ thể có thể làm hôm nay.`;
+**Áp dụng ngay**: 2-3 hành động cụ thể có thể làm hôm nay.${extra}`;
 
   try {
     let out;
@@ -548,6 +560,67 @@ app.post('/api/quiz/grade', async (req, res) => {
     console.error('[quiz-grade]', e.message);
     res.status(200).json({ results: [], error: 'ai_error', message: 'Lỗi gọi AI: ' + e.message });
   }
+});
+
+// ==========================================================================
+// TEMPLATES (thư viện template)
+// ==========================================================================
+app.get('/api/templates', (req, res) => {
+  const { q, category } = req.query;
+  let list = readTemplates().templates;
+  if (category) list = list.filter((t) => t.category === category);
+  if (q) {
+    const n = String(q).toLowerCase();
+    list = list.filter((t) => [t.title, t.description, t.content, t.category, (t.tags || []).join(' ')].filter(Boolean).join(' ').toLowerCase().includes(n));
+  }
+  res.json({ templates: list });
+});
+
+app.post('/api/templates', (req, res) => {
+  const { title, category, description, content, table, tags } = req.body || {};
+  if (!title) return res.status(400).json({ error: 'Thiếu tiêu đề' });
+  const data = readTemplates();
+  const tpl = {
+    id: uid('tpl'),
+    title,
+    category: category || 'Khác',
+    description: description || '',
+    content: content || '',
+    table: table && Array.isArray(table.headers) ? { headers: table.headers, rows: Array.isArray(table.rows) ? table.rows : [] } : null,
+    tags: normalizeTags(tags),
+    builtin: false,
+    createdAt: new Date().toISOString(),
+  };
+  data.templates.push(tpl);
+  writeJSON(TEMPLATES_FILE, data);
+  res.status(201).json(tpl);
+});
+
+app.put('/api/templates/:id', (req, res) => {
+  const { id } = req.params;
+  const data = readTemplates();
+  const tpl = data.templates.find((t) => t.id === id);
+  if (!tpl) return res.status(404).json({ error: 'Không tìm thấy template' });
+  const { title, category, description, content, table, tags } = req.body || {};
+  if (typeof title === 'string' && title.trim()) tpl.title = title.trim();
+  if (typeof category === 'string') tpl.category = category || 'Khác';
+  if (typeof description === 'string') tpl.description = description;
+  if (typeof content === 'string') tpl.content = content;
+  if (table !== undefined) tpl.table = table && Array.isArray(table.headers) ? { headers: table.headers, rows: Array.isArray(table.rows) ? table.rows : [] } : null;
+  if (tags !== undefined) tpl.tags = normalizeTags(tags);
+  writeJSON(TEMPLATES_FILE, data);
+  res.json(tpl);
+});
+
+app.delete('/api/templates/:id', (req, res) => {
+  const { id } = req.params;
+  const data = readTemplates();
+  const tpl = data.templates.find((t) => t.id === id);
+  if (!tpl) return res.status(404).json({ error: 'Không tìm thấy template' });
+  if (tpl.builtin) return res.status(403).json({ error: 'Không thể xóa template mặc định' });
+  data.templates = data.templates.filter((t) => t.id !== id);
+  writeJSON(TEMPLATES_FILE, data);
+  res.json({ ok: true });
 });
 
 // ==========================================================================

@@ -1,0 +1,223 @@
+{
+  "templates": [
+    {
+      "id": "tpl-telesale-script",
+      "title": "Kịch bản Telesale (Cold Call)",
+      "category": "Kịch bản / Script",
+      "description": "Khung gọi điện chào hàng: mở đầu — khơi nhu cầu — trình bày giá trị — xử lý từ chối — chốt hẹn.",
+      "content": "**1. Mở đầu (5s):** Chào anh/chị [Tên], em là [Tên] bên [Công ty]. Em gọi có làm phiền anh/chị 1 phút không ạ?\n**2. Khơi nhu cầu:** Hiện bên mình đang [tình huống/nhu cầu]... anh/chị có gặp khó khăn gì về [vấn đề] không ạ?\n**3. Trình bày giá trị:** Bên em giúp [lợi ích lượng hoá], ví dụ [khách hàng tương tự] đã [kết quả].\n**4. Xử lý từ chối:** (bận/không quan tâm/giá) — Feel–Felt–Found.\n**5. Chốt hẹn:** Em xin phép gửi thông tin và hẹn anh/chị [khung giờ] được không ạ?",
+      "table": null,
+      "tags": [
+        "telesale",
+        "script",
+        "b2b"
+      ],
+      "builtin": true,
+      "createdAt": "2026-09-05T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-route-plan",
+      "title": "Bảng tuyến bán hàng GT (PJP)",
+      "category": "Bảng theo dõi / Tracker",
+      "description": "Mẫu tuyến viếng thăm cố định cho DSR kênh truyền thống — theo dõi độ phủ & đơn hàng.",
+      "content": "Điền theo từng ngày trong tuần; cột 'Kết quả' ghi có đơn / không đơn.",
+      "table": {
+        "headers": [
+          "Thứ",
+          "Điểm bán",
+          "Địa chỉ",
+          "Hạng (A/B/C)",
+          "Mục tiêu đơn",
+          "Kết quả",
+          "Ghi chú"
+        ],
+        "rows": [
+          [
+            "Thứ 2",
+            "Tạp hoá A",
+            "",
+            "A",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Thứ 2",
+            "Tạp hoá B",
+            "",
+            "B",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Thứ 3",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "tags": [
+        "general-trade",
+        "pjp",
+        "route",
+        "excel"
+      ],
+      "builtin": true,
+      "createdAt": "2026-09-05T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-call-checklist",
+      "title": "Checklist viếng thăm 8 bước",
+      "category": "Checklist",
+      "description": "Danh sách kiểm 8 bước một cuộc viếng thăm điểm bán chuẩn.",
+      "content": "☐ 1. Chuẩn bị (lịch sử đơn, mục tiêu, KM)\n☐ 2. Chào hỏi\n☐ 3. Kiểm tra cửa hàng (tồn, giá, đối thủ)\n☐ 4. Kiểm kho & xử lý tồn (FIFO)\n☐ 5. Trưng bày (POSM, facing)\n☐ 6. Chào bán & chốt đơn\n☐ 7. Ghi đơn & xác nhận\n☐ 8. Ghi chép & chào tạm biệt",
+      "table": null,
+      "tags": [
+        "general-trade",
+        "checklist",
+        "call"
+      ],
+      "builtin": true,
+      "createdAt": "2026-09-05T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-kpi-tracker",
+      "title": "Bảng KPI bán hàng tháng",
+      "category": "Bảng theo dõi / Tracker",
+      "description": "Theo dõi chỉ số cốt lõi: doanh số, số call, strike rate, drop size, độ phủ.",
+      "table": {
+        "headers": [
+          "Tuần",
+          "Doanh số",
+          "Mục tiêu",
+          "% đạt",
+          "Số call",
+          "Strike rate %",
+          "Drop size",
+          "Điểm bán mới"
+        ],
+        "rows": [
+          [
+            "Tuần 1",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Tuần 2",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Tuần 3",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Tuần 4",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "tags": [
+        "kpi",
+        "tracker",
+        "excel"
+      ],
+      "builtin": true,
+      "createdAt": "2026-09-05T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-b2b-followup",
+      "title": "Email follow-up sau demo B2B",
+      "category": "Mẫu email / Email",
+      "description": "Mẫu email theo đuổi sau buổi demo: tóm giá trị, next step rõ ràng.",
+      "content": "**Tiêu đề:** [Tên công ty] — Tóm tắt & bước tiếp theo sau buổi demo\n\nChào anh/chị [Tên],\n\nCảm ơn anh/chị đã dành thời gian hôm nay. Tóm nhanh những điểm chính:\n- Nhu cầu của bên mình: [pain point]\n- Giải pháp bên em: [benefit + ROI lượng hoá]\n- Rủi ro/thắc mắc còn lại: [nếu có]\n\n**Bước tiếp theo đề xuất:** [pilot/hợp đồng] vào [mốc thời gian].\nEm gửi kèm [tài liệu/case study]. Anh/chị xác nhận giúp em nhé?\n\nTrân trọng,\n[Tên] — [SĐT]",
+      "table": null,
+      "tags": [
+        "b2b",
+        "email",
+        "follow-up"
+      ],
+      "builtin": true,
+      "createdAt": "2026-09-05T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-live-rundown",
+      "title": "Kịch bản Livestream (Rundown)",
+      "category": "Kịch bản / Script",
+      "description": "Rundown buổi live bán hàng: mở màn — deal — demo — chốt — nhắc lại.",
+      "table": {
+        "headers": [
+          "Phút",
+          "Nội dung",
+          "Sản phẩm ghim",
+          "Mã ưu đãi",
+          "CTA"
+        ],
+        "rows": [
+          [
+            "0-3",
+            "Mở màn, chào, giới thiệu buổi live",
+            "",
+            "",
+            "Follow + thả tim"
+          ],
+          [
+            "3-10",
+            "Giới thiệu deal chính + demo",
+            "SP1",
+            "",
+            "Bấm giỏ hàng"
+          ],
+          [
+            "10-15",
+            "Tạo khan hiếm (flash sale)",
+            "SP1",
+            "LIVE10",
+            "Chốt trong 10 phút"
+          ],
+          [
+            "15-20",
+            "Chốt + nhắc lại + cảm ơn",
+            "",
+            "",
+            "Chốt đơn còn treo"
+          ]
+        ]
+      },
+      "tags": [
+        "ecommerce",
+        "livestream",
+        "script"
+      ],
+      "builtin": true,
+      "createdAt": "2026-09-05T00:00:00.000Z"
+    }
+  ]
+}

@@ -33,6 +33,7 @@
   // markdown nhẹ: **đậm**, *nghiêng*, xuống dòng
   const mdLite = (s) =>
     esc(s)
+      .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1" class="md-img" loading="lazy">')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
       .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
       .replace(/\n/g, '<br>');
@@ -72,10 +73,15 @@
     async getSettings() { return (await fetch('/api/settings')).json(); },
     async saveSettings(body) { return jpost('/api/settings', body); },
     async chat(body) { return jpost('/api/chat', body); },
-    async insight(resourceId) { return jpost('/api/insight', { resourceId }); },
+    async insight(resourceId, prompt) { return jpost('/api/insight', { resourceId, prompt: prompt || '' }); },
     async genKnowledge(body) { return jpost('/api/knowledge/generate', body); },
     async quizGen(body) { return jpost('/api/quiz/generate', body); },
     async quizGrade(body) { return jpost('/api/quiz/grade', body); },
+    async uploadFiles(formData) { return (await fetch('/api/upload', { method: 'POST', body: formData })).json(); },
+    async templates(params = {}) { const q = new URLSearchParams(params).toString(); return (await fetch('/api/templates' + (q ? '?' + q : ''))).json(); },
+    async addTemplate(body) { return jpost('/api/templates', body); },
+    async updateTemplate(id, body) { const r = await fetch('/api/templates/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); return r.json(); },
+    async delTemplate(id) { return jdel('/api/templates/' + id); },
   };
   async function jpost(url, body) {
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -565,35 +571,58 @@
     }
     return box;
   }
-  async function doInsight(r, btn, box) {
-    const old = btn.textContent;
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Đang rút…';
-    try {
-      const res = await api.insight(r.id);
-      if (res.error === 'no_key') { toast(res.insight, 'err'); }
-      else {
-        r.insight = res.insight; r.insightCitations = res.citations || [];
-        box.innerHTML = ''; box.append(renderInsight(r));
-        toast('✨ Đã rút insight!', 'ok');
-      }
-    } catch (e) { toast('Lỗi: ' + e.message, 'err'); }
-    finally { btn.disabled = false; btn.textContent = old; }
+  // Modal nhập prompt tuỳ chỉnh (tuỳ chọn) trước khi rút insight
+  function askInsightPrompt(defaultPrompt, onRun) {
+    const ta = el('textarea', { rows: 4, placeholder: 'VD: Tập trung vào bước hành động cho kênh GT; hoặc dịch sang song ngữ; hoặc rút gọn còn 5 gạch đầu dòng…', value: defaultPrompt || '' });
+    const m = openModal({
+      title: '✨ Rút insight — Prompt tuỳ chỉnh',
+      bodyNodes: [
+        el('p', { style: 'font-size:13px;color:var(--text-soft)' }, 'Để trống = dùng khung mặc định (Tóm tắt / Bài học chính / Áp dụng ngay). Hoặc nhập yêu cầu riêng để AI bám theo.'),
+        el('div', { class: 'field' }, el('label', {}, 'Prompt (tuỳ chọn)'), ta),
+      ],
+      footNodes: [
+        el('button', { class: 'btn', onclick: () => m.close() }, 'Hủy'),
+        el('button', { class: 'btn', onclick: () => { m.close(); onRun(''); } }, 'Dùng mặc định'),
+        el('button', { class: 'btn btn-accent', onclick: () => { const v = ta.value.trim(); m.close(); onRun(v); } }, '✨ Rút insight'),
+      ],
+    });
   }
-  async function insightAll(skillId) {
-    const btn = $('#insightAllBtn');
-    btn.disabled = true; const old = btn.textContent; btn.innerHTML = '<span class="spinner"></span> Đang xử lý…';
-    try {
-      const { resources } = await api.resources({ skill: skillId });
-      let ok = 0;
-      for (const r of resources) {
-        const res = await api.insight(r.id);
-        if (res.error === 'no_key') { toast(res.insight, 'err'); break; }
-        if (!res.error) ok++;
-      }
-      toast(`✨ Đã rút insight cho ${ok} tài liệu.`, 'ok');
-      go(State.view); // refresh
-    } catch (e) { toast('Lỗi: ' + e.message, 'err'); }
-    finally { btn.disabled = false; btn.textContent = old; }
+
+  function doInsight(r, btn, box) {
+    askInsightPrompt(lsGet('lastInsightPrompt', ''), async (prompt) => {
+      if (prompt) lsSet('lastInsightPrompt', prompt);
+      const old = btn.textContent;
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Đang rút…';
+      try {
+        const res = await api.insight(r.id, prompt);
+        if (res.error === 'no_key') { toast(res.insight, 'err'); }
+        else {
+          r.insight = res.insight; r.insightCitations = res.citations || [];
+          box.innerHTML = ''; box.append(renderInsight(r));
+          toast('✨ Đã rút insight!', 'ok');
+        }
+      } catch (e) { toast('Lỗi: ' + e.message, 'err'); }
+      finally { btn.disabled = false; btn.textContent = old; }
+    });
+  }
+  function insightAll(skillId) {
+    askInsightPrompt(lsGet('lastInsightPrompt', ''), async (prompt) => {
+      if (prompt) lsSet('lastInsightPrompt', prompt);
+      const btn = $('#insightAllBtn');
+      btn.disabled = true; const old = btn.textContent; btn.innerHTML = '<span class="spinner"></span> Đang xử lý…';
+      try {
+        const { resources } = await api.resources({ skill: skillId });
+        let ok = 0;
+        for (const r of resources) {
+          const res = await api.insight(r.id, prompt);
+          if (res.error === 'no_key') { toast(res.insight, 'err'); break; }
+          if (!res.error) ok++;
+        }
+        toast(`✨ Đã rút insight cho ${ok} tài liệu.`, 'ok');
+        go(State.view); // refresh
+      } catch (e) { toast('Lỗi: ' + e.message, 'err'); }
+      finally { btn.disabled = false; btn.textContent = old; }
+    });
   }
 
   // ---------- AI tab ----------
@@ -1132,10 +1161,24 @@
     }
   }
 
+  function insertAtCursor(ta, text) {
+    const s = ta.selectionStart ?? ta.value.length, e = ta.selectionEnd ?? ta.value.length;
+    ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
+    const pos = s + text.length; ta.selectionStart = ta.selectionEnd = pos; ta.focus();
+  }
+  async function uploadImageFiles(fileList) {
+    const files = [...fileList].filter((f) => f && f.type && f.type.startsWith('image/'));
+    if (!files.length) return [];
+    const fd = new FormData();
+    files.forEach((f) => fd.append('files', f));
+    const res = await api.uploadFiles(fd);
+    return (res && res.files) || [];
+  }
+
   function openAddResource(skillId, onDone) {
     const type = el('select', {},
-      el('option', { value: 'text' }, '📝 Text (ghi chú)'),
-      el('option', { value: 'image' }, '🖼️ Ảnh (upload)'),
+      el('option', { value: 'text' }, '📝 Text / Ghi chú (chèn ảnh được)'),
+      el('option', { value: 'image' }, '🖼️ Ảnh (upload — nhiều ảnh)'),
       el('option', { value: 'pdf' }, '📄 PDF (upload)'),
       el('option', { value: 'youtube' }, '▶️ YouTube (link nhúng)'),
       el('option', { value: 'facebook' }, '📘 Facebook Reel/Video (link nhúng)'),
@@ -1143,20 +1186,44 @@
     );
     const title = el('input', { placeholder: 'Tiêu đề tài liệu' });
     const url = el('input', { placeholder: 'Dán link (YouTube/Facebook/website)…' });
-    const fileInput = el('input', { type: 'file', accept: 'image/*,application/pdf' });
-    const note = el('textarea', { placeholder: 'Ghi chú / nội dung (hỗ trợ **đậm**, *nghiêng*)…' });
+    const fileInput = el('input', { type: 'file', accept: 'image/*,application/pdf', multiple: '' });
+    const note = el('textarea', { placeholder: 'Ghi chú / nội dung. Hỗ trợ **đậm**, *nghiêng*. 📋 Dán (Ctrl+V) ảnh trực tiếp vào đây để chèn!', rows: 5 });
     const tags = el('input', { placeholder: 'tag1, tag2, tag3' });
 
+    // Toolbar chèn ảnh cho note
+    const imgInput = el('input', { type: 'file', accept: 'image/*', multiple: '', style: 'display:none' });
+    const insertBtn = el('button', { class: 'btn btn-sm', type: 'button', onclick: () => imgInput.click() }, '🖼️ Chèn ảnh (nhiều)');
+    const noteToolbar = el('div', { style: 'display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap' },
+      insertBtn, el('span', { style: 'font-size:12px;color:var(--text-mut)' }, 'hoặc Ctrl+V dán ảnh vào ô nội dung'));
+
+    async function embedImages(fileList) {
+      const imgs = [...fileList].filter((f) => f.type && f.type.startsWith('image/'));
+      if (!imgs.length) return;
+      const old = insertBtn.textContent; insertBtn.disabled = true; insertBtn.innerHTML = '<span class="spinner"></span> Đang tải ảnh…';
+      try {
+        const uploaded = await uploadImageFiles(imgs);
+        uploaded.forEach((u) => insertAtCursor(note, `\n![${u.name || 'ảnh'}](${u.url})\n`));
+        if (uploaded.length) toast(`🖼️ Đã chèn ${uploaded.length} ảnh.`, 'ok');
+      } catch (e) { toast('Lỗi tải ảnh: ' + e.message, 'err'); }
+      finally { insertBtn.disabled = false; insertBtn.textContent = old; }
+    }
+    imgInput.addEventListener('change', () => { embedImages(imgInput.files); imgInput.value = ''; });
+    note.addEventListener('paste', (e) => {
+      const items = [...(e.clipboardData?.items || [])];
+      const imgs = items.filter((it) => it.type && it.type.startsWith('image/')).map((it) => it.getAsFile()).filter(Boolean);
+      if (imgs.length) { e.preventDefault(); embedImages(imgs); }
+    });
+
     const urlField = field('🔗 Link', url, 'Dùng cho YouTube / Facebook / Link.');
-    const fileField = field('📎 Chọn file (≤50MB)', fileInput, 'Dùng cho Ảnh / PDF.');
-    const noteField = field('📝 Nội dung / Ghi chú', note);
+    const fileField = field('📎 Chọn file (≤50MB, chọn nhiều ảnh cùng lúc được)', fileInput, 'Dùng cho Ảnh / PDF.');
+    const noteField = el('div', { class: 'field' }, el('label', {}, '📝 Nội dung / Ghi chú'), noteToolbar, note, imgInput);
 
     function sync() {
       const t = type.value;
-      urlField.style.display = ['youtube', 'facebook', 'link', 'text'].includes(t) ? '' : 'none';
       urlField.style.display = ['youtube', 'facebook', 'link'].includes(t) ? '' : 'none';
       fileField.style.display = ['image', 'pdf'].includes(t) ? '' : 'none';
-      noteField.style.display = t === 'text' ? '' : noteField.style.display; // note luôn hiển thị
+      noteToolbar.style.display = t === 'pdf' ? 'none' : '';
+      noteField.style.display = '';
     }
     type.addEventListener('change', sync);
 
@@ -1173,9 +1240,27 @@
     async function submit() {
       const t = type.value;
       try {
+        if (t === 'image') {
+          const imgs = [...fileInput.files].filter((f) => f.type.startsWith('image/'));
+          const pdfs = [...fileInput.files].filter((f) => /pdf/.test(f.type));
+          if (!imgs.length && !pdfs.length) return toast('Chọn ảnh để upload.', 'err');
+          let n = 0;
+          for (const f of [...imgs, ...pdfs]) {
+            const fd = new FormData();
+            fd.append('file', f);
+            fd.append('skillId', skillId || '');
+            fd.append('title', (title.value.trim() ? title.value.trim() + ' — ' : '') + f.name);
+            fd.append('note', note.value.trim());
+            fd.append('tags', tags.value.trim());
+            const r = await api.uploadResource(fd);
+            if (!r.error) n++;
+          }
+          m.close(); toast(`✅ Đã thêm ${n} tài liệu ảnh!`, 'ok');
+          return onDone ? onDone() : go(State.view);
+        }
         let res;
-        if (t === 'image' || t === 'pdf') {
-          if (!fileInput.files[0]) return toast('Chọn file để upload.', 'err');
+        if (t === 'pdf') {
+          if (!fileInput.files[0]) return toast('Chọn file PDF để upload.', 'err');
           const fd = new FormData();
           fd.append('file', fileInput.files[0]);
           fd.append('skillId', skillId || '');
@@ -1183,8 +1268,11 @@
           fd.append('note', note.value.trim());
           fd.append('tags', tags.value.trim());
           res = await api.uploadResource(fd);
+        } else if (t === 'text') {
+          if (!note.value.trim() && !title.value.trim()) return toast('Nhập nội dung hoặc chèn ảnh.', 'err');
+          res = await api.addResource({ skillId: skillId || null, type: 'text', title: title.value.trim() || 'Ghi chú', url: '', note: note.value.trim(), tags: tags.value.trim() });
         } else {
-          if ((t === 'youtube' || t === 'facebook' || t === 'link') && !url.value.trim()) return toast('Dán link vào.', 'err');
+          if (!url.value.trim()) return toast('Dán link vào.', 'err');
           res = await api.addResource({ skillId: skillId || null, type: t, title: title.value.trim(), url: url.value.trim(), note: note.value.trim(), tags: tags.value.trim() });
         }
         if (res.error) return toast(res.error, 'err');
@@ -1224,6 +1312,192 @@
     [search, typeSel, skillSel].forEach((n) => n.addEventListener('input', load));
     load();
   }
+
+  // ==========================================================================
+  // 📋 THƯ VIỆN TEMPLATE
+  // ==========================================================================
+  function csvEscape(v) {
+    const s = String(v ?? '');
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function downloadFile(filename, content, mime = 'text/csv;charset=utf-8') {
+    const blob = new Blob(['﻿' + content], { type: mime }); // BOM để Excel đọc đúng tiếng Việt
+    const a = el('a', { href: URL.createObjectURL(blob), download: filename });
+    document.body.append(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+  }
+  function templateToCSV(tpl) {
+    if (tpl.table && tpl.table.headers) {
+      const rows = [tpl.table.headers, ...(tpl.table.rows || [])];
+      return rows.map((r) => r.map(csvEscape).join(',')).join('\r\n');
+    }
+    return [['Tiêu đề', tpl.title], ['Danh mục', tpl.category], ['Mô tả', tpl.description], ['Nội dung', tpl.content]]
+      .map((r) => r.map(csvEscape).join(',')).join('\r\n');
+  }
+  function allTemplatesToCSV(list) {
+    const header = ['Tiêu đề', 'Danh mục', 'Mô tả', 'Nội dung', 'Tags'];
+    const rows = list.map((t) => {
+      let content = t.content || '';
+      if (t.table && t.table.headers) content = [t.table.headers.join(' | '), ...(t.table.rows || []).map((r) => r.join(' | '))].join('\n');
+      return [t.title, t.category, t.description, content, (t.tags || []).join(', ')];
+    });
+    return [header, ...rows].map((r) => r.map(csvEscape).join(',')).join('\r\n');
+  }
+
+  async function openTemplates() {
+    const search = el('input', { type: 'search', placeholder: '🔎 Tìm template…' });
+    const catSel = el('select', {}, el('option', { value: '' }, 'Tất cả danh mục'));
+    const holder = el('div', {}, el('div', { class: 'empty' }, el('span', { class: 'spinner' }), ' Đang tải…'));
+    const m = openModal({
+      title: '📋 Thư viện Template',
+      wide: true,
+      bodyNodes: [
+        el('div', { class: 'filter-row' }, search, catSel,
+          el('button', { class: 'btn btn-accent btn-sm', onclick: () => openTemplateForm(null, load) }, '➕ Thêm template'),
+          el('button', { class: 'btn btn-sm', title: 'Xuất toàn bộ template ra CSV/Excel', onclick: exportAll }, '⬇️ Xuất tất cả (CSV)'),
+        ),
+        holder,
+      ],
+    });
+    let current = [];
+    const load = debounce(async () => {
+      holder.innerHTML = '<div class="empty"><span class="spinner"></span> Đang tải…</div>';
+      const params = {};
+      if (search.value.trim()) params.q = search.value.trim();
+      if (catSel.value) params.category = catSel.value;
+      const { templates } = await api.templates(params);
+      current = templates || [];
+      // cập nhật danh mục (chỉ khi không lọc để lấy đủ)
+      if (!catSel.value && !search.value.trim()) {
+        const cats = [...new Set(current.map((t) => t.category).filter(Boolean))];
+        catSel.innerHTML = '';
+        catSel.append(el('option', { value: '' }, 'Tất cả danh mục'));
+        cats.forEach((c) => catSel.append(el('option', { value: c }, c)));
+      }
+      renderTemplateGrid(holder, current, load);
+    }, 220);
+    [search, catSel].forEach((n) => n.addEventListener('input', load));
+    load();
+
+    async function exportAll() {
+      const { templates } = await api.templates({});
+      if (!templates || !templates.length) return toast('Chưa có template.', 'err');
+      downloadFile('templates.csv', allTemplatesToCSV(templates));
+      toast('⬇️ Đã xuất toàn bộ template ra CSV.', 'ok');
+    }
+  }
+
+  function renderTemplateGrid(holder, list, reload) {
+    holder.innerHTML = '';
+    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('div', { class: 'big' }, '📭'), el('p', {}, 'Chưa có template. Bấm “➕ Thêm template”.'))); return; }
+    const grid = el('div', { class: 'res-grid' });
+    list.forEach((t) => grid.append(templateCard(t, reload)));
+    holder.append(grid);
+  }
+
+  function templateCard(t, reload) {
+    const body = el('div', { class: 'res-body' },
+      el('span', { class: 'res-type' }, '📋 ' + (t.category || 'Khác')),
+      el('h4', {}, t.title),
+      t.description && el('div', { class: 'note markdown', html: mdLite(t.description) }),
+    );
+    if (t.table && t.table.headers) {
+      body.append(templateTableEl(t.table));
+    } else if (t.content) {
+      body.append(el('div', { class: 'tpl-content markdown', html: mdLite(t.content) }));
+    }
+    if (t.tags && t.tags.length) body.append(el('div', { class: 'res-tags' }, ...t.tags.map((x) => el('span', {}, '#' + x))));
+
+    const foot = el('div', { class: 'res-foot' },
+      el('button', { class: 'btn btn-sm btn-accent', onclick: () => copyTemplate(t) }, '📋 Copy'),
+      el('button', { class: 'btn btn-sm', onclick: () => { downloadFile(slug(t.title) + '.csv', templateToCSV(t)); toast('⬇️ Đã xuất CSV.', 'ok'); } }, '⬇️ CSV'),
+      el('button', { class: 'btn btn-sm btn-ghost', onclick: () => openTemplateForm(t, reload) }, '✏️ Sửa'),
+      !t.builtin && el('button', { class: 'btn btn-sm btn-danger', onclick: () => confirmModal(`Xóa template "${t.title}"?`, async () => { const r = await api.delTemplate(t.id); if (r.error) return toast(r.error, 'err'); toast('Đã xóa.', 'ok'); reload(); }) }, '🗑'),
+    );
+    return el('div', { class: 'res-card' }, body, foot);
+  }
+
+  function templateTableEl(table) {
+    const wrap = el('div', { class: 'tpl-table-wrap' });
+    const tb = el('table', { class: 'tpl-table' });
+    const thead = el('tr', {});
+    table.headers.forEach((h) => thead.append(el('th', {}, h)));
+    tb.append(thead);
+    (table.rows || []).forEach((r) => {
+      const tr = el('tr', {});
+      table.headers.forEach((_, i) => tr.append(el('td', {}, r[i] || '')));
+      tb.append(tr);
+    });
+    wrap.append(tb);
+    return wrap;
+  }
+
+  function copyTemplate(t) {
+    let text = `${t.title}\n`;
+    if (t.description) text += t.description + '\n';
+    if (t.table && t.table.headers) {
+      text += '\n' + t.table.headers.join('\t') + '\n' + (t.table.rows || []).map((r) => r.join('\t')).join('\n');
+    } else if (t.content) {
+      text += '\n' + t.content.replace(/\*\*/g, '').replace(/\*/g, '');
+    }
+    navigator.clipboard.writeText(text).then(() => toast('📋 Đã copy template!', 'ok'), () => toast('Không copy được.', 'err'));
+  }
+
+  function openTemplateForm(existing, reload) {
+    const isEdit = !!existing;
+    const title = el('input', { value: existing?.title || '', placeholder: 'Tên template' });
+    const category = el('input', { value: existing?.category || '', placeholder: 'VD: Kịch bản / Bảng theo dõi / Checklist', list: 'tplCatList' });
+    const catList = el('datalist', { id: 'tplCatList' },
+      ...['Kịch bản / Script', 'Bảng theo dõi / Tracker', 'Checklist', 'Mẫu email / Email', 'Khác'].map((c) => el('option', { value: c })));
+    const description = el('input', { value: existing?.description || '', placeholder: 'Mô tả ngắn' });
+    const useTable = el('input', { type: 'checkbox' });
+    useTable.checked = !!(existing && existing.table);
+    const content = el('textarea', { rows: 6, value: existing?.content || '', placeholder: 'Nội dung (hỗ trợ **đậm**, *nghiêng*, xuống dòng)' });
+    const tableArea = el('textarea', { rows: 6, placeholder: 'Dạng bảng: mỗi dòng 1 hàng, các cột phân cách bằng dấu | (dòng đầu là tiêu đề cột).\nVD:\nThứ | Điểm bán | Kết quả\nThứ 2 | Tạp hoá A | ' });
+    if (existing && existing.table) {
+      tableArea.value = [existing.table.headers.join(' | '), ...(existing.table.rows || []).map((r) => r.join(' | '))].join('\n');
+    }
+    const tags = el('input', { value: (existing?.tags || []).join(', '), placeholder: 'tag1, tag2' });
+
+    const contentField = field('📝 Nội dung', content);
+    const tableField = field('📊 Bảng (Excel)', tableArea, 'Dùng dấu | để phân cột. Xuất CSV sẽ theo bảng này.');
+    function syncTbl() { tableField.style.display = useTable.checked ? '' : 'none'; contentField.style.display = useTable.checked ? 'none' : ''; }
+    useTable.addEventListener('change', syncTbl);
+
+    const m = openModal({
+      title: (isEdit ? '✏️ Sửa' : '➕ Thêm') + ' template',
+      wide: true,
+      bodyNodes: [
+        catList,
+        el('div', { class: 'grid-2' }, field('Tên *', title), field('Danh mục', category)),
+        field('Mô tả', description),
+        el('label', { class: 'switch', style: 'margin:6px 0' }, useTable, el('span', { class: 'track' }), el('span', {}, '📊 Dạng bảng (Excel) thay vì văn bản')),
+        contentField, tableField,
+        field('🏷 Tags', tags),
+      ],
+      footNodes: [
+        el('button', { class: 'btn', onclick: () => m.close() }, 'Hủy'),
+        el('button', { class: 'btn btn-accent', onclick: submit }, isEdit ? '💾 Lưu' : '✅ Tạo'),
+      ],
+    });
+    syncTbl();
+
+    async function submit() {
+      if (!title.value.trim()) return toast('Nhập tên template.', 'err');
+      let table = null;
+      if (useTable.checked && tableArea.value.trim()) {
+        const lines = tableArea.value.split('\n').map((l) => l.trim()).filter(Boolean);
+        const rows = lines.map((l) => l.split('|').map((c) => c.trim()));
+        table = { headers: rows[0], rows: rows.slice(1) };
+      }
+      const payload = { title: title.value.trim(), category: category.value.trim() || 'Khác', description: description.value.trim(), content: useTable.checked ? '' : content.value.trim(), table, tags: tags.value.trim() };
+      const res = isEdit ? await api.updateTemplate(existing.id, payload) : await api.addTemplate(payload);
+      if (res.error) return toast(res.error, 'err');
+      m.close(); toast(isEdit ? '💾 Đã lưu template.' : '✅ Đã thêm template.', 'ok');
+      reload && reload();
+    }
+  }
+  const slug = (s) => (s || 'template').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'template';
 
   // ---------- Confirms ----------
   function confirmModal(msg, onYes, yesLabel = 'Xóa') {
@@ -1321,6 +1595,7 @@
     $('#themeBtn').addEventListener('click', () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
     $('#settingsBtn').addEventListener('click', openSettings);
     $('#libraryBtn').addEventListener('click', () => openLibrary());
+    $('#templatesBtn').addEventListener('click', () => openTemplates());
     $('#addSkillBtn').addEventListener('click', openAddSkill);
     $('#menuBtn').addEventListener('click', () => ($('#sidebar').classList.contains('open') ? closeSidebar() : openSidebar()));
     $('#backdrop').addEventListener('click', closeSidebar);
