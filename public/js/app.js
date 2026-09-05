@@ -433,6 +433,7 @@
       tabBtn('deep', '🧠 Đào sâu', tab),
       tabBtn('library', '📚 Thư viện', tab),
       tabBtn('ai', '🤖 Hỏi AI', tab),
+      tabBtn('template', '📋 Template', tab),
     );
     main.append(tabs);
     const body = el('div', { id: 'tabBody' });
@@ -441,6 +442,7 @@
     if (tab === 'learn') renderLearnTab(body, skill, lesson);
     else if (tab === 'deep') renderDeepTab(body, skill, lesson);
     else if (tab === 'library') renderLibraryTab(body, skill, lesson);
+    else if (tab === 'template') renderTemplateTab(body, skill, lesson);
     else renderAiTab(body, skill, lesson);
 
     function tabBtn(key, label, cur) {
@@ -506,6 +508,27 @@
       holder.innerHTML = '';
       holder.append(el('div', { class: 'empty' }, 'Lỗi tải thư viện.'));
     }
+  }
+
+  // 📋 Tab Template trong bài học — template của kỹ năng (nhóm bài học) này
+  async function renderTemplateTab(root, skill, lesson) {
+    const holder = el('div', {}, el('div', { class: 'empty' }, el('span', { class: 'spinner' }), ' Đang tải…'));
+    const reload = async () => {
+      holder.innerHTML = '<div class="empty"><span class="spinner"></span> Đang tải…</div>';
+      const { templates } = await api.templates({ skill: skill.id });
+      renderTemplateGroups(holder, templates || [], reload, false);
+    };
+    root.append(
+      el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px' },
+        el('button', { class: 'btn btn-accent', onclick: () => openTemplateForm({ skillId: skill.id }, reload) }, '➕ Thêm template'),
+        el('button', { class: 'btn', onclick: (e) => generateTemplateAI({ context: `${skill.name_vi} — ${lesson.title_vi}. ${stripMd(lesson.objective || '')}`, skillId: skill.id, btn: e.target, reload }) }, '✨ AI sinh template (.xlsx) từ bài học'),
+        el('button', { class: 'btn', onclick: () => openTemplates(skill.id) }, '📋 Mở thư viện template'),
+      ),
+      el('div', { style: 'font-size:13px;color:var(--text-soft);margin-bottom:12px' }, `Các mẫu (template) thuộc nhóm kỹ năng: ${skill.icon} ${skill.name_vi}. Có thể Copy, tải .xlsx/CSV, hoặc AI tự sinh mẫu mới.`),
+      holder
+    );
+    try { await reload(); }
+    catch (e) { holder.innerHTML = ''; holder.append(el('div', { class: 'empty' }, 'Lỗi tải template.')); }
   }
 
   function renderResourceGrid(holder, resources, skillId) {

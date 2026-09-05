@@ -14,7 +14,7 @@
   - 🤝 **B2B Sales** — bán hàng doanh nghiệp (SPIN, bán tư vấn)
 - Mỗi kỹ năng **5 bài học**, mỗi bài đủ block: Khái niệm / Quy trình / Kỹ thuật / Ví dụ / Bài tập / Lỗi thường gặp / Thuật ngữ.
 - **Sidebar** gập/mở theo kỹ năng + ô tìm kiếm; **trang chủ** hero + lưới thẻ kỹ năng (số bài, đã xong, số tài liệu).
-- **Trang bài học 4 tab**: 📖 Bài học · 🧠 Đào sâu · 📚 Thư viện · 🤖 Hỏi AI (có công tắc 🔎 tìm web kèm nguồn).
+- **Trang bài học 5 tab**: 📖 Bài học · 🧠 Đào sâu · 📚 Thư viện · 🤖 Hỏi AI (có công tắc 🔎 tìm web kèm nguồn) · **📋 Template** (template của kỹ năng: thêm/AI sinh .xlsx/Copy/tải).
 - **🧠 Đào sâu** (AI gợi ý): Ví dụ thực tế · Công cụ/Thư viện · **🎬 Video liên quan (tìm YouTube đúng chủ đề)** · Hướng dẫn thực hành. Mỗi gợi ý có **💾 Lưu vào Thư viện**.
 - **🎧 Text-to-Speech (chế độ ngồi xe)**: nghe cả bài học **và toàn bộ nội dung đào sâu** (nội dung bài + ví dụ + công cụ + video + thực hành) qua mini-player cố định đáy màn hình (phát/dừng, câu trước/sau, chỉnh tốc độ, chọn giọng ưu tiên vi-VN).
 - **📝 Thu hoạch / Kiểm tra**: trắc nghiệm (tự chấm) + tự luận (AI chấm điểm /10 kèm nhận xét), theo **bài (kiểm tra nhanh)**, **module** và **tổng kết toàn khoá**. Có **🔁 Cần ôn lại** (nhắc ôn bài đã học quá 3 ngày / chưa kiểm tra / điểm < 7).
