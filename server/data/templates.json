@@ -13,7 +13,8 @@
         "b2b"
       ],
       "builtin": true,
-      "createdAt": "2026-09-05T00:00:00.000Z"
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "skillId": "b2b-sales"
     },
     {
       "id": "tpl-route-plan",
@@ -68,7 +69,8 @@
         "excel"
       ],
       "builtin": true,
-      "createdAt": "2026-09-05T00:00:00.000Z"
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "skillId": "general-trade"
     },
     {
       "id": "tpl-call-checklist",
@@ -83,7 +85,8 @@
         "call"
       ],
       "builtin": true,
-      "createdAt": "2026-09-05T00:00:00.000Z"
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "skillId": "general-trade"
     },
     {
       "id": "tpl-kpi-tracker",
@@ -150,7 +153,8 @@
         "excel"
       ],
       "builtin": true,
-      "createdAt": "2026-09-05T00:00:00.000Z"
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "skillId": "general-trade"
     },
     {
       "id": "tpl-b2b-followup",
@@ -165,7 +169,8 @@
         "follow-up"
       ],
       "builtin": true,
-      "createdAt": "2026-09-05T00:00:00.000Z"
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "skillId": "b2b-sales"
     },
     {
       "id": "tpl-live-rundown",
@@ -217,7 +222,8 @@
         "script"
       ],
       "builtin": true,
-      "createdAt": "2026-09-05T00:00:00.000Z"
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "skillId": "ecommerce"
     }
   ]
 }

@@ -566,8 +566,9 @@ app.post('/api/quiz/grade', async (req, res) => {
 // TEMPLATES (thư viện template)
 // ==========================================================================
 app.get('/api/templates', (req, res) => {
-  const { q, category } = req.query;
+  const { q, category, skill } = req.query;
   let list = readTemplates().templates;
+  if (skill) list = list.filter((t) => (t.skillId || '') === skill);
   if (category) list = list.filter((t) => t.category === category);
   if (q) {
     const n = String(q).toLowerCase();
@@ -577,11 +578,12 @@ app.get('/api/templates', (req, res) => {
 });
 
 app.post('/api/templates', (req, res) => {
-  const { title, category, description, content, table, tags } = req.body || {};
+  const { title, category, description, content, table, tags, skillId } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Thiếu tiêu đề' });
   const data = readTemplates();
   const tpl = {
     id: uid('tpl'),
+    skillId: skillId || null,
     title,
     category: category || 'Khác',
     description: description || '',
@@ -601,8 +603,9 @@ app.put('/api/templates/:id', (req, res) => {
   const data = readTemplates();
   const tpl = data.templates.find((t) => t.id === id);
   if (!tpl) return res.status(404).json({ error: 'Không tìm thấy template' });
-  const { title, category, description, content, table, tags } = req.body || {};
+  const { title, category, description, content, table, tags, skillId } = req.body || {};
   if (typeof title === 'string' && title.trim()) tpl.title = title.trim();
+  if (skillId !== undefined) tpl.skillId = skillId || null;
   if (typeof category === 'string') tpl.category = category || 'Khác';
   if (typeof description === 'string') tpl.description = description;
   if (typeof content === 'string') tpl.content = content;

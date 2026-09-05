@@ -369,6 +369,7 @@
         el('button', { class: 'btn btn-primary', onclick: () => openAddLesson(skill.id) }, '➕ Thêm bài học'),
         el('button', { class: 'btn btn-accent', onclick: () => openAddResource(skill.id) }, '📎 Thêm tài liệu'),
         el('button', { class: 'btn', onclick: () => openLibrary(skill.id) }, '📚 Thư viện kỹ năng'),
+        el('button', { class: 'btn', onclick: () => openTemplates(skill.id) }, '📋 Template'),
         el('button', { class: 'btn', onclick: () => startQuiz({ context: quizContextSkill(skill), title: 'Kiểm tra module: ' + skill.name_vi, mcq: 6, essay: 1, skillId: skill.id }) }, '🧪 Kiểm tra module'),
         !skill.builtin && el('button', { class: 'btn btn-danger', onclick: () => confirmDelSkill(skill) }, '🗑 Xóa kỹ năng'),
       )
@@ -1344,16 +1345,21 @@
     return [header, ...rows].map((r) => r.map(csvEscape).join(',')).join('\r\n');
   }
 
-  async function openTemplates() {
+  async function openTemplates(presetSkill = '') {
     const search = el('input', { type: 'search', placeholder: '🔎 Tìm template…' });
     const catSel = el('select', {}, el('option', { value: '' }, 'Tất cả danh mục'));
+    const skillSel = el('select', {}, el('option', { value: '' }, '📚 Tất cả nhóm bài học'),
+      ...State.skills.map((s) => el('option', { value: s.id }, s.icon + ' ' + s.name_vi)),
+      el('option', { value: '__none' }, '📌 Chung (không thuộc kỹ năng)'));
+    if (presetSkill) skillSel.value = presetSkill;
     const holder = el('div', {}, el('div', { class: 'empty' }, el('span', { class: 'spinner' }), ' Đang tải…'));
+    const defaultSkill = presetSkill ? findSkill(presetSkill)?.id : '';
     const m = openModal({
-      title: '📋 Thư viện Template',
+      title: '📋 Thư viện Template' + (presetSkill && findSkill(presetSkill) ? ' — ' + findSkill(presetSkill).name_vi : ''),
       wide: true,
       bodyNodes: [
-        el('div', { class: 'filter-row' }, search, catSel,
-          el('button', { class: 'btn btn-accent btn-sm', onclick: () => openTemplateForm(null, load) }, '➕ Thêm template'),
+        el('div', { class: 'filter-row' }, search, skillSel, catSel,
+          el('button', { class: 'btn btn-accent btn-sm', onclick: () => openTemplateForm({ skillId: skillSel.value && skillSel.value !== '__none' ? skillSel.value : (presetSkill || null) }, load) }, '➕ Thêm template'),
           el('button', { class: 'btn btn-sm', title: 'Xuất toàn bộ template ra CSV/Excel', onclick: exportAll }, '⬇️ Xuất tất cả (CSV)'),
         ),
         holder,
@@ -1365,18 +1371,22 @@
       const params = {};
       if (search.value.trim()) params.q = search.value.trim();
       if (catSel.value) params.category = catSel.value;
+      if (skillSel.value === '__none') params.skill = '';
+      else if (skillSel.value) params.skill = skillSel.value;
+      // Nếu chọn "Chung", filter client (server coi skill='' là chưa lọc)
       const { templates } = await api.templates(params);
       current = templates || [];
-      // cập nhật danh mục (chỉ khi không lọc để lấy đủ)
-      if (!catSel.value && !search.value.trim()) {
+      if (skillSel.value === '__none') current = current.filter((t) => !t.skillId);
+      // Cập nhật danh mục khi chưa lọc gì
+      if (!catSel.value && !search.value.trim() && !skillSel.value) {
         const cats = [...new Set(current.map((t) => t.category).filter(Boolean))];
         catSel.innerHTML = '';
         catSel.append(el('option', { value: '' }, 'Tất cả danh mục'));
         cats.forEach((c) => catSel.append(el('option', { value: c }, c)));
       }
-      renderTemplateGrid(holder, current, load);
+      renderTemplateGroups(holder, current, load, skillSel.value === '');
     }, 220);
-    [search, catSel].forEach((n) => n.addEventListener('input', load));
+    [search, catSel, skillSel].forEach((n) => n.addEventListener('input', load));
     load();
 
     async function exportAll() {
@@ -1387,12 +1397,30 @@
     }
   }
 
-  function renderTemplateGrid(holder, list, reload) {
+  // Gom nhóm template theo kỹ năng (nhóm bài học)
+  function renderTemplateGroups(holder, list, reload, grouped) {
     holder.innerHTML = '';
     if (!list.length) { holder.append(el('div', { class: 'empty' }, el('div', { class: 'big' }, '📭'), el('p', {}, 'Chưa có template. Bấm “➕ Thêm template”.'))); return; }
-    const grid = el('div', { class: 'res-grid' });
-    list.forEach((t) => grid.append(templateCard(t, reload)));
-    holder.append(grid);
+    if (!grouped) { // đã lọc theo 1 kỹ năng → grid phẳng
+      const grid = el('div', { class: 'res-grid' });
+      list.forEach((t) => grid.append(templateCard(t, reload)));
+      holder.append(grid);
+      return;
+    }
+    // Nhóm theo thứ tự kỹ năng, cuối cùng là "Chung"
+    const order = [...State.skills.map((s) => s.id), '__none'];
+    const groups = {};
+    list.forEach((t) => { const k = t.skillId && findSkill(t.skillId) ? t.skillId : '__none'; (groups[k] = groups[k] || []).push(t); });
+    order.forEach((k) => {
+      const arr = groups[k];
+      if (!arr || !arr.length) return;
+      const s = findSkill(k);
+      const label = s ? `${s.icon} ${s.name_vi}` : '📌 Chung (không thuộc kỹ năng)';
+      holder.append(el('div', { class: 'tpl-group-head' }, label, el('span', { class: 'tpl-group-count' }, arr.length + ' mẫu')));
+      const grid = el('div', { class: 'res-grid' });
+      arr.forEach((t) => grid.append(templateCard(t, reload)));
+      holder.append(grid);
+    });
   }
 
   function templateCard(t, reload) {
@@ -1444,8 +1472,11 @@
   }
 
   function openTemplateForm(existing, reload) {
-    const isEdit = !!existing;
+    const isEdit = !!(existing && existing.id);
     const title = el('input', { value: existing?.title || '', placeholder: 'Tên template' });
+    const skillSel = el('select', {}, el('option', { value: '' }, '📌 Chung (không thuộc kỹ năng)'),
+      ...State.skills.map((s) => el('option', { value: s.id }, s.icon + ' ' + s.name_vi)));
+    skillSel.value = existing?.skillId || '';
     const category = el('input', { value: existing?.category || '', placeholder: 'VD: Kịch bản / Bảng theo dõi / Checklist', list: 'tplCatList' });
     const catList = el('datalist', { id: 'tplCatList' },
       ...['Kịch bản / Script', 'Bảng theo dõi / Tracker', 'Checklist', 'Mẫu email / Email', 'Khác'].map((c) => el('option', { value: c })));
@@ -1469,7 +1500,8 @@
       wide: true,
       bodyNodes: [
         catList,
-        el('div', { class: 'grid-2' }, field('Tên *', title), field('Danh mục', category)),
+        el('div', { class: 'grid-2' }, field('Tên *', title), field('📚 Nhóm bài học (kỹ năng)', skillSel)),
+        field('Danh mục', category),
         field('Mô tả', description),
         el('label', { class: 'switch', style: 'margin:6px 0' }, useTable, el('span', { class: 'track' }), el('span', {}, '📊 Dạng bảng (Excel) thay vì văn bản')),
         contentField, tableField,
@@ -1490,7 +1522,7 @@
         const rows = lines.map((l) => l.split('|').map((c) => c.trim()));
         table = { headers: rows[0], rows: rows.slice(1) };
       }
-      const payload = { title: title.value.trim(), category: category.value.trim() || 'Khác', description: description.value.trim(), content: useTable.checked ? '' : content.value.trim(), table, tags: tags.value.trim() };
+      const payload = { skillId: skillSel.value || null, title: title.value.trim(), category: category.value.trim() || 'Khác', description: description.value.trim(), content: useTable.checked ? '' : content.value.trim(), table, tags: tags.value.trim() };
       const res = isEdit ? await api.updateTemplate(existing.id, payload) : await api.addTemplate(payload);
       if (res.error) return toast(res.error, 'err');
       m.close(); toast(isEdit ? '💾 Đã lưu template.' : '✅ Đã thêm template.', 'ok');

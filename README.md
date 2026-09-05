@@ -21,7 +21,7 @@
 - **Mọi kết quả AI** (đào sâu + kết quả kiểm tra) đều **lưu được vào Thư viện** làm nguồn tài liệu (feature theo yêu cầu).
 - **🖼️ Chèn ảnh vào ghi chú**: dán (Ctrl+V) ảnh trực tiếp vào ô nội dung, hoặc chọn **nhiều ảnh cùng lúc** — ảnh hiển thị trực tiếp trong thẻ tài liệu. Loại "Ảnh" cũng upload được nhiều ảnh một lần.
 - **✨ Rút insight + prompt tự nhập**: khi rút insight (từng tài liệu hoặc tất cả) có ô nhập **prompt tuỳ chỉnh** để AI bám theo yêu cầu riêng.
-- **📋 Thư viện Template**: kho mẫu tái sử dụng (kịch bản, bảng theo dõi, checklist, email…), có mẫu dạng **bảng Excel**; hỗ trợ tìm/lọc, thêm/sửa/xoá, **📋 Copy**, **⬇️ Xuất CSV** từng mẫu và **xuất toàn bộ** (mở bằng Excel / import Google Sheets).
+- **📋 Thư viện Template**: kho mẫu tái sử dụng (kịch bản, bảng theo dõi, checklist, email…), có mẫu dạng **bảng Excel**; **gom nhóm theo từng nhóm bài học (kỹ năng)**, lọc theo kỹ năng/danh mục, tìm kiếm, thêm/sửa/xoá, **📋 Copy**, **⬇️ Xuất CSV** từng mẫu và **xuất toàn bộ** (mở bằng Excel / import Google Sheets). Mỗi trang kỹ năng có nút **📋 Template** mở thẳng template của kỹ năng đó.
 - **Thư viện tài liệu**: text / ảnh / PDF / YouTube / Facebook Reel / link. Video dán link **nhúng xem trực tiếp**; ảnh/PDF **upload**. Có tag + source link.
 - **Thư viện chung** (modal): tìm kiếm + lọc theo loại + theo kỹ năng.
 - **✨ Rút insight bằng AI** cho từng tài liệu (cache lại, có nút *Làm mới*) + *Rút insight tất cả*.

@@ -342,6 +342,9 @@ button { font-family: inherit; }
 .md-img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); margin: 6px 0; display: block; }
 
 /* ---------- Template library ---------- */
+.tpl-group-head { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: var(--primary); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+.tpl-group-head:first-child { margin-top: 0; }
+.tpl-group-count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--text-mut); background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; }
 .tpl-content { font-size: 13px; color: var(--text-soft); max-height: 220px; overflow-y: auto; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 4px; white-space: normal; }
 .tpl-table-wrap { overflow-x: auto; margin-top: 6px; border: 1px solid var(--border); border-radius: 8px; }
 .tpl-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }

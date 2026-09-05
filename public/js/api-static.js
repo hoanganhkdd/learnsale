@@ -169,7 +169,8 @@
     // ----- TEMPLATES -----
     if (path === '/api/templates' && method === 'GET') {
       let list = store.templates.templates;
-      const q = qp.get('q'), cat = qp.get('category');
+      const q = qp.get('q'), cat = qp.get('category'), sk = qp.get('skill');
+      if (sk) list = list.filter((t) => (t.skillId || '') === sk);
       if (cat) list = list.filter((t) => t.category === cat);
       if (q) { const n = q.toLowerCase(); list = list.filter((t) => [t.title, t.description, t.content, t.category, (t.tags || []).join(' ')].filter(Boolean).join(' ').toLowerCase().includes(n)); }
       return jsonRes({ templates: list });
@@ -177,7 +178,7 @@
     if (path === '/api/templates' && method === 'POST') {
       const b = body || {}; if (!b.title) return jsonRes({ error: 'Thiếu tiêu đề' }, 400);
       const data = store.templates;
-      const tpl = { id: uid('tpl'), title: b.title, category: b.category || 'Khác', description: b.description || '', content: b.content || '', table: b.table && Array.isArray(b.table.headers) ? { headers: b.table.headers, rows: Array.isArray(b.table.rows) ? b.table.rows : [] } : null, tags: normTags(b.tags), builtin: false, createdAt: new Date().toISOString() };
+      const tpl = { id: uid('tpl'), skillId: b.skillId || null, title: b.title, category: b.category || 'Khác', description: b.description || '', content: b.content || '', table: b.table && Array.isArray(b.table.headers) ? { headers: b.table.headers, rows: Array.isArray(b.table.rows) ? b.table.rows : [] } : null, tags: normTags(b.tags), builtin: false, createdAt: new Date().toISOString() };
       data.templates.push(tpl); store.templates = data; return jsonRes(tpl, 201);
     }
     if ((mm = path.match(/^\/api\/templates\/([^/]+)$/)) && method === 'PUT') {
@@ -185,6 +186,7 @@
       if (!tpl) return jsonRes({ error: 'Không tìm thấy template' }, 404);
       const b = body || {};
       if (typeof b.title === 'string' && b.title.trim()) tpl.title = b.title.trim();
+      if (b.skillId !== undefined) tpl.skillId = b.skillId || null;
       if (typeof b.category === 'string') tpl.category = b.category || 'Khác';
       if (typeof b.description === 'string') tpl.description = b.description;
       if (typeof b.content === 'string') tpl.content = b.content;
