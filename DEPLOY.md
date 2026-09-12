@@ -47,11 +47,12 @@ Dùng để **thống kê link & tài liệu** trong một Google Sheet, đồng
 
 ```javascript
 function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Resources')
-           || SpreadsheetApp.getActiveSpreadsheet().insertSheet('Resources');
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Resources') || ss.insertSheet('Resources');
   var headers = ['id','title','type','url','tags','skillId','note','createdAt'];
   if (sheet.getLastRow() === 0) sheet.appendRow(headers);
-  var body = JSON.parse(e.postData.contents || '{}');
+  // Guard: khi bấm ▶ Run trực tiếp, Google KHÔNG truyền e → tránh lỗi 'postData'
+  var body = (e && e.postData && e.postData.contents) ? JSON.parse(e.postData.contents) : {};
   var rows = body.rows || [];
   // Lập chỉ mục theo id (cột A) để upsert
   var data = sheet.getDataRange().getValues();
@@ -65,7 +66,15 @@ function doPost(e) {
   return ContentService.createTextOutput(JSON.stringify({ ok: true, count: rows.length }))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+// Mở URL /exec bằng trình duyệt để kiểm tra webhook còn sống
+function doGet() {
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, msg: 'Webhook alive' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 ```
+
+> ⚠️ **KHÔNG test bằng nút ▶ Run** trong trình soạn — chạy tay sẽ báo `Cannot read properties of undefined (reading 'postData')` vì thiếu tham số `e`. Đó là bình thường. Chỉ test qua **URL Web App** (app tự POST, hoặc mở `/exec` bằng trình duyệt để thấy `doGet`).
 
 3. **Deploy → New deployment → Type: Web app**
    - *Execute as*: **Me**
