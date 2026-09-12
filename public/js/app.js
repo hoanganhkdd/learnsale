@@ -83,6 +83,7 @@
     async updateTemplate(id, body) { const r = await fetch('/api/templates/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); return r.json(); },
     async delTemplate(id) { return jdel('/api/templates/' + id); },
     async genTemplate(body) { return jpost('/api/template/generate', body); },
+    async syncSheets() { return jpost('/api/sheets/sync', {}); },
   };
   async function jpost(url, body) {
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -1347,7 +1348,8 @@
       wide: true,
       bodyNodes: [
         el('div', { class: 'filter-row' }, search, typeSel, skillSel,
-          el('button', { class: 'btn btn-accent btn-sm', onclick: () => openAddResource(skillSel.value || '', load) }, '➕ Thêm')),
+          el('button', { class: 'btn btn-accent btn-sm', onclick: () => openAddResource(skillSel.value || '', load) }, '➕ Thêm'),
+          el('button', { class: 'btn btn-sm', title: 'Đồng bộ danh sách tài liệu/link sang Google Sheets', onclick: (e) => syncSheets(e.target) }, '🔗 Đồng bộ Sheets')),
         holder,
       ],
     });
@@ -1362,6 +1364,18 @@
     }, 250);
     [search, typeSel, skillSel].forEach((n) => n.addEventListener('input', load));
     load();
+  }
+
+  async function syncSheets(btn) {
+    const old = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Đang đồng bộ…'; }
+    try {
+      const res = await api.syncSheets();
+      if (res.error === 'no_webhook') toast(res.message || 'Chưa cấu hình Google Sheets (⚙️ Cài đặt).', 'err');
+      else if (!res.ok) toast(res.message || 'Đồng bộ thất bại.', 'err');
+      else toast(`🔗 Đã đồng bộ ${res.count} tài liệu lên Google Sheets.`, 'ok');
+    } catch (e) { toast('Lỗi: ' + e.message, 'err'); }
+    finally { if (btn) { btn.disabled = false; btn.textContent = old; } }
   }
 
   // ==========================================================================
@@ -1690,13 +1704,18 @@
     const s = await api.getSettings().catch(() => ({}));
     const key = el('input', { type: 'password', placeholder: s.hasKey ? '•••••••• (đã có key)' : 'sk-...' });
     const model = el('input', { value: s.model || 'gpt-4o-mini', placeholder: 'gpt-4o-mini' });
+    const sheets = el('input', { value: s.sheetsWebhook || '', placeholder: 'https://script.google.com/macros/s/…/exec' });
+    const cloudStatus = el('div', { style: 'font-size:12.5px;color:var(--text-soft);margin:2px 0 10px' },
+      `☁️ Cloud lưu trữ (MongoDB): ${s.mongo ? '🟢 Bật' : '⚪ Tắt (đặt env MONGODB_URI)'} · Google Sheets: ${s.hasSheets ? '🟢 Đã cấu hình' : '⚪ Chưa'}`);
     const m = openModal({
-      title: '⚙️ Cài đặt AI / Settings',
+      title: '⚙️ Cài đặt / Settings',
       bodyNodes: [
-        el('p', { style: 'font-size:13px;color:var(--text-soft)' }, 'Nhập OpenAI API key để bật tính năng 🤖 Hỏi AI và ✨ Rút insight. Key chỉ lưu tại máy chủ (server/data/settings.json), không hiển thị lại.'),
+        el('p', { style: 'font-size:13px;color:var(--text-soft)' }, 'Nhập OpenAI API key để bật 🤖 Hỏi AI, ✨ Insight và sinh template. Key chỉ lưu tại máy chủ, không hiển thị lại.'),
         field('OpenAI API Key', key, s.keyFromEnv ? 'Đang dùng key từ biến môi trường (env).' : (s.hasKey ? 'Đã lưu key. Để trống nếu không đổi.' : '')),
-        field('Model', model, 'Mặc định: gpt-4o-mini. Có thể dùng gpt-4o, gpt-4.1-mini…'),
-        el('p', { style: 'font-size:12.5px;color:var(--text-mut)' }, 'Lấy key tại: '), el('a', { href: 'https://platform.openai.com/api-keys', target: '_blank', rel: 'noopener' }, 'platform.openai.com/api-keys'),
+        field('Model', model, 'Mặc định: gpt-4o-mini.'),
+        el('hr', { style: 'border:none;border-top:1px solid var(--border);margin:14px 0' }),
+        cloudStatus,
+        field('🔗 Google Sheets webhook (Apps Script)', sheets, 'Dán URL Web App (…/exec) để đồng bộ danh sách tài liệu/link sang Google Sheet. Xem hướng dẫn trong DEPLOY.md.'),
       ],
       footNodes: [
         el('button', { class: 'btn', onclick: () => m.close() }, 'Đóng'),
@@ -1704,7 +1723,7 @@
       ],
     });
     async function submit() {
-      const body = { model: model.value.trim() };
+      const body = { model: model.value.trim(), sheetsWebhook: sheets.value.trim() };
       if (key.value.trim()) body.apiKey = key.value.trim();
       const res = await api.saveSettings(body);
       if (res.error) return toast(res.error, 'err');

@@ -144,6 +144,11 @@ Cũng dùng được **Procfile** (`web: npm start`) cho các PaaS khác. Node v
 
 ---
 
+## ☁️ Lưu trữ Cloud (MongoDB) + đồng bộ Google Sheets
+
+- **MongoDB (env `MONGODB_URI`)**: khi bật, mọi thứ trong **Thư viện** (text, link, PDF, **ảnh** — kể cả ảnh dán/upload) + skills + template được **lưu bền vững trên cloud**, không mất sau refresh/host reset. Ảnh & PDF lưu base64 trong Mongo và vẫn phục vụ được qua `/uploads/...` ngay cả khi ổ đĩa host bị xoá. Không đặt `MONGODB_URI` → chạy như cũ (file JSON). Hướng dẫn: **[DEPLOY.md](DEPLOY.md)**.
+- **Google Sheets (Apps Script webhook)**: đặt URL trong ⚙️ Cài đặt (hoặc env `SHEETS_WEBHOOK_URL`). Thêm tài liệu → tự đẩy 1 dòng; nút **🔗 Đồng bộ Sheets** trong Thư viện đẩy toàn bộ (upsert theo `id`) để thống kê link/tài liệu. Code Apps Script + các bước trong **[DEPLOY.md](DEPLOY.md)**.
+
 ## 🛡 Độ bền & chống mất kỹ năng đã tạo
 
 - **Tự sao lưu & khôi phục kỹ năng người dùng**: mỗi kỹ năng bạn tự tạo (kèm bài học) được sao lưu vào `localStorage` của trình duyệt. Khi mở app, nếu server bị **reset dữ liệu** (thường gặp trên hosting free có ổ đĩa tạm — Render free, redeploy…), app **tự khôi phục** các kỹ năng đó lên server (báo "♻️ Đã khôi phục N kỹ năng"). Kỹ năng đã xoá sẽ **không** bị khôi phục lại.

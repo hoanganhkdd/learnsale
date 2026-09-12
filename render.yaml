@@ -15,6 +15,14 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-4o-mini
+      # ☁️ Lưu trữ bền vững MIỄN PHÍ qua MongoDB Atlas (khuyến nghị) — xem DEPLOY.md
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: learnsale
+      # 🔗 (tuỳ chọn) đồng bộ Google Sheets qua Apps Script webhook
+      - key: SHEETS_WEBHOOK_URL
+        sync: false
       # Bật Disk (gói trả phí) rồi mở comment 2 dòng dưới + phần disk:
       # - key: DATA_DIR
       #   value: /var/data

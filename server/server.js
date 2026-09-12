@@ -58,8 +58,12 @@ function readJSON(file, fallback) {
     return fallback;
   }
 }
-function writeJSON(file, data) {
+function writeJSONLocal(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+}
+function writeJSON(file, data) {
+  writeJSONLocal(file, data);
+  mirrorKV(file, data); // đồng bộ lên MongoDB (nếu bật)
 }
 function readSkills() {
   return readJSON(SKILLS_FILE, { meta: {}, skills: [] });
@@ -79,6 +83,78 @@ function getOpenAIConfig() {
   const model = (s.model || process.env.OPENAI_MODEL || 'gpt-4o-mini').trim();
   return { apiKey, model };
 }
+// ==========================================================================
+// CLOUD: MongoDB (tuỳ chọn, bật bằng env MONGODB_URI) + Google Sheets webhook
+//  - Không đặt MONGODB_URI → app chạy y như cũ (chỉ file JSON).
+//  - Có MONGODB_URI → dữ liệu skills/library/templates + file ảnh/PDF được
+//    đồng bộ lên Mongo → bền vững, không mất khi host reset/refresh.
+// ==========================================================================
+const MONGODB_URI = (process.env.MONGODB_URI || '').trim();
+const MONGODB_DB = (process.env.MONGODB_DB || 'learnsale').trim();
+let mdb = null, mkv = null, mfiles = null;
+const FILE_KEYS = { [SKILLS_FILE]: 'skills', [LIBRARY_FILE]: 'library', [TEMPLATES_FILE]: 'templates' };
+
+async function initMongo() {
+  if (!MONGODB_URI) { console.log('[mongo] MONGODB_URI chưa đặt → dùng file JSON.'); return; }
+  try {
+    const { MongoClient } = await import('mongodb');
+    const client = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 8000 });
+    await client.connect();
+    mdb = client.db(MONGODB_DB);
+    mkv = mdb.collection('kv');
+    mfiles = mdb.collection('files');
+    await hydrateFromMongo();
+    console.log(`[mongo] ✅ Đã kết nối & đồng bộ DB "${MONGODB_DB}".`);
+  } catch (e) {
+    console.error('[mongo] ❌ Kết nối thất bại, quay về file JSON:', e.message);
+    mdb = mkv = mfiles = null;
+  }
+}
+// Khi khởi động: nạp dữ liệu từ Mongo xuống file (nguồn sự thật là Mongo nếu có)
+async function hydrateFromMongo() {
+  for (const [file, key] of Object.entries(FILE_KEYS)) {
+    const doc = await mkv.findOne({ _id: key });
+    if (doc && doc.data) writeJSONLocal(file, doc.data);
+    else await mkv.replaceOne({ _id: key }, { _id: key, data: readJSON(file, {}) }, { upsert: true });
+  }
+}
+function mirrorKV(file, data) {
+  if (!mkv) return;
+  const key = FILE_KEYS[file];
+  if (!key) return;
+  mkv.replaceOne({ _id: key }, { _id: key, data }, { upsert: true }).catch((e) => console.error('[mongo mirrorKV]', e.message));
+}
+async function mirrorFile(filename, title, mimetype, absPath) {
+  if (!mfiles) return;
+  try {
+    const b64 = fs.readFileSync(absPath).toString('base64');
+    await mfiles.replaceOne({ _id: filename }, { _id: filename, title: title || filename, mimetype: mimetype || '', data: b64, createdAt: new Date().toISOString() }, { upsert: true });
+  } catch (e) { console.error('[mongo mirrorFile]', e.message); }
+}
+function removeMongoFile(filename) {
+  if (!mfiles || !filename) return;
+  mfiles.deleteOne({ _id: path.basename(filename) }).catch(() => {});
+}
+
+// ---- Google Sheets qua Apps Script webhook ----
+function getSheetsWebhook() {
+  const s = readSettings();
+  return (s.sheetsWebhook || process.env.SHEETS_WEBHOOK_URL || '').trim();
+}
+async function pushToSheet(resources) {
+  const url = getSheetsWebhook();
+  if (!url) return { ok: false, skipped: true };
+  const rows = (resources || []).map((r) => ({
+    id: r.id, title: r.title || '', type: r.type || '', url: r.url || '',
+    tags: (r.tags || []).join(', '), skillId: r.skillId || '',
+    note: String(r.note || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '[ảnh]').slice(0, 800),
+    createdAt: r.createdAt || '',
+  }));
+  const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows }) });
+  return { ok: resp.ok, status: resp.status };
+}
+const syncSheetSafe = (resources) => { pushToSheet(resources).catch((e) => console.error('[sheets]', e.message)); };
+
 const uid = (p = 'id') => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 const slugify = (s) =>
   (s || '')
@@ -237,14 +313,16 @@ app.post('/api/resources', (req, res) => {
   };
   lib.resources.push(resource);
   writeJSON(LIBRARY_FILE, lib);
+  syncSheetSafe([resource]); // đẩy lên Google Sheets (nếu cấu hình)
   res.status(201).json(resource);
 });
 
 // Upload ảnh/PDF
-app.post('/api/resources/upload', upload.single('file'), (req, res) => {
+app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Không có file' });
   const { skillId, title, note, tags } = req.body || {};
   const type = /pdf/.test(req.file.mimetype) ? 'pdf' : 'image';
+  await mirrorFile(req.file.filename, title || req.file.originalname, req.file.mimetype, path.join(UPLOADS_DIR, req.file.filename));
   const lib = readLibrary();
   const resource = {
     id: uid('res'),
@@ -259,11 +337,13 @@ app.post('/api/resources/upload', upload.single('file'), (req, res) => {
   };
   lib.resources.push(resource);
   writeJSON(LIBRARY_FILE, lib);
+  syncSheetSafe([resource]);
   res.status(201).json(resource);
 });
 
 // Upload nhiều ảnh cùng lúc để NHÚNG vào nội dung (không tạo resource) → trả danh sách URL
-app.post('/api/upload', upload.array('files', 30), (req, res) => {
+app.post('/api/upload', upload.array('files', 30), async (req, res) => {
+  for (const f of (req.files || [])) await mirrorFile(f.filename, f.originalname, f.mimetype, path.join(UPLOADS_DIR, f.filename));
   const files = (req.files || []).map((f) => ({ url: `/uploads/${f.filename}`, name: f.originalname }));
   res.status(201).json({ files });
 });
@@ -274,6 +354,7 @@ app.delete('/api/resources/:id', (req, res) => {
   const r = lib.resources.find((x) => x.id === id);
   if (!r) return res.status(404).json({ error: 'Không tìm thấy tài liệu' });
   deleteUploadFile(r.file);
+  removeMongoFile(r.file);
   lib.resources = lib.resources.filter((x) => x.id !== id);
   writeJSON(LIBRARY_FILE, lib);
   res.json({ ok: true });
@@ -299,20 +380,39 @@ app.get('/api/settings', (req, res) => {
     model: s.model || process.env.OPENAI_MODEL || 'gpt-4o-mini',
     hasKey: Boolean((s.apiKey || envKey || '').trim()),
     keyFromEnv: Boolean(envKey) && !s.apiKey,
+    sheetsWebhook: s.sheetsWebhook || '',
+    hasSheets: Boolean(getSheetsWebhook()),
+    mongo: Boolean(mdb),
   });
 });
 
 app.post('/api/settings', (req, res) => {
-  const { apiKey, model } = req.body || {};
+  const { apiKey, model, sheetsWebhook } = req.body || {};
   const s = readSettings();
   if (typeof apiKey === 'string') s.apiKey = apiKey.trim();
   if (typeof model === 'string' && model.trim()) s.model = model.trim();
+  if (typeof sheetsWebhook === 'string') s.sheetsWebhook = sheetsWebhook.trim();
   writeJSON(SETTINGS_FILE, s);
   res.json({
     model: s.model || 'gpt-4o-mini',
     hasKey: Boolean((s.apiKey || process.env.OPENAI_API_KEY || '').trim()),
+    hasSheets: Boolean(getSheetsWebhook()),
+    mongo: Boolean(mdb),
   });
 });
+
+// Đồng bộ toàn bộ thư viện lên Google Sheets
+app.post('/api/sheets/sync', async (req, res) => {
+  if (!getSheetsWebhook()) return res.json({ ok: false, error: 'no_webhook', message: 'Chưa cấu hình Google Sheets webhook. Vào ⚙️ Cài đặt để thêm.' });
+  try {
+    const lib = readLibrary();
+    const out = await pushToSheet(lib.resources);
+    res.json({ ok: out.ok, count: lib.resources.length });
+  } catch (e) {
+    res.status(200).json({ ok: false, error: 'sync_error', message: e.message });
+  }
+});
+app.get('/api/sheets/status', (req, res) => res.json({ configured: Boolean(getSheetsWebhook()), mongo: Boolean(mdb) }));
 
 // ==========================================================================
 // AI: CHAT (proxy ChatGPT) + INSIGHT
@@ -653,7 +753,23 @@ app.delete('/api/templates/:id', (req, res) => {
 // ==========================================================================
 // Static + uploads + health
 // ==========================================================================
-app.use('/uploads', express.static(UPLOADS_DIR));
+// Phục vụ file upload: ưu tiên đĩa, nếu mất (host reset) thì lấy từ MongoDB
+app.get('/uploads/:name', async (req, res, next) => {
+  const name = path.basename(req.params.name);
+  const p = path.join(UPLOADS_DIR, name);
+  if (fs.existsSync(p)) return res.sendFile(p);
+  if (mfiles) {
+    try {
+      const f = await mfiles.findOne({ _id: name });
+      if (f && f.data) {
+        if (f.mimetype) res.type(f.mimetype);
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.send(Buffer.from(f.data, 'base64'));
+      }
+    } catch (e) { console.error('[uploads-mongo]', e.message); }
+  }
+  next();
+});
 // Chống cache JS/CSS/HTML cũ trên host
 app.use(express.static(PUBLIC_DIR, {
   setHeaders: (res) => res.setHeader('Cache-Control', 'no-store'),
@@ -676,6 +792,9 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Sale app chạy tại http://localhost:${PORT}  (DATA_DIR=${DATA_DIR})`);
+// Kết nối Mongo (nếu có) rồi mới lắng nghe — hydrate dữ liệu bền vững trước khi phục vụ
+initMongo().finally(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Sale app chạy tại http://localhost:${PORT}  (DATA_DIR=${DATA_DIR}, Mongo=${mdb ? 'ON' : 'OFF'})`);
+  });
 });
