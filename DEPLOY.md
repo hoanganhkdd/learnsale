@@ -37,24 +37,45 @@ Log `[mongo] ✅ Đã kết nối & đồng bộ DB "learnsale".` là thành cô
 
 ---
 
-## 🔗 2) Đồng bộ Google Sheets (Apps Script webhook)
+## 🔗 2) Google Drive (lưu file) + Google Sheets (thống kê) — 1 Apps Script
 
-Dùng để **thống kê link & tài liệu** trong một Google Sheet, đồng bộ 1 chiều (App → Sheet).
+Một Apps Script Web App làm cả 2 việc:
+- **Lưu ảnh/PDF lên Google Drive** (thư mục `LearnSale Library`), chia sẻ "anyone with link", trả về link Drive.
+- **Ghi metadata + link** vào Google Sheet (tab `Resources`) để thống kê/truy xuất.
 
 ### Bước 1 — Tạo Google Apps Script
 1. Tạo 1 **Google Sheet** mới.
-2. Menu **Extensions → Apps Script**, dán đoạn sau:
+2. Menu **Extensions → Apps Script**, dán đoạn sau (thay toàn bộ):
 
 ```javascript
+var FOLDER_NAME = 'LearnSale Library';
+
 function doPost(e) {
+  // Guard: khi bấm ▶ Run trực tiếp, Google KHÔNG truyền e → tránh lỗi 'postData'
+  var body = (e && e.postData && e.postData.contents) ? JSON.parse(e.postData.contents) : {};
+  if (body.action === 'upload' && body.file) return handleUpload_(body.file);
+  return handleRows_(body.rows || []);
+}
+
+// Lưu 1 file lên Google Drive, trả link xem trực tiếp
+function handleUpload_(file) {
+  var folder = getFolder_(FOLDER_NAME);
+  var bytes = Utilities.base64Decode(file.data);
+  var blob = Utilities.newBlob(bytes, file.mimetype || 'application/octet-stream', file.title || file.name || 'file');
+  var f = folder.createFile(blob);
+  f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  var id = f.getId();
+  return json_({ ok: true, id: id,
+    url: 'https://drive.google.com/uc?export=view&id=' + id,
+    viewUrl: 'https://drive.google.com/file/d/' + id + '/view' });
+}
+
+// Ghi/upsert các dòng metadata vào tab Resources
+function handleRows_(rows) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Resources') || ss.insertSheet('Resources');
   var headers = ['id','title','type','url','tags','skillId','note','createdAt'];
   if (sheet.getLastRow() === 0) sheet.appendRow(headers);
-  // Guard: khi bấm ▶ Run trực tiếp, Google KHÔNG truyền e → tránh lỗi 'postData'
-  var body = (e && e.postData && e.postData.contents) ? JSON.parse(e.postData.contents) : {};
-  var rows = body.rows || [];
-  // Lập chỉ mục theo id (cột A) để upsert
   var data = sheet.getDataRange().getValues();
   var idIndex = {};
   for (var i = 1; i < data.length; i++) idIndex[data[i][0]] = i + 1;
@@ -63,31 +84,34 @@ function doPost(e) {
     if (idIndex[r.id]) sheet.getRange(idIndex[r.id], 1, 1, headers.length).setValues([line]);
     else sheet.appendRow(line);
   });
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, count: rows.length }))
-    .setMimeType(ContentService.MimeType.JSON);
+  return json_({ ok: true, count: rows.length });
 }
 
-// Mở URL /exec bằng trình duyệt để kiểm tra webhook còn sống
-function doGet() {
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, msg: 'Webhook alive' }))
-    .setMimeType(ContentService.MimeType.JSON);
+function getFolder_(name) {
+  var it = DriveApp.getFoldersByName(name);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(name);
 }
+function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function doGet() { return json_({ ok: true, msg: 'Webhook alive' }); }
 ```
 
-> ⚠️ **KHÔNG test bằng nút ▶ Run** trong trình soạn — chạy tay sẽ báo `Cannot read properties of undefined (reading 'postData')` vì thiếu tham số `e`. Đó là bình thường. Chỉ test qua **URL Web App** (app tự POST, hoặc mở `/exec` bằng trình duyệt để thấy `doGet`).
+> ⚠️ **KHÔNG test bằng nút ▶ Run** — chạy tay báo lỗi `postData` vì thiếu `e`. Đó là bình thường. Chỉ test qua **URL Web App**.
 
 3. **Deploy → New deployment → Type: Web app**
-   - *Execute as*: **Me**
-   - *Who has access*: **Anyone**
-   - Copy URL dạng `https://script.google.com/macros/s/…/exec`.
+   - *Execute as*: **Me** · *Who has access*: **Anyone** → Deploy.
+   - Lần đầu Google hỏi cấp quyền **Drive + Sheets** → Authorize → Advanced → Allow.
+   - Copy URL `https://script.google.com/macros/s/…/exec`.
 
 ### Bước 2 — Cấu hình trong app
-- Mở **⚙️ Cài đặt** → dán URL vào ô **Google Sheets webhook** → Lưu.
+- Mở **⚙️ Cài đặt** → dán URL vào ô **Google Sheets webhook** → Lưu (URL này dùng cho cả Drive + Sheets).
 - Hoặc đặt env `SHEETS_WEBHOOK_URL=...`.
 
-### Cách dùng
-- Mỗi khi **thêm tài liệu** mới → tự đẩy 1 dòng lên Sheet.
-- Nút **🔗 Đồng bộ Sheets** trong Thư viện chung → đẩy **toàn bộ** danh sách (upsert theo `id`).
+### Cách hoạt động
+- **Thêm ảnh/PDF** → app đẩy file lên **Google Drive** (thư mục `LearnSale Library`), lưu link Drive làm `url` của tài liệu, đồng thời ghi 1 dòng vào Sheet.
+- **Thêm text/link** → chỉ ghi 1 dòng metadata vào Sheet.
+- Nút **🔗 Đồng bộ Sheets** → đẩy lại **toàn bộ** danh sách (upsert theo `id`).
+
+> Ghi chú hiển thị ảnh: link `uc?export=view&id=…` thường hiển thị được trong thẻ `<img>`. Nếu một ảnh không hiện (Google chặn hotlink), vẫn có link Drive để mở. Muốn hiển thị chắc chắn 100% → chọn phương án "Cả Drive + MongoDB".
 
 ---
 

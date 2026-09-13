@@ -155,6 +155,22 @@ async function pushToSheet(resources) {
 }
 const syncSheetSafe = (resources) => { pushToSheet(resources).catch((e) => console.error('[sheets]', e.message)); };
 
+// Tải file lên Google Drive qua Apps Script webhook → trả {ok,id,url,viewUrl}
+async function driveUpload(absPath, name, title, mimetype) {
+  const url = getSheetsWebhook();
+  if (!url) return null;
+  try {
+    const b64 = fs.readFileSync(absPath).toString('base64');
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'upload', file: { name, title: title || name, mimetype: mimetype || '', data: b64 } }),
+    });
+    const d = await resp.json().catch(() => null);
+    return d && d.ok ? d : null;
+  } catch (e) { console.error('[drive]', e.message); return null; }
+}
+
 const uid = (p = 'id') => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 const slugify = (s) =>
   (s || '')
@@ -317,22 +333,37 @@ app.post('/api/resources', (req, res) => {
   res.status(201).json(resource);
 });
 
-// Upload ảnh/PDF
+// Upload ảnh/PDF. Nếu có webhook Google → lưu file lên Google Drive; nếu không → lưu nội bộ + Mongo.
 app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Không có file' });
   const { skillId, title, note, tags } = req.body || {};
   const type = /pdf/.test(req.file.mimetype) ? 'pdf' : 'image';
-  await mirrorFile(req.file.filename, title || req.file.originalname, req.file.mimetype, path.join(UPLOADS_DIR, req.file.filename));
+  const absPath = path.join(UPLOADS_DIR, req.file.filename);
+  let url = `/uploads/${req.file.filename}`;
+  let fileRef = req.file.filename;
+  let drive = null;
+
+  const d = await driveUpload(absPath, req.file.filename, title || req.file.originalname, req.file.mimetype);
+  if (d) {
+    url = d.url || d.viewUrl || url;
+    drive = { id: d.id, viewUrl: d.viewUrl || '' };
+    fileRef = null;
+    fs.promises.unlink(absPath).catch(() => {}); // Drive là nguồn lưu trữ → bỏ bản nội bộ
+  } else {
+    await mirrorFile(req.file.filename, title || req.file.originalname, req.file.mimetype, absPath);
+  }
+
   const lib = readLibrary();
   const resource = {
     id: uid('res'),
     skillId: skillId || null,
     type,
     title: title || req.file.originalname,
-    url: `/uploads/${req.file.filename}`,
+    url,
     note: note || '',
     tags: normalizeTags(tags),
-    file: req.file.filename,
+    file: fileRef,
+    drive,
     createdAt: new Date().toISOString(),
   };
   lib.resources.push(resource);
@@ -341,10 +372,15 @@ app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
   res.status(201).json(resource);
 });
 
-// Upload nhiều ảnh cùng lúc để NHÚNG vào nội dung (không tạo resource) → trả danh sách URL
+// Upload nhiều ảnh cùng lúc để NHÚNG vào nội dung → trả danh sách URL (Drive nếu có webhook)
 app.post('/api/upload', upload.array('files', 30), async (req, res) => {
-  for (const f of (req.files || [])) await mirrorFile(f.filename, f.originalname, f.mimetype, path.join(UPLOADS_DIR, f.filename));
-  const files = (req.files || []).map((f) => ({ url: `/uploads/${f.filename}`, name: f.originalname }));
+  const files = [];
+  for (const f of (req.files || [])) {
+    const absPath = path.join(UPLOADS_DIR, f.filename);
+    const d = await driveUpload(absPath, f.filename, f.originalname, f.mimetype);
+    if (d) { files.push({ url: d.url || d.viewUrl, name: f.originalname }); fs.promises.unlink(absPath).catch(() => {}); }
+    else { await mirrorFile(f.filename, f.originalname, f.mimetype, absPath); files.push({ url: `/uploads/${f.filename}`, name: f.originalname }); }
+  }
   res.status(201).json({ files });
 });
 
