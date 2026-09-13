@@ -360,7 +360,7 @@
         const file = fd.get('file');
         body = { skillId: fd.get('skillId'), title: fd.get('title'), note: fd.get('note'), tags: fd.get('tags') };
         if (file && file.size) {
-          body.type = /pdf/.test(file.type) ? 'pdf' : 'image';
+          body.type = /pdf/.test(file.type) ? 'pdf' : (/^video\//.test(file.type) ? 'video' : 'image');
           body.title = body.title || file.name;
           body.dataUrl = await readAsDataURL(file);
         }

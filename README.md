@@ -146,6 +146,7 @@ Cũng dùng được **Procfile** (`web: npm start`) cho các PaaS khác. Node v
 
 ## ☁️ Lưu trữ Cloud (MongoDB) + đồng bộ Google Sheets
 
+- **Google Drive = kho lưu trữ nội dung**: khi cấu hình Apps Script webhook, **mọi loại tài liệu đều lên Drive** — ảnh, PDF, **video** (upload), và **text** (lưu thành file `.txt`). **Google Sheets** giữ **link truy xuất** (cột `url` + `images`). Link/YouTube/Facebook là link ngoài nên chỉ ghi vào Sheet. Chi tiết: **[DEPLOY.md](DEPLOY.md)**.
 - **MongoDB (env `MONGODB_URI`)**: khi bật, mọi thứ trong **Thư viện** (text, link, PDF, **ảnh** — kể cả ảnh dán/upload) + skills + template được **lưu bền vững trên cloud**, không mất sau refresh/host reset. Ảnh & PDF lưu base64 trong Mongo và vẫn phục vụ được qua `/uploads/...` ngay cả khi ổ đĩa host bị xoá. Không đặt `MONGODB_URI` → chạy như cũ (file JSON). Hướng dẫn: **[DEPLOY.md](DEPLOY.md)**.
 - **Google Drive + Google Sheets (1 Apps Script webhook)**: đặt URL trong ⚙️ Cài đặt (hoặc env `SHEETS_WEBHOOK_URL`).
   - Thêm **ảnh/PDF** → file được **lưu lên Google Drive** (thư mục `LearnSale Library`), tài liệu giữ link Drive.

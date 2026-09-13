@@ -181,11 +181,10 @@ async function removeFromGoogle(r) {
 const removeFromGoogleSafe = (r) => { removeFromGoogle(r).catch(() => {}); };
 
 // Tải file lên Google Drive qua Apps Script webhook → trả {ok,id,url,viewUrl}
-async function driveUpload(absPath, name, title, mimetype) {
+async function driveUploadData(b64, name, title, mimetype) {
   const url = getSheetsWebhook();
   if (!url) return null;
   try {
-    const b64 = fs.readFileSync(absPath).toString('base64');
     const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -195,6 +194,16 @@ async function driveUpload(absPath, name, title, mimetype) {
     // Chỉ coi là thành công khi có link/id Drive (tránh Apps Script cũ trả ok nhưng không có url)
     return d && d.ok && (d.url || d.viewUrl || d.id) ? d : null;
   } catch (e) { console.error('[drive]', e.message); return null; }
+}
+async function driveUpload(absPath, name, title, mimetype) {
+  try { return await driveUploadData(fs.readFileSync(absPath).toString('base64'), name, title, mimetype); }
+  catch (e) { console.error('[drive]', e.message); return null; }
+}
+// Lưu nội dung text thành file .txt trên Drive
+async function driveUploadText(title, text) {
+  const b64 = Buffer.from(String(text || ''), 'utf8').toString('base64');
+  const base = (slugify(title) || 'note').slice(0, 60);
+  return driveUploadData(b64, base + '.txt', title || 'note', 'text/plain');
 }
 
 const uid = (p = 'id') => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -223,8 +232,8 @@ const upload = multer({
   storage,
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const ok = /image\/|application\/pdf/.test(file.mimetype);
-    cb(ok ? null : new Error('Chỉ chấp nhận ảnh hoặc PDF / Only images or PDF'), ok);
+    const ok = /^image\//.test(file.mimetype) || file.mimetype === 'application/pdf' || /^video\//.test(file.mimetype);
+    cb(ok ? null : new Error('Chỉ chấp nhận ảnh, PDF hoặc video / Only image, PDF or video'), ok);
   },
 });
 
@@ -337,11 +346,10 @@ app.get('/api/resources', (req, res) => {
   res.json({ resources: list });
 });
 
-// Thêm text/youtube/facebook/link
-app.post('/api/resources', (req, res) => {
+// Thêm text/youtube/facebook/link. Với type=text → lưu nội dung thành file .txt trên Google Drive.
+app.post('/api/resources', async (req, res) => {
   const { skillId, type, title, url, note, tags } = req.body || {};
   if (!type) return res.status(400).json({ error: 'Thiếu type' });
-  const lib = readLibrary();
   const resource = {
     id: uid('res'),
     skillId: skillId || null,
@@ -351,11 +359,18 @@ app.post('/api/resources', (req, res) => {
     note: note || '',
     tags: normalizeTags(tags),
     file: null,
+    drive: null,
     createdAt: new Date().toISOString(),
   };
+  // text → tạo bản .txt trên Drive, lưu link để truy xuất
+  if (type === 'text' && (note || title)) {
+    const d = await driveUploadText(resource.title, note || '');
+    if (d) { resource.drive = { id: d.id, viewUrl: d.viewUrl || '' }; if (!resource.url) resource.url = d.url || d.viewUrl || ''; }
+  }
+  const lib = readLibrary();
   lib.resources.push(resource);
   writeJSON(LIBRARY_FILE, lib);
-  syncSheetSafe([resource]); // đẩy lên Google Sheets (nếu cấu hình)
+  syncSheetSafe([resource]); // đẩy link lên Google Sheets (nếu cấu hình)
   res.status(201).json(resource);
 });
 
@@ -363,7 +378,7 @@ app.post('/api/resources', (req, res) => {
 app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Không có file' });
   const { skillId, title, note, tags } = req.body || {};
-  const type = /pdf/.test(req.file.mimetype) ? 'pdf' : 'image';
+  const type = /pdf/.test(req.file.mimetype) ? 'pdf' : (/^video\//.test(req.file.mimetype) ? 'video' : 'image');
   const absPath = path.join(UPLOADS_DIR, req.file.filename);
   let url = `/uploads/${req.file.filename}`;
   let fileRef = req.file.filename;

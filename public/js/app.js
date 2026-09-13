@@ -582,6 +582,9 @@
       else media.append(el('div', { class: 'placeholder' }, '▶️'));
     } else if (r.type === 'facebook') {
       media.append(el('iframe', { src: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(r.url)}&show_text=false`, allowfullscreen: '', title: r.title }));
+    } else if (r.type === 'video') {
+      if (r.url && r.url.startsWith('/uploads')) media.append(el('video', { src: r.url, controls: '', style: 'width:100%;max-height:190px;background:#000' }));
+      else media.append(el('a', { href: r.url || '#', target: '_blank', rel: 'noopener', class: 'placeholder', style: 'text-decoration:none;font-size:20px' }, '🎬 Mở video'));
     } else if (r.type === 'pdf') {
       media.append(el('div', { class: 'placeholder' }, '📄'));
     } else if (r.type === 'text') {
@@ -610,7 +613,7 @@
 
     return el('div', { class: 'res-card' }, media, body, foot);
   }
-  const TYPE_LABEL = { text: '📝 Text', image: '🖼️ Ảnh', pdf: '📄 PDF', youtube: '▶️ YouTube', facebook: '📘 Facebook', link: '🔗 Link' };
+  const TYPE_LABEL = { text: '📝 Text', image: '🖼️ Ảnh', pdf: '📄 PDF', video: '🎬 Video', youtube: '▶️ YouTube', facebook: '📘 Facebook', link: '🔗 Link' };
   const shortUrl = (u) => { try { return new URL(u, location.origin).host + '…'; } catch { return u; } };
 
   function renderInsight(r) {
@@ -1232,13 +1235,14 @@
       el('option', { value: 'text' }, '📝 Text / Ghi chú (chèn ảnh được)'),
       el('option', { value: 'image' }, '🖼️ Ảnh (upload — nhiều ảnh)'),
       el('option', { value: 'pdf' }, '📄 PDF (upload)'),
+      el('option', { value: 'video' }, '🎬 Video (upload — lên Drive)'),
       el('option', { value: 'youtube' }, '▶️ YouTube (link nhúng)'),
       el('option', { value: 'facebook' }, '📘 Facebook Reel/Video (link nhúng)'),
       el('option', { value: 'link' }, '🔗 Link (website)'),
     );
     const title = el('input', { placeholder: 'Tiêu đề tài liệu' });
     const url = el('input', { placeholder: 'Dán link (YouTube/Facebook/website)…' });
-    const fileInput = el('input', { type: 'file', accept: 'image/*,application/pdf', multiple: '' });
+    const fileInput = el('input', { type: 'file', accept: 'image/*,application/pdf,video/*', multiple: '' });
     const note = el('textarea', { placeholder: 'Ghi chú / nội dung. Hỗ trợ **đậm**, *nghiêng*. 📋 Dán (Ctrl+V) ảnh trực tiếp vào đây để chèn!', rows: 5 });
     const tags = el('input', { placeholder: 'tag1, tag2, tag3' });
 
@@ -1267,14 +1271,14 @@
     });
 
     const urlField = field('🔗 Link', url, 'Dùng cho YouTube / Facebook / Link.');
-    const fileField = field('📎 Chọn file (≤50MB, chọn nhiều ảnh cùng lúc được)', fileInput, 'Dùng cho Ảnh / PDF.');
+    const fileField = field('📎 Chọn file (≤50MB, chọn nhiều ảnh cùng lúc được)', fileInput, 'Ảnh / PDF / Video → lưu lên Google Drive. Video nên < 20MB; video lớn nên dùng link YouTube.');
     const noteField = el('div', { class: 'field' }, el('label', {}, '📝 Nội dung / Ghi chú'), noteToolbar, note, imgInput);
 
     function sync() {
       const t = type.value;
       urlField.style.display = ['youtube', 'facebook', 'link'].includes(t) ? '' : 'none';
-      fileField.style.display = ['image', 'pdf'].includes(t) ? '' : 'none';
-      noteToolbar.style.display = t === 'pdf' ? 'none' : '';
+      fileField.style.display = ['image', 'pdf', 'video'].includes(t) ? '' : 'none';
+      noteToolbar.style.display = (t === 'pdf' || t === 'video') ? 'none' : '';
       noteField.style.display = '';
     }
     type.addEventListener('change', sync);
@@ -1311,14 +1315,16 @@
           return onDone ? onDone() : go(State.view);
         }
         let res;
-        if (t === 'pdf') {
-          if (!fileInput.files[0]) return toast('Chọn file PDF để upload.', 'err');
+        if (t === 'pdf' || t === 'video') {
+          if (!fileInput.files[0]) return toast(t === 'video' ? 'Chọn file video để upload.' : 'Chọn file PDF để upload.', 'err');
           const fd = new FormData();
           fd.append('file', fileInput.files[0]);
           fd.append('skillId', skillId || '');
           fd.append('title', title.value.trim());
           fd.append('note', note.value.trim());
           fd.append('tags', tags.value.trim());
+          const sbtn = m.modal.querySelector('.btn-accent');
+          if (sbtn) { sbtn.disabled = true; sbtn.innerHTML = '<span class="spinner"></span> Đang tải lên Drive…'; }
           res = await api.uploadResource(fd);
         } else if (t === 'text') {
           if (!note.value.trim() && !title.value.trim()) return toast('Nhập nội dung hoặc chèn ảnh.', 'err');
@@ -1337,7 +1343,7 @@
   async function openLibrary(presetSkill = '') {
     const search = el('input', { type: 'search', placeholder: '🔎 Tìm tài liệu…' });
     const typeSel = el('select', {}, el('option', { value: '' }, 'Tất cả loại'),
-      ...['text', 'image', 'pdf', 'youtube', 'facebook', 'link'].map((t) => el('option', { value: t }, TYPE_LABEL[t])));
+      ...['text', 'image', 'pdf', 'video', 'youtube', 'facebook', 'link'].map((t) => el('option', { value: t }, TYPE_LABEL[t])));
     const skillSel = el('select', {}, el('option', { value: '' }, 'Tất cả kỹ năng'),
       ...State.skills.map((s) => el('option', { value: s.id, selected: s.id === presetSkill ? '' : null }, s.icon + ' ' + s.name_vi)));
     if (presetSkill) skillSel.value = presetSkill;
