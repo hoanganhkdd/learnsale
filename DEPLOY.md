@@ -111,7 +111,19 @@ function getFolder_(name) {
   return it.hasNext() ? it.next() : DriveApp.createFolder(name);
 }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
-function doGet() { return json_({ ok: true, msg: 'Webhook alive' }); }
+
+// Mở URL /exec: tạo folder nếu chưa có và TRẢ LUÔN LINK FOLDER
+function doGet() {
+  var f = getFolder_(FOLDER_NAME);
+  return json_({ ok: true, msg: 'Webhook alive', folder: f.getUrl() });
+}
+
+// ▶ Chạy hàm này 1 lần (bấm Run) để TẠO folder + IN LINK ra Execution log
+function showFolderLink() {
+  var f = getFolder_(FOLDER_NAME);
+  Logger.log('FOLDER: ' + f.getUrl());
+  return f.getUrl();
+}
 ```
 
 > ⚠️ **KHÔNG test bằng nút ▶ Run** — chạy tay báo lỗi `postData` vì thiếu `e`. Đó là bình thường. Chỉ test qua **URL Web App**.
