@@ -43,12 +43,15 @@ Một Apps Script Web App làm cả 2 việc:
 - **Lưu ảnh/PDF lên Google Drive** (thư mục `LearnSale Library`), chia sẻ "anyone with link", trả về link Drive.
 - **Ghi metadata + link** vào Google Sheet (tab `Resources`) để thống kê/truy xuất.
 
+> 📌 **File lưu vào Drive của tài khoản NÀO?** = tài khoản **sở hữu Apps Script** (Web App chạy *Execute as: Me*). Muốn lưu vào Drive của **hoanganhkdd@gmail.com** → hãy **đăng nhập đúng tài khoản đó** rồi mới tạo Sheet + Apps Script + Deploy. Mở URL `/exec` sẽ in ra `account` để bạn xác nhận đang chạy bằng tài khoản nào. (Tuỳ chọn: dán `FOLDER_ID` để lưu vào đúng 1 thư mục có sẵn.)
+
 ### Bước 1 — Tạo Google Apps Script
-1. Tạo 1 **Google Sheet** mới.
+1. **Đăng nhập tài khoản Google bạn muốn dùng** (vd hoanganhkdd@gmail.com), rồi tạo 1 **Google Sheet** mới.
 2. Menu **Extensions → Apps Script**, dán đoạn sau (thay toàn bộ):
 
 ```javascript
 var FOLDER_NAME = 'LearnSale Library';
+var FOLDER_ID = ''; // (tuỳ chọn) dán ID 1 folder có sẵn trong Drive của bạn để lưu vào đúng đó
 
 function doPost(e) {
   // Guard: khi bấm ▶ Run trực tiếp, Google KHÔNG truyền e → tránh lỗi 'postData'
@@ -73,7 +76,7 @@ function handleRemove_(body) {
 
 // Lưu 1 file lên Google Drive, trả link xem trực tiếp
 function handleUpload_(file) {
-  var folder = getFolder_(FOLDER_NAME);
+  var folder = getFolder_();
   var bytes = Utilities.base64Decode(file.data);
   var blob = Utilities.newBlob(bytes, file.mimetype || 'application/octet-stream', file.title || file.name || 'file');
   var f = folder.createFile(blob);
@@ -106,21 +109,23 @@ function handleRows_(rows) {
   return json_({ ok: true, count: rows.length });
 }
 
-function getFolder_(name) {
-  var it = DriveApp.getFoldersByName(name);
-  return it.hasNext() ? it.next() : DriveApp.createFolder(name);
+function getFolder_() {
+  if (FOLDER_ID) { try { return DriveApp.getFolderById(FOLDER_ID); } catch (e) {} }
+  var it = DriveApp.getFoldersByName(FOLDER_NAME);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
 }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
-// Mở URL /exec: tạo folder nếu chưa có và TRẢ LUÔN LINK FOLDER
+// Mở URL /exec: tạo folder nếu chưa có và TRẢ LUÔN LINK FOLDER + email tài khoản đang chạy
 function doGet() {
-  var f = getFolder_(FOLDER_NAME);
-  return json_({ ok: true, msg: 'Webhook alive', folder: f.getUrl() });
+  var f = getFolder_();
+  return json_({ ok: true, msg: 'Webhook alive', account: Session.getEffectiveUser().getEmail(), folder: f.getUrl() });
 }
 
-// ▶ Chạy hàm này 1 lần (bấm Run) để TẠO folder + IN LINK ra Execution log
+// ▶ Chạy hàm này 1 lần (bấm Run) để TẠO folder + IN LINK & EMAIL ra Execution log
 function showFolderLink() {
-  var f = getFolder_(FOLDER_NAME);
+  var f = getFolder_();
+  Logger.log('ACCOUNT: ' + Session.getEffectiveUser().getEmail());
   Logger.log('FOLDER: ' + f.getUrl());
   return f.getUrl();
 }
