@@ -141,15 +141,26 @@ function getSheetsWebhook() {
   const s = readSettings();
   return (s.sheetsWebhook || process.env.SHEETS_WEBHOOK_URL || '').trim();
 }
+function extractImageLinks(note) {
+  const out = [];
+  String(note || '').replace(/!\[[^\]]*\]\(([^)]+)\)/g, (m, u) => { out.push(u); return m; });
+  return out;
+}
 async function pushToSheet(resources) {
   const url = getSheetsWebhook();
   if (!url) return { ok: false, skipped: true };
-  const rows = (resources || []).map((r) => ({
-    id: r.id, title: r.title || '', type: r.type || '', url: r.url || '',
-    tags: (r.tags || []).join(', '), skillId: r.skillId || '',
-    note: String(r.note || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '[ảnh]').slice(0, 800),
-    createdAt: r.createdAt || '',
-  }));
+  const rows = (resources || []).map((r) => {
+    const imgs = extractImageLinks(r.note);
+    // Link truy cập chính: url của tài liệu (Drive/link), hoặc link ảnh đầu tiên nếu là ghi chú có ảnh
+    const accessUrl = r.url || (r.drive && r.drive.viewUrl) || imgs[0] || '';
+    return {
+      id: r.id, title: r.title || '', type: r.type || '', url: accessUrl,
+      tags: (r.tags || []).join(', '), skillId: r.skillId || '',
+      images: imgs.join('\n'),
+      note: String(r.note || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '[ảnh]').slice(0, 800),
+      createdAt: r.createdAt || '',
+    };
+  });
   const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows }) });
   return { ok: resp.ok, status: resp.status };
 }
@@ -181,7 +192,8 @@ async function driveUpload(absPath, name, title, mimetype) {
       body: JSON.stringify({ action: 'upload', file: { name, title: title || name, mimetype: mimetype || '', data: b64 } }),
     });
     const d = await resp.json().catch(() => null);
-    return d && d.ok ? d : null;
+    // Chỉ coi là thành công khi có link/id Drive (tránh Apps Script cũ trả ok nhưng không có url)
+    return d && d.ok && (d.url || d.viewUrl || d.id) ? d : null;
   } catch (e) { console.error('[drive]', e.message); return null; }
 }
 

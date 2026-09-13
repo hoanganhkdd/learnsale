@@ -88,8 +88,13 @@ function handleUpload_(file) {
 function handleRows_(rows) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Resources') || ss.insertSheet('Resources');
-  var headers = ['id','title','type','url','tags','skillId','note','createdAt'];
+  var headers = ['id','title','type','url','tags','skillId','images','note','createdAt'];
   if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+  else if (sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].indexOf('images') === -1) {
+    // Sheet cũ thiếu cột images → chèn cột trước 'note'
+    var noteCol = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].indexOf('note') + 1;
+    if (noteCol > 0) { sheet.insertColumnBefore(noteCol); sheet.getRange(1, noteCol).setValue('images'); }
+  }
   var data = sheet.getDataRange().getValues();
   var idIndex = {};
   for (var i = 1; i < data.length; i++) idIndex[data[i][0]] = i + 1;
