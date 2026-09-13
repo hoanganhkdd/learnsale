@@ -61,14 +61,14 @@ function doPost(e) {
   return handleRows_(body.rows || []);
 }
 
-// Xoá: bỏ file Drive vào thùng rác + xoá dòng trong Sheet theo id
+// Xoá: bỏ file Drive vào thùng rác + xoá dòng trong Sheet theo id (cột ID = cột J)
 function handleRemove_(body) {
   if (body.driveId) { try { DriveApp.getFileById(body.driveId).setTrashed(true); } catch (err) {} }
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Resources');
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Links');
   if (sheet && body.id) {
     var data = sheet.getDataRange().getValues();
     for (var i = data.length - 1; i >= 1; i--) {
-      if (data[i][0] === body.id) sheet.deleteRow(i + 1);
+      if (data[i][9] === body.id) sheet.deleteRow(i + 1);
     }
   }
   return json_({ ok: true });
@@ -92,26 +92,37 @@ function handleUpload_(file) {
     viewUrl: 'https://drive.google.com/file/d/' + id + '/view' });
 }
 
-// Ghi/upsert các dòng metadata vào tab Resources
-function handleRows_(rows) {
+// Tab "Links" với header tiếng Việt (tự tạo/di trú nếu khác)
+function getLinksSheet_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('Resources') || ss.insertSheet('Resources');
-  var headers = ['id','title','type','url','tags','skillId','images','note','createdAt'];
-  if (sheet.getLastRow() === 0) sheet.appendRow(headers);
-  else if (sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].indexOf('images') === -1) {
-    // Sheet cũ thiếu cột images → chèn cột trước 'note'
-    var noteCol = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].indexOf('note') + 1;
-    if (noteCol > 0) { sheet.insertColumnBefore(noteCol); sheet.getRange(1, noteCol).setValue('images'); }
+  var sheet = ss.getSheetByName('Links') || ss.insertSheet('Links');
+  var headers = ['Thời gian','Module','Bài học','Loại','Tiêu đề','Link','Ảnh','Tags','Ghi chú','ID'];
+  var cur = sheet.getLastRow() ? sheet.getRange(1, 1, 1, 10).getValues()[0] : [];
+  if (cur[0] !== 'Thời gian') {
+    sheet.clearContents();
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+    sheet.setFrozenRows(1); sheet.setColumnWidth(7, 240);
   }
+  return sheet;
+}
+
+// Ghi/upsert dòng vào tab Links; cột "Ảnh" hiện thumbnail =IMAGE()
+function handleRows_(rows) {
+  var sheet = getLinksSheet_();
   var data = sheet.getDataRange().getValues();
   var idIndex = {};
-  for (var i = 1; i < data.length; i++) idIndex[data[i][0]] = i + 1;
-  rows.forEach(function (r) {
-    var line = headers.map(function (h) { return r[h] != null ? r[h] : ''; });
-    if (idIndex[r.id]) sheet.getRange(idIndex[r.id], 1, 1, headers.length).setValues([line]);
-    else sheet.appendRow(line);
+  for (var i = 1; i < data.length; i++) idIndex[data[i][9]] = i + 1; // cột J = ID
+  (rows || []).forEach(function (r) {
+    var line = [r.time || '', r.module || '', r.lesson || '', r.type || '', r.title || '', r.url || '', '', r.tags || '', r.note || '', r.id || ''];
+    var row;
+    if (idIndex[r.id]) { row = idIndex[r.id]; sheet.getRange(row, 1, 1, 10).setValues([line]); }
+    else { sheet.appendRow(line); row = sheet.getLastRow(); }
+    if (r.imageId) {
+      sheet.getRange(row, 7).setFormula('=IMAGE("https://drive.google.com/thumbnail?id=' + r.imageId + '&sz=w600")');
+      sheet.setRowHeight(row, 120);
+    } else { sheet.getRange(row, 7).setValue(''); }
   });
-  return json_({ ok: true, count: rows.length });
+  return json_({ ok: true, count: (rows || []).length });
 }
 
 function getFolder_() {
@@ -150,7 +161,8 @@ function showFolderLink() {
 ### Cách hoạt động
 - **Thêm ảnh/PDF** → app đẩy file lên **Google Drive** (thư mục `LearnSale Library`), lưu link Drive làm `url` của tài liệu, đồng thời ghi 1 dòng vào Sheet.
 - **Thêm text/link** → chỉ ghi 1 dòng metadata vào Sheet.
-- Nút **🔗 Đồng bộ Sheets** → đẩy lại **toàn bộ** danh sách (upsert theo `id`).
+- Sheet dùng tab **`Links`** với cột tiếng Việt: `Thời gian · Module · Bài học · Loại · Tiêu đề · Link · Ảnh · Tags · Ghi chú · ID`. Cột **Ảnh** hiện **thumbnail** bằng `=IMAGE()`. (Tab `Resources` cũ nếu có thì bỏ qua/xoá tay.)
+- Nút **🔗 Đồng bộ Sheets** → đẩy lại **toàn bộ** danh sách (upsert theo `id`, cột ID).
 - **Xoá tài liệu** trong app → tự **xoá file trên Drive** (vào thùng rác) **và xoá dòng** tương ứng trong Sheet.
 
 > Ghi chú hiển thị ảnh: link `uc?export=view&id=…` thường hiển thị được trong thẻ `<img>`. Nếu một ảnh không hiện (Google chặn hotlink), vẫn có link Drive để mở. Muốn hiển thị chắc chắn 100% → chọn phương án "Cả Drive + MongoDB".

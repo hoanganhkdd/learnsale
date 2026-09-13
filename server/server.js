@@ -146,19 +146,36 @@ function extractImageLinks(note) {
   String(note || '').replace(/!\[[^\]]*\]\(([^)]+)\)/g, (m, u) => { out.push(u); return m; });
   return out;
 }
+// Trích Drive file-id từ 1 URL (nhiều dạng)
+function driveIdFromUrl(u) {
+  const s = String(u || '').replace(/&amp;/g, '&');
+  const m = s.match(/\/d\/([\w-]{20,})/) || s.match(/[?&]id=([\w-]{20,})/) || s.match(/googleusercontent\.com\/d\/([\w-]{20,})/);
+  return m ? m[1] : '';
+}
+const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+function toAbsUrl(u) {
+  if (u && u.startsWith('/uploads') && PUBLIC_URL) return PUBLIC_URL + u;
+  return u || '';
+}
 async function pushToSheet(resources) {
   const url = getSheetsWebhook();
   if (!url) return { ok: false, skipped: true };
   const rows = (resources || []).map((r) => {
     const imgs = extractImageLinks(r.note);
-    // Link truy cập chính: url của tài liệu (Drive/link), hoặc link ảnh đầu tiên nếu là ghi chú có ảnh
-    const accessUrl = r.url || (r.drive && r.drive.viewUrl) || imgs[0] || '';
+    const accessUrl = toAbsUrl(r.url || (r.drive && r.drive.viewUrl) || imgs[0] || '');
+    // id ảnh để hiện thumbnail =IMAGE() trong Sheet: ưu tiên file Drive của chính tài liệu, rồi ảnh dán trong ghi chú
+    const imageId = (r.drive && r.drive.id) || driveIdFromUrl(r.url) || driveIdFromUrl(imgs[0] || '');
     return {
-      id: r.id, title: r.title || '', type: r.type || '', url: accessUrl,
-      tags: (r.tags || []).join(', '), skillId: r.skillId || '',
-      images: imgs.join('\n'),
+      id: r.id,
+      time: r.createdAt || new Date().toISOString(),
+      module: skillFolderName(r.skillId),
+      lesson: '',
+      type: r.type || '',
+      title: r.title || '',
+      url: accessUrl,
+      imageId,
+      tags: (r.tags || []).join(', '),
       note: String(r.note || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '[ảnh]').slice(0, 800),
-      createdAt: r.createdAt || '',
     };
   });
   const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows }) });
