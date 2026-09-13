@@ -335,9 +335,10 @@ function deleteUploadFile(file) {
 }
 
 app.get('/api/resources', (req, res) => {
-  const { skill, type, q } = req.query;
+  const { skill, session, type, q } = req.query;
+  const grp = skill || session; // 'session' là alias của 'skill' (mã bài học/nhóm)
   let list = readLibrary().resources;
-  if (skill) list = list.filter((r) => r.skillId === skill);
+  if (grp) list = list.filter((r) => r.skillId === grp);
   if (type) list = list.filter((r) => r.type === type);
   if (q) {
     const needle = String(q).toLowerCase();
@@ -349,6 +350,8 @@ app.get('/api/resources', (req, res) => {
         .includes(needle)
     );
   }
+  // Sắp theo createdAt giảm dần (mới nhất trước)
+  list = list.slice().sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
   res.json({ resources: list });
 });
 
@@ -417,6 +420,17 @@ app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
   writeJSON(LIBRARY_FILE, lib);
   syncSheetSafe([resource]);
   res.status(201).json(resource);
+});
+
+// Chỉ upload 1 ảnh cho việc DÁN vào ghi chú → trả { url } (không tạo resource)
+app.post('/api/upload-image', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Không có ảnh' });
+  const folder = skillFolderName((req.body || {}).skillId);
+  const absPath = path.join(UPLOADS_DIR, req.file.filename);
+  const d = await driveUpload(absPath, req.file.filename, req.file.originalname, req.file.mimetype, folder);
+  if (d) { fs.promises.unlink(absPath).catch(() => {}); return res.status(201).json({ url: d.url || d.viewUrl, name: req.file.originalname }); }
+  await mirrorFile(req.file.filename, req.file.originalname, req.file.mimetype, absPath);
+  res.status(201).json({ url: `/uploads/${req.file.filename}`, name: req.file.originalname });
 });
 
 // Upload nhiều ảnh cùng lúc để NHÚNG vào nội dung → trả danh sách URL (Drive nếu có webhook)
@@ -498,6 +512,19 @@ app.post('/api/sheets/sync', async (req, res) => {
   }
 });
 app.get('/api/sheets/status', (req, res) => res.json({ configured: Boolean(getSheetsWebhook()), mongo: Boolean(mdb) }));
+
+// Alias theo spec: /api/gsheet/status & /api/gsheet/sync-all
+app.get('/api/gsheet/status', (req, res) => res.json({ configured: Boolean(getSheetsWebhook()) }));
+app.post('/api/gsheet/sync-all', async (req, res) => {
+  if (!getSheetsWebhook()) return res.json({ ok: false, error: 'no_webhook', message: 'Chưa cấu hình Google Sheets webhook. Vào ⚙️ Cài đặt để thêm.' });
+  try {
+    const lib = readLibrary();
+    const out = await pushToSheet(lib.resources);
+    res.json({ ok: out.ok, count: lib.resources.length });
+  } catch (e) {
+    res.status(200).json({ ok: false, error: 'sync_error', message: e.message });
+  }
+});
 
 // ==========================================================================
 // AI: CHAT (proxy ChatGPT) + INSIGHT
