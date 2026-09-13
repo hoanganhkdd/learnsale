@@ -181,29 +181,35 @@ async function removeFromGoogle(r) {
 const removeFromGoogleSafe = (r) => { removeFromGoogle(r).catch(() => {}); };
 
 // Tải file lên Google Drive qua Apps Script webhook → trả {ok,id,url,viewUrl}
-async function driveUploadData(b64, name, title, mimetype) {
+async function driveUploadData(b64, name, title, mimetype, folder) {
   const url = getSheetsWebhook();
   if (!url) return null;
   try {
     const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'upload', file: { name, title: title || name, mimetype: mimetype || '', data: b64 } }),
+      body: JSON.stringify({ action: 'upload', file: { name, title: title || name, mimetype: mimetype || '', data: b64, folder: folder || '' } }),
     });
     const d = await resp.json().catch(() => null);
     // Chỉ coi là thành công khi có link/id Drive (tránh Apps Script cũ trả ok nhưng không có url)
     return d && d.ok && (d.url || d.viewUrl || d.id) ? d : null;
   } catch (e) { console.error('[drive]', e.message); return null; }
 }
-async function driveUpload(absPath, name, title, mimetype) {
-  try { return await driveUploadData(fs.readFileSync(absPath).toString('base64'), name, title, mimetype); }
+async function driveUpload(absPath, name, title, mimetype, folder) {
+  try { return await driveUploadData(fs.readFileSync(absPath).toString('base64'), name, title, mimetype, folder); }
   catch (e) { console.error('[drive]', e.message); return null; }
 }
 // Lưu nội dung text thành file .txt trên Drive
-async function driveUploadText(title, text) {
+async function driveUploadText(title, text, folder) {
   const b64 = Buffer.from(String(text || ''), 'utf8').toString('base64');
   const base = (slugify(title) || 'note').slice(0, 60);
-  return driveUploadData(b64, base + '.txt', title || 'note', 'text/plain');
+  return driveUploadData(b64, base + '.txt', title || 'note', 'text/plain', folder);
+}
+// Tên folder con theo kỹ năng (đóng gói tài liệu mỗi kỹ năng vào 1 folder = tiêu đề kỹ năng)
+function skillFolderName(skillId) {
+  if (!skillId) return '';
+  const s = readSkills().skills.find((x) => x.id === skillId);
+  return s ? (s.name_vi || s.name_en || skillId) : String(skillId);
 }
 
 const uid = (p = 'id') => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -364,7 +370,7 @@ app.post('/api/resources', async (req, res) => {
   };
   // text → tạo bản .txt trên Drive, lưu link để truy xuất
   if (type === 'text' && (note || title)) {
-    const d = await driveUploadText(resource.title, note || '');
+    const d = await driveUploadText(resource.title, note || '', skillFolderName(skillId));
     if (d) { resource.drive = { id: d.id, viewUrl: d.viewUrl || '' }; if (!resource.url) resource.url = d.url || d.viewUrl || ''; }
   }
   const lib = readLibrary();
@@ -384,7 +390,7 @@ app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
   let fileRef = req.file.filename;
   let drive = null;
 
-  const d = await driveUpload(absPath, req.file.filename, title || req.file.originalname, req.file.mimetype);
+  const d = await driveUpload(absPath, req.file.filename, title || req.file.originalname, req.file.mimetype, skillFolderName(skillId));
   if (d) {
     url = d.url || d.viewUrl || url;
     drive = { id: d.id, viewUrl: d.viewUrl || '' };
@@ -415,10 +421,11 @@ app.post('/api/resources/upload', upload.single('file'), async (req, res) => {
 
 // Upload nhiều ảnh cùng lúc để NHÚNG vào nội dung → trả danh sách URL (Drive nếu có webhook)
 app.post('/api/upload', upload.array('files', 30), async (req, res) => {
+  const folder = skillFolderName((req.body || {}).skillId);
   const files = [];
   for (const f of (req.files || [])) {
     const absPath = path.join(UPLOADS_DIR, f.filename);
-    const d = await driveUpload(absPath, f.filename, f.originalname, f.mimetype);
+    const d = await driveUpload(absPath, f.filename, f.originalname, f.mimetype, folder);
     if (d) { files.push({ url: d.url || d.viewUrl, name: f.originalname }); fs.promises.unlink(absPath).catch(() => {}); }
     else { await mirrorFile(f.filename, f.originalname, f.mimetype, absPath); files.push({ url: `/uploads/${f.filename}`, name: f.originalname }); }
   }

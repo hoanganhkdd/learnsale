@@ -31,9 +31,27 @@
   const esc = (s) =>
     String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // markdown nhẹ: **đậm**, *nghiêng*, xuống dòng
+  // Trích file-id từ link Google Drive (nhiều dạng)
+  const driveId = (u) => {
+    const s = String(u || '').replace(/&amp;/g, '&'); // gỡ escape để bắt id sau &amp;
+    const m = s.match(/\/d\/([\w-]{20,})/) || s.match(/[?&]id=([\w-]{20,})/) || s.match(/googleusercontent\.com\/d\/([\w-]{20,})/);
+    return m ? m[1] : null;
+  };
+  // URL ảnh hiển thị được trong <img> (Drive uc?id không hotlink được → dùng lh3)
+  const imgDisplaySrc = (u) => { const id = driveId(u); return id ? `https://lh3.googleusercontent.com/d/${id}=w1400` : u; };
+  const imgFallbackSrc = (u) => { const id = driveId(u); return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1400` : ''; };
+  function imgTagHtml(u, alt) {
+    const id = driveId(u);
+    if (id) {
+      const p = `https://lh3.googleusercontent.com/d/${id}=w1400`;
+      const fb = `https://drive.google.com/thumbnail?id=${id}&sz=w1400`;
+      return `<img src="${p}" alt="${alt || ''}" class="md-img" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fb}'">`;
+    }
+    return `<img src="${u}" alt="${alt || ''}" class="md-img" loading="lazy">`;
+  }
   const mdLite = (s) =>
     esc(s)
-      .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1" class="md-img" loading="lazy">')
+      .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, alt, u) => imgTagHtml(u, alt))
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
       .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
       .replace(/\n/g, '<br>');
@@ -575,7 +593,11 @@
   function resourceCard(r, skillId) {
     const media = el('div', { class: 'res-media' });
     if (r.type === 'image') {
-      media.append(el('img', { src: r.url, alt: r.title, loading: 'lazy' }));
+      const img = el('img', { alt: r.title, loading: 'lazy', referrerpolicy: 'no-referrer' });
+      img.src = imgDisplaySrc(r.url);
+      const fb = imgFallbackSrc(r.url);
+      if (fb) img.onerror = () => { img.onerror = null; img.src = fb; };
+      media.append(img);
     } else if (r.type === 'youtube') {
       const id = ytId(r.url);
       if (id) media.append(el('iframe', { src: `https://www.youtube.com/embed/${id}`, allowfullscreen: '', title: r.title }));
@@ -1221,11 +1243,12 @@
     ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
     const pos = s + text.length; ta.selectionStart = ta.selectionEnd = pos; ta.focus();
   }
-  async function uploadImageFiles(fileList) {
+  async function uploadImageFiles(fileList, skillId) {
     const files = [...fileList].filter((f) => f && f.type && f.type.startsWith('image/'));
     if (!files.length) return [];
     const fd = new FormData();
     files.forEach((f) => fd.append('files', f));
+    if (skillId) fd.append('skillId', skillId);
     const res = await api.uploadFiles(fd);
     return (res && res.files) || [];
   }
@@ -1257,7 +1280,7 @@
       if (!imgs.length) return;
       const old = insertBtn.textContent; insertBtn.disabled = true; insertBtn.innerHTML = '<span class="spinner"></span> Đang tải ảnh…';
       try {
-        const uploaded = await uploadImageFiles(imgs);
+        const uploaded = await uploadImageFiles(imgs, skillId);
         uploaded.forEach((u) => insertAtCursor(note, `\n![${u.name || 'ảnh'}](${u.url})\n`));
         if (uploaded.length) toast(`🖼️ Đã chèn ${uploaded.length} ảnh.`, 'ok');
       } catch (e) { toast('Lỗi tải ảnh: ' + e.message, 'err'); }

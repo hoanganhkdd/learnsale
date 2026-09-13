@@ -77,6 +77,11 @@ function handleRemove_(body) {
 // Lưu 1 file lên Google Drive, trả link xem trực tiếp
 function handleUpload_(file) {
   var folder = getFolder_();
+  // Đóng gói mỗi kỹ năng vào 1 folder con (tên = tiêu đề kỹ năng)
+  if (file.folder) {
+    var sub = folder.getFoldersByName(file.folder);
+    folder = sub.hasNext() ? sub.next() : folder.createFolder(file.folder);
+  }
   var bytes = Utilities.base64Decode(file.data);
   var blob = Utilities.newBlob(bytes, file.mimetype || 'application/octet-stream', file.title || file.name || 'file');
   var f = folder.createFile(blob);
