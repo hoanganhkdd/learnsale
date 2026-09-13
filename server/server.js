@@ -155,6 +155,20 @@ async function pushToSheet(resources) {
 }
 const syncSheetSafe = (resources) => { pushToSheet(resources).catch((e) => console.error('[sheets]', e.message)); };
 
+// Xoá tài liệu khỏi Google: xoá file Drive + xoá dòng Sheet (theo id)
+async function removeFromGoogle(r) {
+  const url = getSheetsWebhook();
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'remove', id: r.id, driveId: (r.drive && r.drive.id) || '' }),
+    });
+  } catch (e) { console.error('[gremove]', e.message); }
+}
+const removeFromGoogleSafe = (r) => { removeFromGoogle(r).catch(() => {}); };
+
 // Tải file lên Google Drive qua Apps Script webhook → trả {ok,id,url,viewUrl}
 async function driveUpload(absPath, name, title, mimetype) {
   const url = getSheetsWebhook();
@@ -391,6 +405,7 @@ app.delete('/api/resources/:id', (req, res) => {
   if (!r) return res.status(404).json({ error: 'Không tìm thấy tài liệu' });
   deleteUploadFile(r.file);
   removeMongoFile(r.file);
+  removeFromGoogleSafe(r); // xoá file Drive + dòng Sheet (nếu có webhook)
   lib.resources = lib.resources.filter((x) => x.id !== id);
   writeJSON(LIBRARY_FILE, lib);
   res.json({ ok: true });

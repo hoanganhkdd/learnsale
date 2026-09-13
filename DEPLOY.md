@@ -54,7 +54,21 @@ function doPost(e) {
   // Guard: khi bấm ▶ Run trực tiếp, Google KHÔNG truyền e → tránh lỗi 'postData'
   var body = (e && e.postData && e.postData.contents) ? JSON.parse(e.postData.contents) : {};
   if (body.action === 'upload' && body.file) return handleUpload_(body.file);
+  if (body.action === 'remove') return handleRemove_(body);
   return handleRows_(body.rows || []);
+}
+
+// Xoá: bỏ file Drive vào thùng rác + xoá dòng trong Sheet theo id
+function handleRemove_(body) {
+  if (body.driveId) { try { DriveApp.getFileById(body.driveId).setTrashed(true); } catch (err) {} }
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Resources');
+  if (sheet && body.id) {
+    var data = sheet.getDataRange().getValues();
+    for (var i = data.length - 1; i >= 1; i--) {
+      if (data[i][0] === body.id) sheet.deleteRow(i + 1);
+    }
+  }
+  return json_({ ok: true });
 }
 
 // Lưu 1 file lên Google Drive, trả link xem trực tiếp
@@ -110,6 +124,7 @@ function doGet() { return json_({ ok: true, msg: 'Webhook alive' }); }
 - **Thêm ảnh/PDF** → app đẩy file lên **Google Drive** (thư mục `LearnSale Library`), lưu link Drive làm `url` của tài liệu, đồng thời ghi 1 dòng vào Sheet.
 - **Thêm text/link** → chỉ ghi 1 dòng metadata vào Sheet.
 - Nút **🔗 Đồng bộ Sheets** → đẩy lại **toàn bộ** danh sách (upsert theo `id`).
+- **Xoá tài liệu** trong app → tự **xoá file trên Drive** (vào thùng rác) **và xoá dòng** tương ứng trong Sheet.
 
 > Ghi chú hiển thị ảnh: link `uc?export=view&id=…` thường hiển thị được trong thẻ `<img>`. Nếu một ảnh không hiện (Google chặn hotlink), vẫn có link Drive để mở. Muốn hiển thị chắc chắn 100% → chọn phương án "Cả Drive + MongoDB".
 
