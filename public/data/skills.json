@@ -450,6 +450,78 @@
               ]
             }
           ]
+        },
+        {
+          "id": "gt-7",
+          "title_vi": "Perfect Store & chuẩn thực thi tại điểm bán",
+          "title_en": "Perfect Store & In-store Execution Excellence",
+          "objective": "Biến chiến lược thành kết quả tại điểm bán qua chuẩn thực thi 4 trụ: Sẵn hàng · Hiển thị · Giá · Khuyến mãi — và cách đo tuân thủ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Execution (thực thi)**: biến kế hoạch bán hàng thành hành động chuẩn tại từng điểm bán.",
+                "**4 trụ Perfect Store**: Availability (đủ hàng) · Visibility (hiển thị) · Price (đúng giá) · Promotion (đúng KM).",
+                "**Compliance (tuân thủ)**: % điểm bán đạt chuẩn.",
+                "**Picture of Success (PicOS)**: hình ảnh chuẩn điểm bán cần đạt."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Định nghĩa PicOS theo loại điểm bán (tạp hoá nhỏ/lớn).",
+                "Huấn luyện DSR theo chuẩn + checklist.",
+                "Thực thi trong call: sẵn hàng, trưng bày, giá, POSM khuyến mãi.",
+                "Audit bằng ảnh + chấm điểm Perfect Store.",
+                "Khen thưởng/khắc phục theo điểm → nâng compliance."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Gắn **Perfect Store score** vào KPI & thưởng để thúc thực thi.",
+                "Dùng **ảnh trước–sau** làm bằng chứng & huấn luyện.",
+                "Ưu tiên nhóm điểm bán A đạt chuẩn trước (80/20)."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một NPP áp PicOS cho 1.000 tạp hoá: chuẩn 'đủ 8 SKU chủ lực, giá đúng, 1 POSM khuyến mãi'. Chấm điểm qua ảnh hàng tuần; compliance tăng từ 55%→82% trong 2 tháng, kéo sell-out tăng mà không cần giảm giá thêm."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Vẽ PicOS cho 1 loại điểm bán (liệt kê tiêu chí đạt).",
+                "Chấm điểm Perfect Store cho 1 cửa hàng thực tế (4 trụ).",
+                "Đề xuất 2 hành động nâng compliance nhóm điểm bán yếu."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Có chiến lược hay nhưng thực thi lỏng → không ra kết quả.",
+                "Không đo compliance → không biết điểm bán nào rớt chuẩn.",
+                "Chuẩn PicOS quá phức tạp → DSR không làm nổi."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Execution = thực thi; Compliance = mức tuân thủ",
+                "PicOS = Picture of Success (ảnh chuẩn thành công)",
+                "Availability/Visibility = sẵn hàng/hiển thị",
+                "Perfect Store score = điểm chuẩn điểm bán",
+                "Audit = kiểm tra/đánh giá"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -964,6 +1036,78 @@
               ]
             }
           ]
+        },
+        {
+          "id": "mt-8",
+          "title_vi": "Category Management & planogram theo shopper",
+          "title_en": "Category Management & Shopper-based Planogram",
+          "objective": "Quản trị ngành hàng như một đơn vị kinh doanh: tối ưu cơ cấu SKU và planogram dựa trên dữ liệu & hành vi shopper để tăng cả category.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Category management**: quản lý cả nhóm hàng để tối đa doanh thu & trải nghiệm mua.",
+                "**Role of category**: vai trò (destination, routine, convenience, seasonal) → cách đầu tư khác nhau.",
+                "**Assortment**: cơ cấu SKU — bỏ SKU kém, giữ/ thêm SKU tăng trưởng.",
+                "**Shopper decision tree**: cách shopper chọn trong ngành hàng → sắp kệ theo đó."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Định nghĩa ngành hàng & vai trò với chuỗi.",
+                "Phân tích dữ liệu: doanh số/m², tồn, cơ cấu SKU, uplift KM.",
+                "Tối ưu assortment (bỏ/giữ/thêm) theo đóng góp & tăng trưởng.",
+                "Xếp planogram theo shopper decision tree (block theo nhu cầu).",
+                "Đo sell-out & điều chỉnh; đề xuất với buyer bằng số liệu."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Fact-based selling**: dùng dữ liệu category để thuyết phục buyer, không cảm tính.",
+                "**Assortment 80/20**: cắt đuôi SKU kém, dồn kệ cho SKU chủ lực.",
+                "Sắp kệ theo **decision tree** (thương hiệu → loại → dung tích) cho dễ chọn."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Phân tích cho thấy 30% SKU tạo 5% doanh số. Nhãn đề xuất cắt SKU kém, mở rộng dòng bán chạy, sắp lại kệ theo cách shopper chọn (hoà tan–rang xay–phin). Doanh số ngành hàng của chuỗi tăng 12% → nhãn được mời làm category captain."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Xác định vai trò 1 ngành hàng & cách đầu tư phù hợp.",
+                "Đề xuất 3 SKU bỏ + 3 SKU thêm kèm lý do bằng số.",
+                "Vẽ 1 planogram theo shopper decision tree."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chỉ nghĩ cho nhãn mình, ép SKU → mất niềm tin của chuỗi.",
+                "Giữ quá nhiều SKU đuôi → rối kệ, chôn vốn.",
+                "Sắp kệ theo ý mình, không theo cách shopper chọn."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Category management = quản trị ngành hàng",
+                "Assortment = cơ cấu/danh mục SKU",
+                "Role of category = vai trò ngành hàng",
+                "Shopper decision tree = cây quyết định của người mua",
+                "Category captain = nhà cung cấp tư vấn ngành hàng"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1403,6 +1547,78 @@
               ]
             }
           ]
+        },
+        {
+          "id": "b2b-7",
+          "title_vi": "Tư duy phản biện & đặt câu hỏi tốt trong bán hàng",
+          "title_en": "Critical Thinking & Better Questions in Selling",
+          "objective": "Dùng khung 5W1H để đặt câu hỏi sắc hơn — phát hiện thiên kiến, kiểm chứng bằng chứng và hiểu đúng nhu cầu khách trước khi đề xuất.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Critical thinking (tư duy phản biện)**: bắt đầu bằng ĐẶT CÂU HỎI TỐT HƠN trước khi chấp nhận một ý.",
+                "**5W1H**: Who · What · Where · When · Why · How — khung soi mọi nhận định.",
+                "**Bias (thiên kiến)**: giả định ngầm làm lệch kết luận.",
+                "**Evidence**: bằng chứng/dữ liệu kiểm chứng điều khách (hoặc ta) đang tin."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Trước khi chốt giải pháp, hỏi 5W1H về tình huống khách.",
+                "Who/What: ai quyết định, vấn đề thực là gì?",
+                "Why/When: vì sao quan trọng, vì sao bây giờ?",
+                "Where/How: ở đâu phát sinh, giải quyết thế nào?",
+                "Kiểm chứng bằng evidence, loại bỏ bias → kết luận đúng."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Ghép 5W1H với **SPIN** (xem bài SPIN Selling): câu hỏi tốt lộ Problem & Implication.",
+                "Hỏi 'vì sao' nhiều lớp (5 Whys) để tới nguyên nhân gốc.",
+                "Phân biệt **quan sát** (fact) với **suy diễn** (assumption) khi nghe khách."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Khách nói 'giải pháp của em đắt'. Thay vì giảm giá, hỏi: So với cái gì? (What) Ai đánh giá đắt? (Who) Đắt ở khía cạnh nào? (Where) Vì sao ngân sách là rào cản lúc này? (Why). Hoá ra 'đắt' là do chưa thấy ROI → trình ROI, không cần giảm giá."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết 1 câu 5W1H cho mỗi chữ với 1 tình huống khách thật.",
+                "Dùng 5 Whys truy nguyên nhân gốc 1 phản đối.",
+                "Tách 3 'quan sát' và 3 'suy diễn' trong 1 ghi chú cuộc gọi."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chấp nhận ngay nhận định của khách (hoặc của mình) mà không hỏi.",
+                "Hỏi hời hợt → bỏ lỡ nguyên nhân gốc & điểm đau thật.",
+                "Lẫn suy diễn với dữ kiện → đề xuất sai."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Critical thinking = tư duy phản biện",
+                "5W1H = Who/What/Where/When/Why/How",
+                "5 Whys = hỏi vì sao 5 lớp tìm gốc rễ",
+                "Bias = thiên kiến; Evidence = bằng chứng",
+                "Observation vs Assumption = quan sát vs suy diễn"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1769,6 +1985,79 @@
                 "Uplift = mức tăng doanh số nhờ trưng bày",
                 "Control vs Test = nhóm đối chứng và nhóm thử nghiệm",
                 "ROI = tỷ suất hoàn vốn"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mer-6",
+          "title_vi": "Shopper Marketing & Perfect Store trưng bày",
+          "title_en": "Shopper Marketing & Perfect Store Display",
+          "objective": "Hiểu hành trình & nhiệm vụ mua sắm của shopper để thiết kế trưng bày 'perfect store' tác động đúng khoảnh khắc quyết định.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Shopper ≠ Consumer**: người MUA (shopper) có thể khác người DÙNG (consumer) — trưng bày nhắm shopper.",
+                "**Path to purchase (hành trình mua)**: các điểm chạm từ nhu cầu → tìm → chọn → mua.",
+                "**FMOT (First Moment of Truth)**: vài giây tại kệ quyết định chọn hay bỏ qua.",
+                "**Shopper mission**: lý do chuyến đi (mua nhanh, mua lớn, mua theo dịp) → bố trí khác nhau.",
+                "**Perfect Store**: chuẩn điểm bán lý tưởng (đủ hàng, đúng vị trí, đúng giá, đúng POSM)."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định shopper mission chính của điểm bán.",
+                "Lập chuẩn Perfect Store: availability · visibility · price · promotion.",
+                "Thiết kế trưng bày theo nhiệm vụ & path to purchase.",
+                "Triển khai + chụp ảnh đối chiếu chuẩn (compliance).",
+                "Đo điểm Perfect Store & sell-out → tinh chỉnh."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Thắng **FMOT** bằng block màu, tầm mắt, POSM gọn — khách chỉ liếc vài giây.",
+                "Bố trí theo **shopper mission** (combo tiện lợi gần quầy, mua lớn ở kệ chính).",
+                "Dùng **điểm Perfect Store** làm KPI thực thi cho đội sales/merchandiser."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Cửa hàng tiện lợi có mission 'mua nhanh': đặt nước + snack + combo ăn vặt ngay lối ra & quầy tính tiền (đánh FMOT). Áp chuẩn Perfect Store (đủ hàng, đúng giá, POSM gọn) và chấm điểm hàng tuần → sell-out nhóm impulse tăng rõ."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Xác định shopper mission của 1 điểm bán bạn quan sát.",
+                "Lập checklist Perfect Store 4 tiêu chí cho 1 ngành hàng.",
+                "Đề xuất bố trí trưng bày theo path to purchase."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Trưng bày cho 'đẹp' mà không theo nhiệm vụ mua của shopper.",
+                "Bỏ qua FMOT (kệ rối, giá mờ) → mất khách ngay tại điểm chọn.",
+                "Không chấm điểm Perfect Store → thực thi trôi nổi."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Shopper vs Consumer = người mua vs người dùng",
+                "Path to purchase = hành trình mua; FMOT = khoảnh khắc sự thật đầu tiên",
+                "Shopper mission = nhiệm vụ/chuyến mua",
+                "Perfect Store = chuẩn điểm bán lý tưởng",
+                "Compliance = mức tuân thủ chuẩn"
               ]
             }
           ]
@@ -2212,6 +2501,78 @@
                 "Flash Sale = ưu đãi chớp nhoáng; Campaign ngày đôi = 9.9/10.10...",
                 "ROAS = doanh thu/chi phí ads",
                 "Shoppertainment = giải trí kết hợp mua sắm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ec-7",
+          "title_vi": "Data Storytelling — kể chuyện với dữ liệu bán hàng",
+          "title_en": "Data Storytelling for Sales Reporting",
+          "objective": "Biến dữ liệu bán hàng thành câu chuyện dẫn tới hành động: tách insight khỏi quan sát, dựng cấu trúc và chọn biểu đồ đúng cho đúng người nghe.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Data storytelling**: kết hợp dữ liệu + câu chuyện + hình ảnh để dẫn người nghe tới quyết định.",
+                "**Insight ≠ Observation**: quan sát là 'cái gì xảy ra'; insight là 'vì sao & nên làm gì'.",
+                "**Audience-first**: kể đúng chuyện cho đúng người (sếp, buyer, đội sales).",
+                "**One chart–one message**: mỗi biểu đồ nói 1 thông điệp hành động."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định người nghe & quyết định họ cần ra.",
+                "Tách insight khỏi đống quan sát (điều gì đáng chú ý & vì sao).",
+                "Dựng cấu trúc: Bối cảnh → Vấn đề → Insight → Hành động.",
+                "Chọn biểu đồ phù hợp (xu hướng→đường, so sánh→cột, cơ cấu→phần).",
+                "Kết bằng khuyến nghị hành động rõ ràng."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "**Insight-led**: mở bằng thông điệp, không mở bằng bảng số.",
+                "Làm nổi bật điểm cần chú ý (màu nhấn), bỏ nhiễu (chartjunk).",
+                "Mỗi slide/biểu đồ gắn 1 **câu tiêu đề = kết luận** (không phải nhãn trục)."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Thay vì gửi bảng 20 cột, báo cáo mở: 'SKU chủ lực OOS cuối tuần làm mất ~9% doanh số' + 1 biểu đồ cột nêu bật đúng điểm đó + khuyến nghị tăng safety stock. Sếp ra quyết định trong 2 phút — vì dữ liệu đã có ý nghĩa & hành động."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Từ 1 bảng số, viết 1 insight (vì sao + nên làm gì).",
+                "Dựng cấu trúc 4 bước cho 1 báo cáo tuần.",
+                "Đặt tiêu đề = kết luận cho 3 biểu đồ."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Dồn đầy số/biểu đồ nhưng không có thông điệp hành động.",
+                "Trình bày quan sát thay vì insight.",
+                "Chọn sai loại biểu đồ → khó đọc, sai ý."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Data storytelling = kể chuyện với dữ liệu",
+                "Insight vs Observation = chắt lọc vì-sao vs mô tả cái-gì",
+                "Audience-first = ưu tiên người nghe",
+                "Chartjunk = yếu tố nhiễu trên biểu đồ",
+                "Call to action = khuyến nghị hành động"
               ]
             }
           ]
