@@ -224,6 +224,242 @@
       "builtin": true,
       "createdAt": "2026-09-05T00:00:00.000Z",
       "skillId": "ecommerce"
+    },
+    {
+      "id": "tpl-perfect-store",
+      "skillId": "general-trade",
+      "title": "Bảng chấm Perfect Store (4 trụ)",
+      "category": "Bảng theo dõi / Tracker",
+      "description": "Chấm điểm thực thi tại điểm bán theo 4 trụ: Sẵn hàng · Hiển thị · Giá · Khuyến mãi. Dùng cho audit ảnh trước/sau.",
+      "content": "Mỗi tiêu chí chấm Đạt (1) / Không (0). Perfect Store = tổng đạt / tổng tiêu chí.",
+      "table": {
+        "headers": [
+          "Điểm bán",
+          "Đủ SKU chủ lực",
+          "Trưng bày/tầm mắt",
+          "POSM đúng",
+          "Giá đúng",
+          "KM đúng",
+          "Điểm (%)",
+          "Ghi chú"
+        ],
+        "rows": [
+          [
+            "Tạp hoá A",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Tạp hoá B",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Siêu thị C",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "tags": [
+        "perfect-store",
+        "execution",
+        "picos",
+        "excel"
+      ],
+      "builtin": true,
+      "createdAt": "2026-10-02T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-promo-roi",
+      "skillId": "modern-trade",
+      "title": "Bảng tính Promotion ROI & Uplift",
+      "category": "Bảng theo dõi / Tracker",
+      "description": "Tách Promotion Rate vs Cost, đo uplift so baseline và tính ROI khuyến mãi cho từng SKU/đợt.",
+      "content": "Uplift = Sản lượng thực − Baseline. ROI = (Lợi nhuận tăng thêm) / Promotion Cost.",
+      "table": {
+        "headers": [
+          "SKU/Đợt KM",
+          "Baseline (SL)",
+          "SL thực tế",
+          "Uplift",
+          "Promotion Rate %",
+          "Promotion Cost",
+          "LN tăng thêm",
+          "ROI",
+          "Kết luận"
+        ],
+        "rows": [
+          [
+            "SKU1 - 9.9",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "SKU2 - 10.10",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "tags": [
+        "promotion",
+        "roi",
+        "uplift",
+        "trade-marketing",
+        "excel"
+      ],
+      "builtin": true,
+      "createdAt": "2026-10-02T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-sales-decomp",
+      "skillId": "general-trade",
+      "title": "Bảng phân rã & chẩn đoán doanh số GT",
+      "category": "Bảng theo dõi / Tracker",
+      "description": "Phân rã doanh số theo Độ phủ × Sức bán/điểm × Cơ cấu SKU để tìm đúng nguyên nhân tăng/giảm.",
+      "content": "So kỳ này với kỳ trước để khoanh vùng đòn bẩy đang kéo/ghì doanh số.",
+      "table": {
+        "headers": [
+          "Khu vực",
+          "Điểm bán active",
+          "Doanh số",
+          "Sức bán/điểm",
+          "% SKU chủ lực",
+          "OOS?",
+          "Nguyên nhân chính",
+          "Hành động"
+        ],
+        "rows": [
+          [
+            "Vùng A",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Vùng B",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "tags": [
+        "decomposition",
+        "coverage",
+        "diagnosis",
+        "excel"
+      ],
+      "builtin": true,
+      "createdAt": "2026-10-02T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-rtm-cost",
+      "skillId": "modern-trade",
+      "title": "Bảng RTM & Cost-to-serve theo kênh",
+      "category": "Bảng theo dõi / Tracker",
+      "description": "So sánh mô hình phục vụ (direct/NPP/online) theo độ phủ, doanh thu và chi phí phục vụ để tối ưu Route to Market.",
+      "content": "Cost-to-serve/đơn = Tổng chi phí phục vụ kênh / số đơn. Cân đối với doanh thu & biên.",
+      "table": {
+        "headers": [
+          "Kênh/Phân khúc",
+          "Mô hình (Direct/NPP/Online)",
+          "Số điểm bán",
+          "Doanh thu",
+          "Chi phí phục vụ",
+          "Cost-to-serve/đơn",
+          "Đề xuất"
+        ],
+        "rows": [
+          [
+            "MT - chuỗi lớn",
+            "Direct",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "GT - tạp hoá",
+            "NPP",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Vùng sâu",
+            "Online",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "tags": [
+        "rtm",
+        "cost-to-serve",
+        "distribution",
+        "excel"
+      ],
+      "builtin": true,
+      "createdAt": "2026-10-02T00:00:00.000Z"
+    },
+    {
+      "id": "tpl-data-story",
+      "skillId": "ecommerce",
+      "title": "Khung Data Story (báo cáo bán hàng)",
+      "category": "Kịch bản / Script",
+      "description": "Khung kể chuyện với dữ liệu: Bối cảnh → Vấn đề → Insight → Hành động; mỗi biểu đồ 1 thông điệp.",
+      "content": "**Người nghe:** [sếp/buyer/đội sales] — quyết định cần ra: [...]\n**1. Bối cảnh:** [số liệu nền]\n**2. Vấn đề:** [điều bất thường đáng chú ý]\n**3. Insight:** [vì sao xảy ra + ý nghĩa]\n**4. Hành động:** [khuyến nghị cụ thể, ai làm gì]\n**Biểu đồ chính:** [1 biểu đồ — tiêu đề = kết luận]",
+      "table": null,
+      "tags": [
+        "data-storytelling",
+        "report",
+        "insight"
+      ],
+      "builtin": true,
+      "createdAt": "2026-10-02T00:00:00.000Z"
     }
   ]
 }
