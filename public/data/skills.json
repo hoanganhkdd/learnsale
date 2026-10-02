@@ -3,7 +3,7 @@
     "title": "Tự học Sale — Bán hàng & Thương mại",
     "subtitle": "Self-learning Sales — Trade & Commerce",
     "source": "Tổng hợp từ tài liệu ngành FMCG/B2B (Salesforce, HubSpot, SPIN Selling, BeatRoute, DemandFarm...)",
-    "updated": "2026-08-22"
+    "updated": "2026-10-02"
   },
   "skills": [
     {
@@ -376,6 +376,80 @@
               ]
             }
           ]
+        },
+        {
+          "id": "gt-6",
+          "title_vi": "Chẩn đoán doanh số GT: Độ phủ × Sức bán × Cơ cấu SKU",
+          "title_en": "Diagnosing GT Sales: Coverage × Throughput × SKU Mix",
+          "objective": "Khi doanh số giảm, biết phân rã để tìm đúng nguyên nhân (độ phủ, sức bán/điểm, cơ cấu SKU, nguồn cung) thay vì đổ lỗi cho Sales.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "Doanh số GT ≈ **Số điểm bán có hàng (độ phủ) × Sức bán mỗi điểm × Cơ cấu/giá SKU**.",
+                "**Độ phủ (coverage)**: bao nhiêu điểm bán đang bán hàng của bạn.",
+                "**Sức bán/điểm (throughput)**: trung bình mỗi điểm bán ra bao nhiêu.",
+                "**Cơ cấu SKU (mix)**: tỷ trọng các SKU — SKU giá trị cao có đang được đẩy?",
+                "**OOS/nguồn cung**: hết hàng hoặc thiếu cung làm mất doanh số 'vô hình'."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Tách doanh số sụt theo 3 đòn bẩy: độ phủ giảm? sức bán/điểm giảm? mix xấu đi?",
+                "Kiểm độ phủ: số điểm bán active kỳ này so kỳ trước.",
+                "Kiểm sức bán/điểm: doanh số / số điểm active.",
+                "Kiểm mix: tỷ trọng SKU chủ lực/giá trị cao.",
+                "Kiểm nguồn cung/OOS: có đứt hàng, thiếu SKU không.",
+                "Khoanh vùng nguyên nhân → hành động đúng chỗ."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Dùng **phân rã (decomposition)** trước khi kết luận — số tổng che giấu nguyên nhân.",
+                "So sánh **cùng kỳ (YoY)** và **theo vùng** để tách mùa vụ khỏi vấn đề thật.",
+                "Ưu tiên khắc phục đòn bẩy đóng góp phần sụt lớn nhất (80/20)."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Doanh số vùng A giảm 12%. Phân rã: độ phủ không đổi, sức bán/điểm giảm 4%, nhưng tỷ trọng SKU cao cấp rớt từ 30%→18% (mix xấu do OOS 2 SKU chủ lực). Vấn đề là NGUỒN CUNG, không phải Sales lười. Khắc phục: tăng safety stock → doanh số hồi phục."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Từ số liệu 2 kỳ, phân rã mức sụt doanh số theo độ phủ/sức bán/mix.",
+                "Xác định 2 SKU OOS gây mất mix và đề xuất khắc phục.",
+                "Viết kết luận nguyên nhân chính kèm hành động."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Đổ lỗi ngay cho đội Sales khi chưa phân rã nguyên nhân.",
+                "Bỏ qua OOS/nguồn cung — mất doanh số âm thầm.",
+                "Nhìn số tổng, không tách vùng/kỳ → chẩn đoán sai."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Coverage = độ phủ; Throughput = sức bán/điểm",
+                "SKU mix = cơ cấu mặt hàng",
+                "OOS = Out of Stock (hết hàng)",
+                "Decomposition = phân rã; YoY = cùng kỳ năm trước",
+                "Safety stock = tồn kho an toàn"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -745,6 +819,151 @@
               ]
             }
           ]
+        },
+        {
+          "id": "mt-6",
+          "title_vi": "Trade Marketing dựa trên dữ liệu — Promotion Rate vs Cost",
+          "title_en": "Data-Driven Trade Marketing — Promotion Rate vs Cost",
+          "objective": "Phân biệt Promotion Rate và Promotion Cost, đo đúng mức tăng thật (uplift) và phân rã doanh số để ra quyết định khuyến mãi hiệu quả.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Trade Marketing**: các hoạt động thúc đẩy bán tại kênh phân phối (khuyến mãi, trưng bày, chiết khấu) nhằm tăng sản lượng & độ phủ.",
+                "**Promotion Rate (tỷ lệ khuyến mãi)**: % giảm giá/ưu đãi trên giá — cảm nhận của người mua về mức hời.",
+                "**Promotion Cost (chi phí khuyến mãi)**: tiền doanh nghiệp THỰC CHI cho chương trình (ngân sách thật).",
+                "**Uplift (sản lượng tăng thêm)**: phần tăng SO VỚI nền (baseline) nhờ khuyến mãi — tăng 'thật' hay chỉ dồn mua?",
+                "**ROI khuyến mãi**: lợi nhuận tăng thêm / chi phí khuyến mãi."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Xác định baseline (doanh số nền khi không KM) theo SKU/điểm bán.",
+                "Chạy KM → đo sản lượng thực tế trong kỳ.",
+                "Uplift = Sản lượng thực − baseline. Loại trừ 'kéo mua trước' (pull-forward) & tích trữ.",
+                "Tính Promotion Cost thật (giảm giá + quà + phí trưng bày) và Promotion Rate cảm nhận.",
+                "Tính ROI; so các cơ chế (giảm giá vs tặng kèm vs tích điểm) để chọn hiệu quả nhất."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Tách **Promotion Rate (hấp dẫn khách)** khỏi **Promotion Cost (ngân sách)** — rate cao chưa chắc cost cao nếu dùng cơ chế khéo (quà giá vốn thấp).",
+                "Dùng **nhóm đối chứng (test vs control)** để đo uplift thật, tránh quy nhầm cho KM.",
+                "Phân rã doanh số: **Doanh số = Độ phủ × Sức bán/điểm × Cơ cấu SKU × Giá** để biết đòn bẩy nào đang kéo/ghì."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Hai cơ chế cùng Promotion Rate ~20%: (A) giảm giá trực tiếp 20% → Promotion Cost = 20% doanh thu; (B) 'mua 4 tặng 1' bằng sản phẩm giá vốn 50% → cảm nhận ~20% nhưng cost thực ~10%. Nếu uplift tương đương, chọn (B). Đo bằng test/control cho thấy B đạt ROI gấp đôi A."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Lấy 1 SKU: tính baseline, uplift và ROI cho 1 đợt KM giả định.",
+                "So sánh Promotion Rate vs Promotion Cost của 2 cơ chế khác nhau.",
+                "Phân rã doanh số tháng của 1 khu vực theo độ phủ × sức bán × SKU."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Nhầm doanh số tăng = KM hiệu quả (thực ra là kéo mua trước hoặc mùa vụ).",
+                "Chỉ nhìn Promotion Rate, bỏ qua Promotion Cost thật → đốt ngân sách.",
+                "Không có nhóm đối chứng → không biết uplift thật là bao nhiêu."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Promotion Rate = tỷ lệ khuyến mãi (cảm nhận)",
+                "Promotion Cost = chi phí khuyến mãi thực chi",
+                "Uplift = sản lượng tăng thêm so với baseline",
+                "Baseline = doanh số nền; Pull-forward = kéo mua trước",
+                "Test vs Control = nhóm thử nghiệm và đối chứng"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mt-7",
+          "title_vi": "Route to Market (RTM) — Thiết kế kênh ra thị trường",
+          "title_en": "Route to Market (RTM) Design",
+          "objective": "Hiểu RTM: cách hàng đi từ nhà sản xuất tới người mua qua các kênh, và cách thiết kế mô hình phân phối tối ưu chi phí–độ phủ.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**RTM (Route to Market)**: chiến lược & mô hình đưa sản phẩm từ NSX đến tay người mua qua các kênh (GT, MT, online, HORECA...).",
+                "**Direct vs Indirect**: bán trực tiếp (NSX → điểm bán) hay gián tiếp (qua NPP/đại lý).",
+                "**Coverage model**: cách phân bổ NPP/tuyến để phủ thị trường theo mật độ & tiềm năng.",
+                "**Cost-to-serve**: chi phí để phục vụ mỗi kênh/điểm bán — cân đối với doanh thu."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Phân khúc thị trường & điểm bán theo kênh, vùng, tiềm năng.",
+                "Chọn mô hình phục vụ cho từng phân khúc (direct/distributor/online).",
+                "Thiết kế mạng lưới NPP & tuyến (PJP) tối ưu độ phủ/chi phí.",
+                "Xác định mức dịch vụ (tần suất ghé, thời gian giao, tồn kho).",
+                "Đo lường: độ phủ, cost-to-serve, mức phục vụ → tinh chỉnh."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Phủ **trực tiếp** nhóm điểm bán lớn (giá trị cao), **gián tiếp qua NPP** nhóm nhỏ/xa để tối ưu cost-to-serve.",
+                "Dùng dữ liệu mật độ điểm bán để quy hoạch tuyến & số NPP.",
+                "Kết hợp **omnichannel**: online bổ trợ phủ vùng NPP khó với tới."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một NSX đồ uống phủ trực tiếp 500 siêu thị/chuỗi (MT) để kiểm soát trưng bày; dùng 40 NPP phủ 60.000 tạp hoá (GT); mở gian hàng sàn cho vùng sâu. Nhờ chia RTM theo cost-to-serve, chi phí phân phối/đơn giảm 15% trong khi độ phủ tăng."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Vẽ sơ đồ RTM cho 1 sản phẩm: kênh nào trực tiếp, kênh nào qua NPP.",
+                "Ước lượng cost-to-serve của 2 kênh và đề xuất tối ưu.",
+                "Đề xuất số NPP & tuyến cho 1 tỉnh dựa trên mật độ điểm bán."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Phủ trực tiếp tràn lan nhóm điểm bán nhỏ → cost-to-serve cao, lỗ.",
+                "Quá phụ thuộc 1 NPP lớn → rủi ro & mất kiểm soát giá.",
+                "Thiết kế RTM một lần rồi không cập nhật khi thị trường đổi."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "RTM = Route to Market (kênh ra thị trường)",
+                "Direct/Indirect = phân phối trực tiếp/gián tiếp",
+                "Cost-to-serve = chi phí phục vụ",
+                "Coverage model = mô hình độ phủ",
+                "HORECA = Hotel/Restaurant/Catering (kênh dịch vụ ăn uống)"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1109,6 +1328,78 @@
                 "Churn = tỷ lệ rời bỏ; Retention = giữ chân",
                 "Upsell/Cross-sell = bán nâng cấp/bán chéo",
                 "CLV = Customer Lifetime Value; Referral = giới thiệu"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b2b-6",
+          "title_vi": "Storytelling trong bán hàng & thuyết trình chốt deal",
+          "title_en": "Storytelling for Selling & Closing Presentations",
+          "objective": "Dùng kể chuyện để tạo ý nghĩa và niềm tin — giúp người nghe hiểu 'vì sao quan trọng' và hành động, thay vì chỉ nhận thêm thông tin.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Storytelling bán hàng**: dẫn dắt bằng câu chuyện có bối cảnh–xung đột–giải pháp để khách tự thấy giá trị.",
+                "Cốt lõi: người ta cam kết không phải vì **nhiều thông tin hơn**, mà khi thông tin **có ý nghĩa**.",
+                "**Hook**: câu mở đầu đủ mạnh để giữ sự chú ý.",
+                "**Problem-first**: làm nổi bật vấn đề trước khi nói giải pháp."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Mở bằng **hook** mạnh (một con số, một tình huống thật).",
+                "Dựng bối cảnh & **điểm đau** của khách (họ thấy mình trong đó).",
+                "Đưa 'khúc ngoặt' — hệ quả nếu không giải quyết (implication).",
+                "Trình bày giải pháp như lối thoát, gắn với giá trị/ROI.",
+                "Kết bằng cảm hứng + **lời kêu gọi hành động** rõ ràng (next step)."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Tạo **trải nghiệm, đừng tạo bài giảng** — kể, demo, cho khách cảm nhận.",
+                "Nối câu chuyện với **tầm nhìn lớn hơn** của khách (không chỉ tính năng).",
+                "Dùng **case thật/nhân vật** để tăng độ tin (bằng chứng xã hội)."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Thay vì mở bằng slide tính năng, người bán kể: 'Đội CSKH của anh từng sót 1 yêu cầu lớn, mất hợp đồng 300 triệu...'. Khách thấy chính mình trong câu chuyện; khi giải pháp xuất hiện như lối thoát, quyết định đến tự nhiên — không cần 'kỹ thuật chốt áp lực'."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Viết 1 hook (≤2 câu) cho sản phẩm của bạn.",
+                "Dựng câu chuyện 4 bước: bối cảnh → điểm đau → hệ quả → giải pháp.",
+                "Chuẩn bị 1 case khách hàng thật làm bằng chứng."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Mở bằng tính năng/thông số → khách không thấy 'vì sao quan trọng'.",
+                "Kể lan man, không có điểm đau & lời kêu gọi hành động.",
+                "Lạm dụng 'chốt áp lực' thay vì để giá trị tự thuyết phục."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Storytelling = kể chuyện tạo ý nghĩa",
+                "Hook = câu mở đầu hút chú ý",
+                "Problem-first = nêu vấn đề trước giải pháp",
+                "Implication = hệ quả nếu không hành động",
+                "Call to action = lời kêu gọi hành động"
               ]
             }
           ]
@@ -1849,6 +2140,78 @@
                 "Remarketing = tiếp thị lại người đã tương tác",
                 "Repeat rate = tỷ lệ mua lại; Retention = giữ chân",
                 "Loyalty program = chương trình khách hàng thân thiết"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ec-6",
+          "title_vi": "Vận hành & xu hướng bán hàng trên sàn TMĐT Việt Nam",
+          "title_en": "Operating & Trends on VN E-commerce Marketplaces",
+          "objective": "Nắm cách vận hành gian hàng sàn (Shopee/TikTok Shop/Lazada) và các xu hướng (Mall/Outlet, affiliate, live) để tăng đơn & giữ hiệu quả.",
+          "blocks": [
+            {
+              "type": "concept",
+              "label": "Khái niệm",
+              "items": [
+                "**Marketplace operations**: vận hành gian hàng — listing, giá, khuyến mãi sàn, vận chuyển, chăm sóc, chỉ số shop.",
+                "**Shop/Mall tier**: gian hàng chính hãng (Mall) có niềm tin & ưu đãi hiển thị cao hơn shop thường.",
+                "**Affiliate/KOC**: cộng tác viên/nhà sáng tạo đẩy đơn ăn hoa hồng.",
+                "**Live & Shoppertainment**: bán qua livestream + nội dung giải trí (đặc biệt TikTok Shop)."
+              ]
+            },
+            {
+              "type": "steps",
+              "label": "Quy trình",
+              "items": [
+                "Tối ưu gian hàng: ảnh/tiêu đề/mô tả, đánh giá, voucher sàn.",
+                "Tham gia chương trình sàn (Flash Sale, campaign ngày đôi, Mall/Outlet).",
+                "Kéo traffic: ads sàn + affiliate/KOC + live.",
+                "Vận hành đơn: tồn kho, đóng gói, thời gian giao, tỷ lệ huỷ/hoàn.",
+                "Theo dõi chỉ số shop (tỷ lệ phản hồi, giao đúng hạn) để giữ hạng."
+              ]
+            },
+            {
+              "type": "technique",
+              "label": "Kỹ thuật",
+              "items": [
+                "Dồn ads/affiliate vào **SKU có sẵn review tốt** → ROAS cao hơn.",
+                "Tận dụng **campaign ngày đôi (9.9, 10.10...)** và **Mall/Outlet** để bật hiển thị.",
+                "Dùng **live + mã giảm thời hạn** tạo khan hiếm, chốt đơn tại chỗ."
+              ]
+            },
+            {
+              "type": "example",
+              "label": "Ví dụ",
+              "text": "Một nhà bán tham gia Shopee Mall Outlet + chạy affiliate cho 3 SKU best-seller và live tối thứ Sáu. Nhờ hiển thị Mall + KOC đẩy đơn, lượng đơn tăng mạnh sau 3 tháng; giữ chỉ số giao đúng hạn > 98% để không bị tụt hạng."
+            },
+            {
+              "type": "practice",
+              "label": "Bài tập",
+              "items": [
+                "Audit 1 gian hàng: liệt kê 5 điểm cần tối ưu (ảnh/review/voucher...).",
+                "Chọn 3 SKU để chạy affiliate và giải thích vì sao.",
+                "Lên lịch tham gia 1 campaign ngày đôi + kịch bản 1 buổi live."
+              ]
+            },
+            {
+              "type": "pitfall",
+              "label": "Lỗi thường gặp",
+              "items": [
+                "Chạy ads vào SKU chưa có review → đốt tiền, chuyển đổi thấp.",
+                "Bỏ bê chỉ số vận hành (giao trễ, huỷ nhiều) → tụt hạng, giảm hiển thị.",
+                "Phụ thuộc 100% khuyến mãi sàn → biên mỏng, khách chỉ mua khi giảm."
+              ]
+            },
+            {
+              "type": "terms",
+              "label": "Thuật ngữ",
+              "items": [
+                "Marketplace = sàn TMĐT; Mall/Outlet = gian hàng chính hãng/outlet",
+                "Affiliate/KOC = cộng tác viên/nhà sáng tạo bán hàng",
+                "Flash Sale = ưu đãi chớp nhoáng; Campaign ngày đôi = 9.9/10.10...",
+                "ROAS = doanh thu/chi phí ads",
+                "Shoppertainment = giải trí kết hợp mua sắm"
               ]
             }
           ]
